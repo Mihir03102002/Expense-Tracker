@@ -1,7 +1,10 @@
 package com.Grownited.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -15,17 +18,26 @@ public class ExpenseController {
 	@Autowired
 	ExpenseRepository expenseRepository;
 	
-	@GetMapping ("expense")
+	@GetMapping ("Expense")
 	public String openexpensepage() {
-		return "expense";
+		return "Expense";
 	}
 	
-    @PostMapping ("expense")
+    @PostMapping ("saveExpense")
     public String saveExpense (ExpenseEntity expenseEntity) {
     	expenseRepository.save(expenseEntity);
-    	return" ";
+    	return"AdminController";
     }
 	
-	
+    @GetMapping("/expense-list")
+    public String expenseList(Model model) {
+
+        List<ExpenseEntity> expenseList = expenseRepository.findAll();
+
+        model.addAttribute("expenseList", expenseList);
+
+        return "expense-list";
+    }
+
 	
 }

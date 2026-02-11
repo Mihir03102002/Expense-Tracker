@@ -36,14 +36,14 @@
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <h4 class="text-white text-center py-3">Admin Panel</h4>
-    <a href="/admin/dashboard"><i class="fa fa-home"></i> Dashboard</a>
-    <a href="/admin/users"><i class="fa fa-users"></i> Users</a>
-    <a href="#"><i class="fa fa-wallet"></i> Expenses</a>
-    <a href="#"><i class="fa fa-sign-out-alt"></i> Logout</a>
-</div>
+
+<!-- ================= HEADER ================= -->
+
+	<jsp:include page="AdminHeader.jsp"></jsp:include>
+
+<!-- ================= SIDEBAR ================= -->
+
+	<jsp:include page="AdminSidebar.jsp"></jsp:include>
 
 <!-- MAIN CONTENT -->
 <div class="content">

@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Manage Status | Admin</title>
+<title>User Dashboard | Expense Tracker</title>
 
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@
 
     .sidebar {
         height: 100vh;
-        background-color: #212529;
+        background-color: #0d6efd;
         color: #fff;
         position: fixed;
         width: 240px;
@@ -30,19 +30,19 @@
     }
 
     .sidebar a {
-        color: #adb5bd;
+        color: #e9ecef;
         text-decoration: none;
         padding: 12px 20px;
         display: block;
     }
 
     .sidebar a:hover {
-        background-color: #343a40;
+        background-color: #084298;
         color: #fff;
     }
 
     .sidebar .active {
-        background-color: #0d6efd;
+        background-color: #052c65;
         color: #fff;
     }
 
@@ -74,71 +74,87 @@
 <!-- ================= MAIN CONTENT ================= -->
 <div class="content">
 
-    <h3>Status Management</h3>
-    <p class="text-muted">Manage payment status (Paid / Unpaid / Partial)</p>
+    <h3>Dashboard</h3>
+    <p class="text-muted">Overview of your finances</p>
 
-    <!-- ================= ADD STATUS FORM ================= -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            Add New Status
-        </div>
+    <!-- ================= SUMMARY CARDS ================= -->
+    <div class="row g-3 mb-4">
 
-        <div class="card-body">
-            <form action="Status" method="post">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Status Name</label>
-                        <input type="text" name="status"
-                               class="form-control"
-                               placeholder="paid / unpaid / partialPaid"
-                               required>
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-plus-circle"></i> Add Status
-                        </button>
-                    </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Total Income</h6>
+                    <h4 class="text-success">₹ ${totalIncome}</h4>
                 </div>
-            </form>
+            </div>
         </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Total Expense</h6>
+                    <h4 class="text-danger">₹ ${totalExpense}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Available Balance</h6>
+                    <h4 class="text-primary">₹ ${balance}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Total Accounts</h6>
+                    <h4>${accountCount}</h4>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- ================= STATUS TABLE ================= -->
+    <!-- ================= RECENT EXPENSES ================= -->
     <div class="card shadow-sm">
         <div class="card-header bg-dark text-white">
-            Status List
+            Recent Expenses
         </div>
 
         <div class="card-body">
             <table class="table table-bordered table-hover text-center">
                 <thead class="table-light">
                     <tr>
-                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Amount (₹)</th>
+                        <th>Date</th>
                         <th>Status</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <c:forEach var="s" items="${statuses}">
+                    <c:forEach var="e" items="${recentExpenses}">
                         <tr>
-                            <td>${s.statusId}</td>
-                            <td>${s.status}</td>
+                            <td>${e.title}</td>
+                            <td>${e.category.categoryName}</td>
+                            <td>${e.amount}</td>
+                            <td>${e.date}</td>
                             <td>
-                                <a href="Status${s.statusId}"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Are you sure?')">
-                                    <i class="bi bi-trash"></i> Delete
-                                </a>
+                                <span class="badge bg-success">
+                                    ${e.status.status}
+                                </span>
                             </td>
                         </tr>
                     </c:forEach>
 
-                    <c:if test="${empty statuses}">
+                    <c:if test="${empty recentExpenses}">
                         <tr>
-                            <td colspan="3" class="text-muted">
-                                No status records found
+                            <td colspan="5" class="text-muted">
+                                No recent expenses found
                             </td>
                         </tr>
                     </c:if>
@@ -149,7 +165,7 @@
 
     <!-- ================= FOOTER ================= -->
     <footer>
-        © 2026 Expense Tracker | Status Master Module
+        © 2026 Expense Tracker | User Dashboard
     </footer>
 
 </div>

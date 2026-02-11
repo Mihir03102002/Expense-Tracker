@@ -64,47 +64,15 @@
 <body>
 
 <!-- ================= HEADER ================= -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container-fluid">
-        <span class="navbar-brand fw-bold">Admin Panel</span>
 
-        <div class="ms-auto">
-            <span class="me-3">Welcome, Admin</span>
-            <a href="/logout" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </div>
-    </div>
-</nav>
+	<jsp:include page="AdminHeader.jsp"></jsp:include>
+
 
 <!-- ================= SIDEBAR ================= -->
-<div class="sidebar">
-    <h5 class="text-center py-3 border-bottom">Dashboard</h5>
 
-    <a href="/dashboard">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-    </a>
+	<jsp:include page="AdminSidebar.jsp"></jsp:include>
 
-    <a href="/category">
-        <i class="bi bi-tags me-2"></i> Category
-    </a>
 
-    <a href="/subcategory">
-        <i class="bi bi-diagram-3 me-2"></i> Sub Category
-    </a>
-
-    <a href="/vendor">
-        <i class="bi bi-shop me-2"></i> Vendor
-    </a>
-
-    <a href="/admin/expenses" class="active">
-        <i class="bi bi-wallet2 me-2"></i> Expenses
-    </a>
-
-    <a href="/income">
-        <i class="bi bi-cash-stack me-2"></i> Income
-    </a>
-</div>
 
 <!-- ================= MAIN CONTENT ================= -->
 <div class="content">

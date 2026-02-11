@@ -16,13 +16,14 @@ public class VendorController {
 	
 	@GetMapping ("vendor")
 	public String openvendorpage() {
-		return "vendor";
+		return "Vendor";
 	}
 
 	@PostMapping ("vendor")
 	public String saveVendor(VendorEntity vendorEntity) {
 		vendorRepository.save (vendorEntity);
-		return "";
+		return "Vendor";
 	}
+	
 	
 }

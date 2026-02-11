@@ -66,43 +66,13 @@
 <body>
 
 <!-- ================= HEADER ================= -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container-fluid">
-        <span class="navbar-brand fw-bold">Admin Panel</span>
 
-        <div class="ms-auto">
-            <span class="me-3">Welcome, Admin</span>
-            <a href="/logout" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
+	<jsp:include page="AdminHeader.jsp"></jsp:include>
+	
 <!-- ================= SIDEBAR ================= -->
-<div class="sidebar">
-    <h5 class="text-center py-3 border-bottom">Dashboard</h5>
 
-    <a href="dashboard">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-    </a>
-
-    <a href="category" class="active">
-        <i class="bi bi-tags me-2"></i> Category
-    </a>
-
-    <a href="users">
-        <i class="bi bi-people me-2"></i> Users
-    </a>
-
-    <a href="expenses">
-        <i class="bi bi-wallet2 me-2"></i> Expenses
-    </a>
-
-    <a href="income">
-        <i class="bi bi-cash-stack me-2"></i> Income
-    </a>
-</div>
+	<jsp:include page="AdminSidebar.jsp"></jsp:include>
+	
 
 <!-- ================= MAIN CONTENT ================= -->
 <div class="content">
@@ -117,7 +87,7 @@
         </div>
 
         <div class="card-body">
-            <form action="/admin/category/save" method="post">
+            <form action="category" method="post">
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label">Category Name</label>
@@ -157,7 +127,7 @@
                             <td>${cat.categoryId}</td>
                             <td>${cat.categoryName}</td>
                             <td>
-                                <a href="/admin/category/delete/${cat.categoryId}"
+                                <a href="Category${cat.categoryId}"
                                    class="btn btn-sm btn-danger"
                                    onclick="return confirm('Are you sure?')">
                                     <i class="bi bi-trash"></i> Delete

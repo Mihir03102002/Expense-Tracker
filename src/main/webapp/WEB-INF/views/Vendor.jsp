@@ -64,51 +64,12 @@
 <body>
 
 <!-- ================= HEADER ================= -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container-fluid">
-        <span class="navbar-brand fw-bold">Admin Panel</span>
 
-        <div class="ms-auto">
-            <span class="me-3">Welcome, Admin</span>
-            <a href="/logout" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
+	<jsp:include page="AdminHeader.jsp"></jsp:include>
+	
 <!-- ================= SIDEBAR ================= -->
-<div class="sidebar">
-    <h5 class="text-center py-3 border-bottom">Dashboard</h5>
 
-    <a href="/dashboard">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-    </a>
-
-    <a href="/category">
-        <i class="bi bi-tags me-2"></i> Category
-    </a>
-
-    <a href="/subcategory">
-        <i class="bi bi-diagram-3 me-2"></i> Sub Category
-    </a>
-
-    <a href="/vendor" class="active">
-        <i class="bi bi-shop me-2"></i> Vendor
-    </a>
-
-    <a href="/users">
-        <i class="bi bi-people me-2"></i> Users
-    </a>
-
-    <a href="/expenses">
-        <i class="bi bi-wallet2 me-2"></i> Expenses
-    </a>
-
-    <a href="/income">
-        <i class="bi bi-cash-stack me-2"></i> Income
-    </a>
-</div>
+	<jsp:include page="AdminSidebar.jsp"></jsp:include>
 
 <!-- ================= MAIN CONTENT ================= -->
 <div class="content">
@@ -123,7 +84,7 @@
         </div>
 
         <div class="card-body">
-            <form action="/admin/vendor/save" method="post">
+            <form action="vendor" method="post">
                 <div class="row">
                     <div class="col-md-6">
                         <label class="form-label">Vendor Name</label>
@@ -165,7 +126,7 @@
                             <td>${v.vendorId}</td>
                             <td>${v.vendorName}</td>
                             <td>
-                                <a href="/admin/vendor/delete/${v.vendorId}"
+                                <a href="vendor${v.vendorId}"
                                    class="btn btn-sm btn-danger"
                                    onclick="return confirm('Are you sure?')">
                                     <i class="bi bi-trash"></i> Delete

@@ -14,14 +14,14 @@ public class IncomeController {
     @Autowired
     IncomeRepository incomeRepository;
 
-    @GetMapping("/income")
+    @GetMapping("/Income")
     public String openIncomePage() {
-        return "income"; // income.jsp
+        return "Income"; // income.jsp
     }
 
-    @PostMapping("/income")
+    @PostMapping("/Income")
     public String saveIncome(IncomeEntity incomeEntity) {
         incomeRepository.save(incomeEntity); // ✅ correct
-        return "redirect:/income"; // redirect after save
+        return "redirect:/Income"; // redirect after save
     }
 }

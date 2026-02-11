@@ -35,7 +35,6 @@
         text-decoration: none;
         padding: 12px 20px;
         display: block;
-        transition: 0.3s;
     }
 
     .sidebar a:hover {
@@ -54,7 +53,6 @@
         padding: 20px;
     }
 
-    /* Footer */
     footer {
         background-color: #fff;
         border-top: 1px solid #dee2e6;
@@ -68,56 +66,20 @@
 <body>
 
 <!-- ================= HEADER ================= -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container-fluid">
-        <span class="navbar-brand fw-bold">Admin Panel</span>
 
-        <div class="ms-auto">
-            <span class="me-3">Welcome, Admin</span>
-            <a href="/logout" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
+   <jsp:include page="AdminHeader.jsp"></jsp:include>
+   
 <!-- ================= SIDEBAR ================= -->
-<div class="sidebar">
-    <h5 class="text-center py-3 border-bottom">Dashboard</h5>
 
-    <a href="#" class="active">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-    </a>
-
-    <a href="category">
-        <i class="bi bi-tags me-2"></i> Category
-    </a>
-
-    <a href="users">
-        <i class="bi bi-people me-2"></i> Users
-    </a>
-
-    <a href="expenses">
-        <i class="bi bi-wallet2 me-2"></i> Expenses
-    </a>
-
-    <a href="income">
-        <i class="bi bi-cash-stack me-2"></i> Income
-    </a>
-
-    <a href="settings">
-        <i class="bi bi-gear me-2"></i> Settings
-    </a>
-</div>
-
+	<jsp:include page="AdminSidebar.jsp"></jsp:include>
 <!-- ================= MAIN CONTENT ================= -->
 <div class="content">
 
     <h3>Dashboard</h3>
-    <p class="text-muted">Welcome to the admin dashboard.</p>
+    <p class="text-muted">System overview and statistics</p>
 
-    <!-- ================= STAT CARDS ================= -->
-    <div class="row g-3">
+    <!-- ================= SUMMARY CARDS ================= -->
+    <div class="row g-3 mb-4">
 
         <div class="col-md-3">
             <div class="card shadow-sm">
@@ -140,8 +102,8 @@
         <div class="col-md-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h6>Total Expenses</h6>
-                    <h4>₹ ${totalExpense}</h4>
+                    <h6>Total Expense</h6>
+                    <h4 class="text-danger">₹ ${totalExpense}</h4>
                 </div>
             </div>
         </div>
@@ -150,15 +112,15 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h6>Total Income</h6>
-                    <h4>₹ ${totalIncome}</h4>
+                    <h4 class="text-success">₹ ${totalIncome}</h4>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- ================= RECENT EXPENSES TABLE ================= -->
-    <div class="card shadow-sm mt-4">
+    <!-- ================= RECENT EXPENSES ================= -->
+    <div class="card shadow-sm">
         <div class="card-header bg-dark text-white">
             Recent Expenses
         </div>
@@ -169,31 +131,27 @@
                     <tr>
                         <th>Title</th>
                         <th>User</th>
-                        <th>Amount</th>
-                        <th>Status</th>
+                        <th>Category</th>
+                        <th>Amount (₹)</th>
                         <th>Date</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <c:forEach var="exp" items="${recentExpenses}">
+                    <c:forEach var="e" items="${recentExpenses}">
                         <tr>
-                            <td>${exp.title}</td>
-                            <td>${exp.user.firstName}</td>
-                            <td>₹ ${exp.amount}</td>
-                            <td>
-                                <span class="badge bg-success">
-                                    ${exp.status.status}
-                                </span>
-                            </td>
-                            <td>${exp.date}</td>
+                            <td>${e.title}</td>
+                            <td>${e.user.firstName}</td>
+                            <td>${e.category.categoryName}</td>
+                            <td>${e.amount}</td>
+                            <td>${e.date}</td>
                         </tr>
                     </c:forEach>
 
                     <c:if test="${empty recentExpenses}">
                         <tr>
                             <td colspan="5" class="text-muted">
-                                No records found
+                                No recent expenses found
                             </td>
                         </tr>
                     </c:if>
@@ -204,7 +162,7 @@
 
     <!-- ================= FOOTER ================= -->
     <footer>
-        © 2026 Expense Tracker Admin Dashboard | Designed for Academic Project
+        © 2026 Expense Tracker | Admin Dashboard
     </footer>
 
 </div>

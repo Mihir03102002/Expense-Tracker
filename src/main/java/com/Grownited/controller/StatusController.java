@@ -16,13 +16,13 @@ public class StatusController {
 	
 	@GetMapping ("status")
 	public String openstatuspage(){
-	return "status";
+	return "Status";
 	
 	}
 	
 	@PostMapping ("status")
 	public String saveStatus (StatusEntity statusEntity) {
 		statusRepository.save (statusEntity);
-		return " ";
+		return "status";
 	}
 }
