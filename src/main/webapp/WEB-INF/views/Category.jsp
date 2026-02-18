@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Manage Categories | Admin</title>
+<title>Category Management | Expense Tracker</title>
 
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -50,6 +51,7 @@
     /* Main content */
     .content {
         margin-left: 240px;
+        margin-top: 100px;   /* Added like Account.jsp */
         padding: 20px;
     }
 
@@ -61,18 +63,18 @@
         margin-top: 30px;
     }
 </style>
+
+<jsp:include page="AdminCSS.jsp"></jsp:include>
+
 </head>
 
 <body>
 
 <!-- ================= HEADER ================= -->
+<jsp:include page="AdminHeader.jsp"></jsp:include>
 
-	<jsp:include page="AdminHeader.jsp"></jsp:include>
-	
 <!-- ================= SIDEBAR ================= -->
-
-	<jsp:include page="AdminSidebar.jsp"></jsp:include>
-	
+<jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
 <!-- ================= MAIN CONTENT ================= -->
 <div class="content">
@@ -89,10 +91,13 @@
         <div class="card-body">
             <form action="category" method="post">
                 <div class="row">
+
                     <div class="col-md-6">
                         <label class="form-label">Category Name</label>
-                        <input type="text" name="categoryName" class="form-control"
-                               placeholder="Enter category name" required>
+                        <input type="text" name="categoryName"
+                               class="form-control"
+                               placeholder="Enter category name"
+                               required>
                     </div>
 
                     <div class="col-md-3 d-flex align-items-end">
@@ -100,6 +105,7 @@
                             <i class="bi bi-plus-circle"></i> Add Category
                         </button>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -112,7 +118,7 @@
         </div>
 
         <div class="card-body">
-            <table class="table table-bordered table-hover text-center">
+            <table class="table table-bordered text-center">
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
@@ -122,36 +128,38 @@
                 </thead>
 
                 <tbody>
-                    <c:forEach var="cat" items="${category}">
-                        <tr>
-                            <td>${cat.categoryId}</td>
-                            <td>${cat.categoryName}</td>
-                            <td>
-                                <a href="Category${cat.categoryId}"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Are you sure?')">
-                                    <i class="bi bi-trash"></i> Delete
-                                </a>
-                            </td>
-                        </tr>
-                    </c:forEach>
 
-                    <c:if test="${empty categories}">
+                    <!-- If Empty -->
+                    <c:if test="${empty listCategory}">
                         <tr>
                             <td colspan="3" class="text-muted">
                                 No categories found
                             </td>
                         </tr>
                     </c:if>
+
+                    <!-- Loop Categories -->
+                    <c:forEach var="cat" items="${listCategory}">
+                        <tr>
+                            <td>${cat.categoryId}</td>
+                            <td>${cat.categoryName}</td>
+                            <td>
+                                <a href="deleteCategory?categoryId=${cat.categoryId}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Are you sure you want to delete this category?')">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+
                 </tbody>
             </table>
         </div>
     </div>
 
     <!-- ================= FOOTER ================= -->
-    <footer>
-        © 2026 Expense Tracker | Admin Category Module
-    </footer>
+    <jsp:include page="AdminFooter.jsp"></jsp:include>
 
 </div>
 

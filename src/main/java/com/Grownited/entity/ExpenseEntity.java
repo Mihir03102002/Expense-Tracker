@@ -1,131 +1,136 @@
 package com.Grownited.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table (name = "expenses" )
+@Table(name = "expenses")
 public class ExpenseEntity {
-	
-	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	
-	private  Integer expenseId	;	
-	
-	private String  title ;	
-	
-	private Integer  categoryId ;
-	
-	private	Integer   subCategoryId;
-	
-	private	Integer   vendorId;
-	
-	private	Integer   accountId;
-    
-	private	Integer	  statusId;
-	
-	private	Integer  userId;
-	
-	private	Float    amount;	
-	
-	private	String  date;	
-	
-	private	String  description;
 
-	public Integer getExpenseId() {
-		return expenseId;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer expenseId;
 
-	public void setExpenseId(Integer expenseId) {
-		this.expenseId = expenseId;
-	}
+    private String title;
 
-	public String getTitle() {
-		return title;
-	}
+    private Float amount;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    private String date;
 
-	public Integer getCategoryId() {
-		return categoryId;
-	}
+    private String description;
 
-	public void setCategoryId(Integer categoryId) {
-		this.categoryId = categoryId;
-	}
+    /* ================= RELATIONSHIPS ================= */
 
-	public Integer getSubCategoryId() {
-		return subCategoryId;
-	}
+    @ManyToOne
+    @JoinColumn(name = "categoryId")
+    private CategoryEntity category;
 
-	public void setSubCategoryId(Integer subCategoryId) {
-		this.subCategoryId = subCategoryId;
-	}
+    @ManyToOne
+    @JoinColumn(name = "subCategoryId")
+    private SubCategoryEntity subCategory;
 
-	public Integer getVendorId() {
-		return vendorId;
-	}
+    @ManyToOne
+    @JoinColumn(name = "vendorId")
+    private VendorEntity vendor;
 
-	public void setVendorId(Integer vendorId) {
-		this.vendorId = vendorId;
-	}
+    @ManyToOne
+    @JoinColumn(name = "accountId")
+    private AccountEntity account;
 
-	public Integer getAccountId() {
-		return accountId;
-	}
+    @ManyToOne
+    @JoinColumn(name = "statusId")
+    private StatusEntity status;
 
-	public void setAccountId(Integer accountId) {
-		this.accountId = accountId;
-	}
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private UserEntity user;
 
-	public Integer getStatusId() {
-		return statusId;
-	}
+    /* ================= GETTERS & SETTERS ================= */
 
-	public void setStatusId(Integer statusId) {
-		this.statusId = statusId;
-	}
+    public Integer getExpenseId() {
+        return expenseId;
+    }
 
-	public Integer getUserId() {
-		return userId;
-	}
+    public void setExpenseId(Integer expenseId) {
+        this.expenseId = expenseId;
+    }
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public Float getAmount() {
-		return amount;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setAmount(Float amount) {
-		this.amount = amount;
-	}
+    public Float getAmount() {
+        return amount;
+    }
 
-	public String getDate() {
-		return date;
-	}
+    public void setAmount(Float amount) {
+        this.amount = amount;
+    }
 
-	public void setDate(String date) {
-		this.date = date;
-	}
+    public String getDate() {
+        return date;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setDate(String date) {
+        this.date = date;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
+    public String getDescription() {
+        return description;
+    }
 
-	
-	
-	
-	
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public CategoryEntity getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
+    }
+
+    public SubCategoryEntity getSubCategory() {
+        return subCategory;
+    }
+
+    public void setSubCategory(SubCategoryEntity subCategory) {
+        this.subCategory = subCategory;
+    }
+
+    public VendorEntity getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(VendorEntity vendor) {
+        this.vendor = vendor;
+    }
+
+    public AccountEntity getAccount() {
+        return account;
+    }
+
+    public void setAccount(AccountEntity account) {
+        this.account = account;
+    }
+
+    public StatusEntity getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEntity status) {
+        this.status = status;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
 }

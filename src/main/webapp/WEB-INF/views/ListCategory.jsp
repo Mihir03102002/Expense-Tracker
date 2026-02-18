@@ -1,146 +1,114 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>List Categories | Admin</title>
+<title>List Category | Expense Tracker</title>
 
-<!-- Common Admin CSS -->
+<!-- ================= ADMIN CSS ================= -->
 <jsp:include page="AdminCSS.jsp"></jsp:include>
-
-<style>
-body {
-    background-color: #f8f9fa;
-}
-
-.card {
-    margin-top: 80px;
-    border-radius: 12px;
-}
-
-.container {
-    width: 95%;
-    margin: 20px auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 6px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: center;
-}
-
-th {
-    background: #007bff;
-    color: white;
-}
-
-tr:nth-child(even) {
-    background: #f9f9f9;
-}
-
-.btn {
-    padding: 6px 10px;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 13px;
-    color: white;
-}
-
-.btn-add { background: #28a745; }
-.btn-edit { background: #ffc107; color: black; }
-.btn-delete { background: #dc3545; }
-</style>
 
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
-<jsp:include page="AdminHeader.jsp"></jsp:include>
+<div class="container-scroller">
 
-<!-- ================= SIDEBAR ================= -->
-<jsp:include page="AdminSidebar.jsp"></jsp:include>
+    <!-- ================= HEADER ================= -->
+    <jsp:include page="AdminHeader.jsp"></jsp:include>
 
-<!-- ================= MAIN CONTENT ================= -->
-<div class="content">
-    <div class="row justify-content-center">
-        <div class="col-md-12 col-lg-10">
-            <div class="card shadow">
-                <div class="card-body p-4">
+    <div class="container-fluid page-body-wrapper">
 
-                    <h4 class="text-center mb-4">All Categories</h4>
+        <!-- ================= SIDEBAR ================= -->
+        <jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
-                    <!-- ADD CATEGORY BUTTON -->
-                    <div class="mb-3 text-end">
-                        <a href="/category" class="btn btn-add">
-                            + Add New Category
-                        </a>
+        <!-- ================= MAIN PANEL ================= -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+
+                <!-- ================= PAGE TITLE ================= -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h3>Category List</h3>
+                        <p class="text-muted">Manage all categories</p>
                     </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Category Name</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <c:choose>
-
-                                <c:when test="${empty listCategory}">
-                                    <tr>
-                                        <td colspan="3">No categories found</td>
-                                    </tr>
-                                </c:when>
-
-                                <c:otherwise>
-                                    <c:forEach var="c" items="${listCategory}" varStatus="i">
-                                        <tr>
-                                            <td>${i.count}</td>
-                                            <td>${c.categoryName}</td>
-                                            <td>
-                                                <a href="Category=${c.categoryId}"
-                                                   class="btn btn-edit">
-                                                    Edit
-                                                </a>
-
-                                                <a href="deleteCategory?categoryId=${c.categoryId}"
-                                                   class="btn btn-delete"
-                                                   onclick="return confirm('Are you sure you want to delete this category?')">
-                                                    Delete
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </c:otherwise>
-
-                            </c:choose>
-                        </tbody>
-                    </table>
-
                 </div>
+
+                <!-- ================= CATEGORY TABLE CARD ================= -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card shadow-sm">
+
+                            <div class="card-header bg-dark text-white">
+                                <i class="bi bi-list-ul me-2"></i> Category List
+                            </div>
+
+                            <div class="card-body">
+                                <div class="table-responsive">
+
+                                    <table class="table table-bordered table-hover text-center align-middle">
+
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Category Name</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            <!-- If Empty -->
+                                            <c:if test="${empty listCategory}">
+                                                <tr>
+                                                    <td colspan="3" class="text-muted">
+                                                        No categories found
+                                                    </td>
+                                                </tr>
+                                            </c:if>
+
+                                            <!-- Loop Data -->
+                                            <c:forEach var="cat" items="${listCategory}">
+                                                <tr>
+                                                    <td>${cat.categoryId}</td>
+                                                    <td>${cat.categoryName}</td>
+                                                    <td>
+                                                        <a href="deleteCategory?categoryId=${cat.categoryId}"
+                                                           class="btn btn-sm btn-danger"
+                                                           onclick="return confirm('Are you sure you want to delete this category?')">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- ================= FOOTER ================= -->
+            <jsp:include page="AdminFooter.jsp"></jsp:include>
+
         </div>
+
     </div>
+
 </div>
 
-<!-- ================= FOOTER ================= -->
-<jsp:include page="AdminFooter.jsp"></jsp:include>
+<jsp:include page="AdminJS.jsp" />
 
 </body>
 </html>

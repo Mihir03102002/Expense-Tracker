@@ -6,82 +6,92 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Income</title>
+<title>My Income | Expense Tracker</title>
 
-<!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<jsp:include page="AdminCSS.jsp"></jsp:include>
 
-<!-- Bootstrap Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
-
-<style>
-body { background-color:#f4f6f9; }
-.content { margin-left:240px; padding:20px; }
-footer { background:#fff; border-top:1px solid #dee2e6; padding:10px; margin-top:30px; text-align:center; }
-</style>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
+<div class="container-scroller">
 
-	<jsp:include page="AdminHeader.jsp"></jsp:include>
+    <!-- HEADER -->
+    <jsp:include page="AdminHeader.jsp"></jsp:include>
 
-<!-- ================= SIDEBAR ================= -->
+    <div class="container-fluid page-body-wrapper">
 
-	<jsp:include page="AdminSidebar.jsp"></jsp:include>
+        <!-- SIDEBAR -->
+        <jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
-<!-- ================= MAIN CONTENT ================= -->
+        <!-- MAIN PANEL -->
+        <div class="main-panel">
+            <div class="content-wrapper">
 
-<div class="content">
+                <h3 class="mb-3">My Income</h3>
 
-    <h3>My Income</h3>
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        Income List
+                    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-            Income List
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered table-hover text-center">
-                <thead class="table-light">
-                    <tr>
-                        <th>Title</th>
-                        <th>Account</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="i" items="${incomes}">
-                        <tr>
-                            <td>${i.title}</td>
-                            <td>${i.account.title}</td>
-                            <td>₹ ${i.amount}</td>
-                            <td>${i.date}</td>
-                            <td>${i.status.status}</td>
-                        </tr>
-                    </c:forEach>
+                    <div class="card-body">
 
-                    <c:if test="${empty incomes}">
-                        <tr>
-                            <td colspan="5">No income records found</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover text-center">
+
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Account</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <c:choose>
+
+                                        <c:when test="${empty incomes}">
+                                            <tr>
+                                                <td colspan="5">No income records found</td>
+                                            </tr>
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <c:forEach var="i" items="${incomes}">
+												    <tr>
+												        <td>${i.title}</td>
+												        <td>${i.account.title}</td>
+												        <td>₹ ${i.amount}</td>
+												        <td>${i.date}</td>
+												        <td>${i.status.status}</td>
+												    </tr>
+												</c:forEach>
+                                        </c:otherwise>
+
+                                    </c:choose>
+
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <jsp:include page="AdminFooter.jsp"></jsp:include>
+
         </div>
     </div>
-    
-<!-- ================= FOOTER ================= -->
-    <footer>
-        © 2026 Expense Tracker | Income List
-    </footer>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<jsp:include page="AdminJS.jsp"></jsp:include>
 
 </body>
 </html>

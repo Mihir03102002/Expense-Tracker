@@ -48,6 +48,7 @@
 
     .content {
         margin-left: 240px;
+        margin-top:100px;
         padding: 20px;
     }
 
@@ -70,7 +71,7 @@
 
 <!-- ================= SIDEBAR ================= -->
 
-	<jsp:include page="AdminSidebar.jsp"></jsp:include>
+	<jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
 
 

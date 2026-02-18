@@ -19,7 +19,9 @@ public class CategoryController {
 
     // OPEN CATEGORY PAGE
     @GetMapping("/category")
-    public String openCategoryPage() {
+    public String openCategoryPage(Model model) {
+    	List<CategoryEntity> listCategory = categoryRepository.findAll();
+		model.addAttribute("listCategory",listCategory);//
         return "Category";   // category.jsp
     }
 

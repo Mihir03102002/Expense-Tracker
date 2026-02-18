@@ -7,63 +7,66 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table (name = "accounts")
+@Table(name = "accounts")
 public class AccountEntity {
-	
-	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	
-	private Integer accountId;
-	
-	private String  title;
-	
-	private Boolean isDefault;
-	
-	private Float   amount;
-	
-	private Integer userId;
 
-	public Integer getAccountId() {
-		return accountId;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer accountId;
 
-	public void setAccountId(Integer accountId) {
-		this.accountId = accountId;
-	}
+    private String title;        // Account Name
+    private String accountType;  // Cash, UPI, Credit Card, etc
+    private Boolean isDefault;
+    private Float amount;
+    private Integer userId;
 
-	public String getTitle() {
-		return title;
-	}
+    // ===== Getters & Setters =====
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public Integer getAccountId() {
+        return accountId;
+    }
 
-	public Boolean getIsDefault() {
-		return isDefault;
-	}
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
+    }
 
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public Float getAmount() {
-		return amount;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setAmount(Float amount) {
-		this.amount = amount;
-	}
+    public String getAccountType() {
+        return accountType;
+    }
 
-	public Integer getUserId() {
-		return userId;
-	}
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-	
-	
-	
+    public Boolean getIsDefault() {
+        return isDefault;
+    }
 
+    public void setIsDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    public Float getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Float amount) {
+        this.amount = amount;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 }

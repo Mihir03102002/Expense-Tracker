@@ -41,7 +41,7 @@ public class SessionController {
 		System.out.println(userDetailEntity.getState());
 
 		
-		userEntity.setRole("PARTICIPANT");
+		userEntity.setRole("User");
 		userEntity.setActive(true);
 		userEntity.setCreatedAt(LocalDate.now());
 		

@@ -1,102 +1,98 @@
 package com.Grownited.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table (name = "incomes")
+@Table(name = "incomes")
 public class IncomeEntity {
 
-	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer incomeId;
-    
-    private	String 	title;
-    
-    private	String	date;
-	
-    private	String	description;
-	
-    private	Float	amount;	
-    
-    private	Integer	userId;	
-	
-    private	Integer accountId;
-	
-    private	Integer	statusId;
 
-	public Integer getIncomeId() {
-		return incomeId;
-	}
+    private String title;
 
-	public void setIncomeId(Integer incomeId) {
-		this.incomeId = incomeId;
-	}
+    private String date;
 
-	public String getTitle() {
-		return title;
-	}
+    private String description;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    private Float amount;
 
-	public String getDate() {
-		return date;
-	}
+    private Integer userId;
 
-	public void setDate(String date) {
-		this.date = date;
-	}
+    // 🔹 RELATION WITH ACCOUNT
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private AccountEntity account;
 
-	public String getDescription() {
-		return description;
-	}
+    // 🔹 RELATION WITH STATUS
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private StatusEntity status;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    // ================= GETTERS & SETTERS =================
 
-	public Float getAmount() {
-		return amount;
-	}
+    public Integer getIncomeId() {
+        return incomeId;
+    }
 
-	public void setAmount(Float amount) {
-		this.amount = amount;
-	}
+    public void setIncomeId(Integer incomeId) {
+        this.incomeId = incomeId;
+    }
 
-	public Integer getUserId() {
-		return userId;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public Integer getAccountId() {
-		return accountId;
-	}
+    public String getDate() {
+        return date;
+    }
 
-	public void setAccountId(Integer accountId) {
-		this.accountId = accountId;
-	}
+    public void setDate(String date) {
+        this.date = date;
+    }
 
-	public Integer getStatusId() {
-		return statusId;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setStatusId(Integer statusId) {
-		this.statusId = statusId;
-	}	
-	
-	
-    
-    
-    
-	
-	
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Float getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Float amount) {
+        this.amount = amount;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public AccountEntity getAccount() {
+        return account;
+    }
+
+    public void setAccount(AccountEntity account) {
+        this.account = account;
+    }
+
+    public StatusEntity getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEntity status) {
+        this.status = status;
+    }
 }

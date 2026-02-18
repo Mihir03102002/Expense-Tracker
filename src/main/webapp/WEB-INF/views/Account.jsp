@@ -14,17 +14,58 @@
  <!-- Bootstrap Icons -->
  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+
 <style>
-      body { background-color:#f4f6f9; }
-        .content { margin-left:240px; padding:20px; }
+    body {
+        background-color: #f4f6f9;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        height: 100vh;
+        background-color: #212529;
+        color: #fff;
+        position: fixed;
+        width: 240px;
+        top: 0;
+        left: 0;
+    }
+
+    .sidebar a {
+        color: #adb5bd;
+        text-decoration: none;
+        padding: 12px 20px;
+        display: block;
+    }
+
+    .sidebar a:hover {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .sidebar .active {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+
+    /* Main content */
+    .content {
+        margin-left: 240px;
+        margin-top:100px;
+        padding: 20px;
+    }
+
     footer {
-    background:#fff;
-    border-top:1px solid #dee2e6;
-    padding:10px;
-    text-align:center;
-    margin-top:30px;
-}
-    </style>
+        background-color: #fff;
+        border-top: 1px solid #dee2e6;
+        padding: 10px;
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+
+<jsp:include page="AdminCSS.jsp"></jsp:include>
+
 </head>
 
 <body>
@@ -35,7 +76,7 @@
 
 <!-- ================= SIDEBAR ================= -->
 
-	<jsp:include page="AdminSidebar.jsp"></jsp:include>
+	<jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 	
 <!-- ================= MAIN CONTENT ================= -->
     <div class="content">
@@ -50,23 +91,41 @@
             Add New Account
         </div>
         <div class="card-body">
-            <form action="/account/save" method="post">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label class="form-label">Account Title</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Initial Amount</label>
-                        <input type="number" name="amount" class="form-control" required>
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button class="btn btn-success">
-                            <i class="bi bi-plus-circle"></i> Add Account
-                        </button>
-                    </div>
-                </div>
-            </form>
+            <form action="/account" method="post">
+    <div class="row">
+
+        <div class="col-md-3">
+            <label class="form-label">Account Title</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Payment Type</label>
+            <select name="accountType" class="form-select" required>
+                <option value="">-- Select Type --</option>
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Debit Card">Debit Card</option>
+                <option value="Net Banking">Net Banking</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Initial Amount</label>
+            <input type="number" name="amount" class="form-control" required>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-success">
+                Add Account
+            </button>
+        </div>
+
+    </div>
+</form>
+            
         </div>
     </div>
 
@@ -81,6 +140,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Account</th>
+                        <th>Type</th>
                         <th>Balance</th>
                     </tr>
                 </thead>
@@ -89,6 +149,7 @@
                         <tr>
                             <td>${a.accountId}</td>
                             <td>${a.title}</td>
+                            <td>${a.accountType}</td>
                             <td>₹ ${a.amount}</td>
                         </tr>
                     </c:forEach>
@@ -103,9 +164,9 @@
     </div>
 
  <!-- ================= FOOTER ================= -->
-    <footer>
-        © 2026 Expense Tracker | Account Module
-    </footer>
+   
+   <jsp:include page="AdminFooter.jsp"></jsp:include>
+   
 </div>
 
 <!-- Bootstrap JS -->

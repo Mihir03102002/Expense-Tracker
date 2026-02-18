@@ -8,154 +8,137 @@
 <meta charset="UTF-8">
 <title>Manage Vendors | Admin</title>
 
-<!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Common Admin CSS -->
+<jsp:include page="AdminCSS.jsp"></jsp:include>
 
-<!-- Bootstrap Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
-<style>
-    body {
-        background-color: #f4f6f9;
-    }
-
-    .sidebar {
-        height: 100vh;
-        background-color: #212529;
-        color: #fff;
-        position: fixed;
-        width: 240px;
-        top: 0;
-        left: 0;
-    }
-
-    .sidebar a {
-        color: #adb5bd;
-        text-decoration: none;
-        padding: 12px 20px;
-        display: block;
-    }
-
-    .sidebar a:hover {
-        background-color: #343a40;
-        color: #fff;
-    }
-
-    .sidebar .active {
-        background-color: #0d6efd;
-        color: #fff;
-    }
-
-    .content {
-        margin-left: 240px;
-        padding: 20px;
-    }
-
-    footer {
-        background-color: #fff;
-        border-top: 1px solid #dee2e6;
-        padding: 10px;
-        text-align: center;
-        margin-top: 30px;
-    }
-</style>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
+<div class="container-scroller">
 
-	<jsp:include page="AdminHeader.jsp"></jsp:include>
-	
-<!-- ================= SIDEBAR ================= -->
+    <!-- ================= HEADER ================= -->
+    <jsp:include page="AdminHeader.jsp"></jsp:include>
 
-	<jsp:include page="AdminSidebar.jsp"></jsp:include>
+    <div class="container-fluid page-body-wrapper">
 
-<!-- ================= MAIN CONTENT ================= -->
-<div class="content">
+        <!-- ================= SIDEBAR ================= -->
+        <jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
-    <h3>Vendor Management</h3>
-    <p class="text-muted">Add and manage vendors</p>
+        <!-- ================= MAIN PANEL ================= -->
+        <div class="main-panel">
+            <div class="content-wrapper">
 
-    <!-- ================= ADD VENDOR FORM ================= -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            Add New Vendor
-        </div>
-
-        <div class="card-body">
-            <form action="vendor" method="post">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Vendor Name</label>
-                        <input type="text" name="vendorName"
-                               class="form-control"
-                               placeholder="Enter vendor name"
-                               required>
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-plus-circle"></i> Add Vendor
-                        </button>
+                <!-- PAGE TITLE -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h3>Vendor Management</h3>
+                        <p class="text-muted">Add and manage vendors</p>
                     </div>
                 </div>
-            </form>
+
+                <!-- ADD VENDOR FORM -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-primary text-white">
+                                Add New Vendor
+                            </div>
+
+                            <div class="card-body">
+                                <form action="vendor" method="post">
+                                    <div class="row g-3 align-items-end">
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Vendor Name</label>
+                                            <input type="text"
+                                                   name="vendorName"
+                                                   class="form-control"
+                                                   placeholder="Enter vendor name"
+                                                   required>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <button type="submit" class="btn btn-success w-100">
+                                                <i class="bi bi-plus-circle"></i> Add Vendor
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VENDOR TABLE -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-dark text-white">
+                                Vendor List
+                            </div>
+
+                            <div class="card-body">
+                                <div class="table-responsive">
+
+                                    <table class="table table-bordered table-hover text-center align-middle">
+
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Vendor Name</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            <c:if test="${empty vendors}">
+                                                <tr>
+                                                    <td colspan="3" class="text-muted">
+                                                        No vendors found
+                                                    </td>
+                                                </tr>
+                                            </c:if>
+
+                                            <c:forEach var="v" items="${vendors}">
+                                                <tr>
+                                                    <td>${v.vendorId}</td>
+                                                    <td>${v.vendorName}</td>
+                                                    <td>
+                                                        <a href="deleteVendor?vendorId=${v.vendorId}"
+                                                           class="btn btn-sm btn-danger"
+                                                           onclick="return confirm('Are you sure?')">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <jsp:include page="AdminFooter.jsp"></jsp:include>
+
         </div>
+
     </div>
-
-    <!-- ================= VENDOR TABLE ================= -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-            Vendor List
-        </div>
-
-        <div class="card-body">
-            <table class="table table-bordered table-hover text-center">
-                <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Vendor Name</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <c:forEach var="v" items="${vendors}">
-                        <tr>
-                            <td>${v.vendorId}</td>
-                            <td>${v.vendorName}</td>
-                            <td>
-                                <a href="vendor${v.vendorId}"
-                                   class="btn btn-sm btn-danger"
-                                   onclick="return confirm('Are you sure?')">
-                                    <i class="bi bi-trash"></i> Delete
-                                </a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-
-                    <c:if test="${empty vendors}">
-                        <tr>
-                            <td colspan="3" class="text-muted">
-                                No vendors found
-                            </td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ================= FOOTER ================= -->
-    <footer>
-        © 2026 Expense Tracker | Vendor Module
-    </footer>
 
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ADMIN JS -->
+<jsp:include page="AdminJS.jsp" />
 
 </body>
 </html>

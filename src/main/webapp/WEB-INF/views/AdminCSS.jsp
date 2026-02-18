@@ -1,57 +1,22 @@
-
-<!-- Bootstrap CSS -->
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-
-<!-- Bootstrap Icons -->
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-	rel="stylesheet">
-<style>
-body {
-	background-color: #f4f6f9;
-}
-
-/* Sidebar */
-.sidebar {
-	height: 100vh;
-	background-color: #212529;
-	color: #fff;
-	position: fixed;
-	width: 240px;
-}
-
-.sidebar a {
-	color: #adb5bd;
-	text-decoration: none;
-	padding: 12px 20px;
-	display: block;
-	transition: 0.3s;
-}
-
-.sidebar a:hover {
-	background-color: #343a40;
-	color: #fff;
-}
-
-.sidebar .active {
-	background-color: #0d6efd;
-	color: #fff;
-}
-
-/* Main content */
-.content {
-	margin-left: 240px;
-	padding: 20px;
-}
-
-/* Footer */
-footer {
-	background-color: #fff;
-	border-top: 1px solid #dee2e6;
-	padding: 10px;
-	text-align: center;
-	margin-top: 20px;
-}
-</style>
+<link rel="stylesheet" href="assets/vendors/feather/feather.css">
+<link rel="stylesheet"
+	href="assets/vendors/ti-icons/css/themify-icons.css">
+<link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
+<link rel="stylesheet"
+	href="assets/vendors/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet"
+	href="assets/vendors/mdi/css/materialdesignicons.min.css">
+<!-- endinject -->
+<!-- Plugin css for this page -->
+<!-- <link rel="stylesheet" href="assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css"> -->
+<link rel="stylesheet"
+	href="assets/vendors/datatables.net-bs5/dataTables.bootstrap5.css">
+<link rel="stylesheet"
+	href="assets/vendors/ti-icons/css/themify-icons.css">
+<link rel="stylesheet" type="text/css"
+	href="assets/js/select.dataTables.min.css">
+<!-- End plugin css for this page -->
+<!-- inject:css -->
+<link rel="stylesheet" href="assets/css/style.css">
+<!-- endinject -->
+<link rel="shortcut icon" href="assets/images/favicon.png" />

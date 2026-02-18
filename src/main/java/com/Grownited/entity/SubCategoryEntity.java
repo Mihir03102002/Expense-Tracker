@@ -1,52 +1,42 @@
 package com.Grownited.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table (name = "subcategorys")
+@Table(name = "subcategories")  // fixed table name
 public class SubCategoryEntity {
-	
-	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY )
- 
-	private Integer  subCategoryId;
-	
-	private String subCategoryName;
-	
-	private Integer categoryId;
 
-	public Integer getSubCategoryId() {
-		return subCategoryId;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer subCategoryId;
 
-	public void setSubCategoryId(Integer subCategoryId) {
-		this.subCategoryId = subCategoryId;
-	}
+    private String subCategoryName;
 
-	public String getSubCategoryName() {
-		return subCategoryName;
-	}
+    @ManyToOne
+    @JoinColumn(name = "categoryId")
+    private CategoryEntity category;
 
-	public void setSubCategoryName(String subCategoryName) {
-		this.subCategoryName = subCategoryName;
-	}
+    public Integer getSubCategoryId() {
+        return subCategoryId;
+    }
 
-	public Integer getCategoryId() {
-		return categoryId;
-	}
+    public void setSubCategoryId(Integer subCategoryId) {
+        this.subCategoryId = subCategoryId;
+    }
 
-	public void setCategoryId(Integer categoryId) {
-		this.categoryId = categoryId;
-	}
-	
-	
-	
-	
-	
-	
-	
+    public String getSubCategoryName() {
+        return subCategoryName;
+    }
+
+    public void setSubCategoryName(String subCategoryName) {
+        this.subCategoryName = subCategoryName;
+    }
+
+    public CategoryEntity getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
+    }
 }
