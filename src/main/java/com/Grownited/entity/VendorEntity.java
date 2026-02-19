@@ -17,6 +17,8 @@ public class VendorEntity {
       private Integer vendorId;
       
       private String vendorName;
+      
+      private Integer userId; //FK
 
 	  public Integer getVendorId() {
 		  return vendorId;
@@ -32,6 +34,14 @@ public class VendorEntity {
 
 	  public void setVendorName(String vendorName) {
 		  this.vendorName = vendorName;
+	  }
+
+	  public Integer getUserId() {
+		  return userId;
+	  }
+
+	  public void setUserId(Integer userId) {
+		  this.userId = userId;
 	  }
       
       

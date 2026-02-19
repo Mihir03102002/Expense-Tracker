@@ -17,6 +17,8 @@ public class CategoryEntity {
 	
     private String  categoryName;
     
+    private Integer userId; //FK
+    
 	public Integer getCategoryId() {
 		return categoryId;
 	}
@@ -29,8 +31,15 @@ public class CategoryEntity {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
+	public Integer getUserId() {
+		return userId;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
     
     
+	
     
     
     

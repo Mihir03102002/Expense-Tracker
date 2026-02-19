@@ -20,7 +20,7 @@ public class UserEntity {
 	private String email;
 	private String password;
 	private LocalDate createdAt;  
-	private String role; //admin , participant , judge
+	private String role; //admin , customer
 	private String gender;
 	private Integer birthYear;
 	private String contactNum; 

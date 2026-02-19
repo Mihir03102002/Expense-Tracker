@@ -29,13 +29,13 @@
                         <!-- First Name -->
                         <div class="mb-3">
                             <label class="form-label">First Name</label>
-                            <input type="text" name="first_name" class="form-control" required>
+                            <input type="text" name="firstName" class="form-control" required>
                         </div>
 
                         <!-- Last Name -->
                         <div class="mb-3">
                             <label class="form-label">Last Name</label>
-                            <input type="text" name="last_name" class="form-control" required>
+                            <input type="text" name="lastName" class="form-control" required>
                         </div>
 
                         <!-- Email (users table) -->
@@ -76,7 +76,7 @@
                         <!-- Mobile Number -->
                         <div class="mb-3">
                             <label class="form-label">Mobile Number</label>
-                            <input type="text" name="mobile_no" class="form-control"
+                            <input type="text" name="contactNum" class="form-control"
                                    pattern="[0-9]{10}"
                                    title="Enter 10-digit mobile number">
                         </div>

@@ -32,7 +32,7 @@ public class CategoryController {
         // FIXED LINE
         categoryRepository.save(categoryEntity);
 
-        return "ListCategory";
+        return "Category";
     }
     
     @GetMapping("listCategory")
