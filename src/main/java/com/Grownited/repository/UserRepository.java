@@ -14,8 +14,11 @@ import com.Grownited.entity.UserEntity;
 public interface UserRepository extends JpaRepository<UserEntity, Integer>{
 	 
 	//select * from users where email = :email
-		Optional<UserEntity>  findByEmail(String email);
+		
 		
 		List<UserEntity> findByRole(String role); //
+
+		Optional<UserEntity> findByEmail(String email);
+		
 	
 }

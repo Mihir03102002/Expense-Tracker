@@ -12,7 +12,7 @@ package com.Grownited.service;
 
 import com.Grownited.entity.UserEntity;
 
-import jakarta.mail.MessagingException;
+
 	import jakarta.mail.internet.MimeMessage;
 
 	@Service
@@ -76,6 +76,8 @@ import jakarta.mail.MessagingException;
 		    }
 		}
 
+		
+		
 	}
 	
 	

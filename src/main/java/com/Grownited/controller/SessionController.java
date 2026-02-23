@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.Grownited.entity.UserDetailEntity;
 import com.Grownited.entity.UserEntity;
+import com.Grownited.repository.UserDetailRepository;
 import com.Grownited.repository.UserRepository;
 import com.Grownited.service.MailerService;
-import com.Grownited.repository.UserDetailRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -28,6 +28,9 @@ public class SessionController {
 
     @Autowired
     MailerService mailerService;
+    
+  
+    
 
     // ================= SIGNUP PAGE =================
     @GetMapping("/signup")
@@ -49,6 +52,7 @@ public class SessionController {
                                HttpSession session) {
 
         Optional<UserEntity> op = userRepository.findByEmail(email);
+       
 
         if (op.isPresent()) {
 
@@ -58,10 +62,10 @@ public class SessionController {
 
                 session.setAttribute("user", dbUser);
 
-                if (dbUser.getRole().equals("ADMIN")) {
+                if ("ADMIN".equalsIgnoreCase(dbUser.getRole())) {
                     return "redirect:/AdminDashboard";
                 } 
-                else if (dbUser.getRole().equals("USER")) {
+                else if ("USER".equalsIgnoreCase(dbUser.getRole())) {
                     return "redirect:/participant-dashboard";
                 }
             }
@@ -70,12 +74,14 @@ public class SessionController {
         model.addAttribute("error", "Invalid Credentials");
         return "Login";
     }
-
     // ================= FORGET PASSWORD =================
-    @GetMapping("/forgetpassword")
-    public String openForgetPassword() {
-        return "ForgetPassword";
-    }
+//    @GetMapping("/Forgot-Password")
+//    public String openForgetPassword() {
+//        return "Forgot-Password";
+//    }
+    
+   
+    
 
     // ================= REGISTER =================
     @PostMapping("/register")

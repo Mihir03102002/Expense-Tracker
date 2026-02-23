@@ -106,6 +106,14 @@ public class UserEntity {
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
+	public boolean isPresent() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public UserEntity get() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	
 	

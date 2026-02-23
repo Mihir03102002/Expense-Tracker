@@ -60,9 +60,15 @@
 										class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
 										>LOGIN</button>
 								</div>
-								<div class="text-center mt-4 font-weight-light">
-									Don't have an account? <a href="signup"
-										class="text-primary">Signup</a>
+								<div class="text-center mt-4">
+								    <p class="mb-1">
+								        Don't have an account? 
+								        <a href="signup" class="text-primary">Signup</a>
+								    </p>
+								
+								    <a href="Forgot-Password" class="text-decoration-none text-primary">
+								        Forgot Password?
+								    </a>
 								</div>
 								<br>
 								<span class="text-danger">${error}</span>

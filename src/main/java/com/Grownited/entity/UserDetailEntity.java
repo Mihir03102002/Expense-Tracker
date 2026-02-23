@@ -1,5 +1,8 @@
 package com.Grownited.entity;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +21,12 @@ public class UserDetailEntity {
 	private String city;
 	private String state;
 	private String country;
+	@Column(name = "otp")
+	private String otp;
+
+	@Column(name = "otp_expiry")
+	private LocalDateTime otpExpiry;
+	
 
 	public Integer getUserDetailId() {
 		return userDetailId;
@@ -67,4 +76,22 @@ public class UserDetailEntity {
 		this.country = country;
 	}
 
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
+	public LocalDateTime getOtpExpiry() {
+		return otpExpiry;
+	}
+
+	public void setOtpExpiry(LocalDateTime otpExpiry) {
+		this.otpExpiry = otpExpiry;
+	}
+
+	
+	
 }
