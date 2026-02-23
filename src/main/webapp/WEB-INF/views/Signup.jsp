@@ -70,7 +70,7 @@
                         <!-- Date of Birth -->
                         <div class="mb-3">
                             <label class="form-label">Date of Birth</label>
-                            <input type="date" name="date_of_birth" class="form-control">
+                            <input type="date" name="birthYear" class="form-control">
                         </div>
 
                         <!-- Mobile Number -->
@@ -87,11 +87,11 @@
                             <textarea name="address" class="form-control" rows="3"></textarea>
                         </div>
 
-                        <!-- Profile Photo -->
-                        <div class="mb-3">
-                            <label class="form-label">Profile Photo</label>
-                            <input type="file" name="profile_photo" class="form-control">
-                        </div>
+                        <!-- Profile Pic URL -->
+							<div class="mb-3">
+								<label class="form-label">Profile Picture</label> <input
+									type="file" name="profilePic" class="form-control">
+							</div>
 
                         <!-- Submit -->
                         <div class="d-grid">

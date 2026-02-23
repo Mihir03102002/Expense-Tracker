@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.Grownited.entity.UserDetailEntity;
 import com.Grownited.entity.UserEntity;
@@ -28,6 +31,9 @@ public class SessionController {
 
     @Autowired
     MailerService mailerService;
+    
+    @Autowired
+    PasswordEncoder passwordEncoder;
     
   
     
@@ -57,10 +63,13 @@ public class SessionController {
         if (op.isPresent()) {
 
             UserEntity dbUser = op.get();
+            
+            session.setAttribute("user", dbUser);
+            
+            if (passwordEncoder.matches(password, dbUser.getPassword())) {
 
-            if (dbUser.getPassword().equals(password)) {
 
-                session.setAttribute("user", dbUser);
+         //   if (dbUser.getPassword().equals(password)) {
 
                 if ("ADMIN".equalsIgnoreCase(dbUser.getRole())) {
                     return "redirect:/AdminDashboard";
@@ -86,8 +95,9 @@ public class SessionController {
     // ================= REGISTER =================
     @PostMapping("/register")
     public String register(UserEntity userEntity,
-                           UserDetailEntity userDetailEntity) {
+                           UserDetailEntity userDetailEntity,MultipartFile profilPic) {
 
+    	
         System.out.println(userEntity.getFirstName());
         System.out.println(userEntity.getLastName());
         System.out.println("Processor => " + Runtime.getRuntime().availableProcessors());
@@ -98,6 +108,14 @@ public class SessionController {
         userEntity.setActive(true);
         userEntity.setCreatedAt(LocalDate.now());
 
+     // encode password
+     		String encodedPassword = passwordEncoder.encode(userEntity.getPassword());
+     		System.out.println(encodedPassword);
+     		userEntity.setPassword(encodedPassword);
+        
+     	// file uploading
+    		System.out.println(profilPic.getOriginalFilename());
+        
         // Save user
         userRepository.save(userEntity);
 
