@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,8 @@ public class ForgotPasswordController {
     @Autowired
     private JavaMailSender mailSender;
 
-    
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     // Step 1: Open Forgot Page
     @GetMapping("/Forgot-Password")
@@ -127,9 +129,10 @@ public class ForgotPasswordController {
 
         // 4️⃣ Get actual user object
         UserEntity user = optionalUser.get();
-
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+ 		
         // 5️⃣ Set new password
-        user.setPassword(password);
+        user.setPassword(encodedPassword);
 
         // 6️⃣ Save updated user in database
         userRepo.save(user);
@@ -138,6 +141,6 @@ public class ForgotPasswordController {
         session.invalidate();
 
         // 8️⃣ Redirect to login
-        return "redirect:/login?reset=success";
+        return "redirect:/login";
     }
 }

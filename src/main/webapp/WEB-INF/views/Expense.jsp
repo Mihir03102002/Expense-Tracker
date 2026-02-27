@@ -80,7 +80,7 @@
 
                                         <div class="col-md-4">
                                             <label class="form-label">Category</label>
-                                            <select name="categoryId"
+                                            <select name="category.categoryId"
                                                     class="form-select" required>
                                                 <option value="">-- Select Category --</option>
                                                 <c:forEach var="c" items="${categories}">
@@ -93,7 +93,7 @@
 
                                         <div class="col-md-4">
                                             <label class="form-label">Sub Category</label>
-                                            <select name="subCategoryId"
+                                            <select name="subCategory.subCategoryId"
                                                     class="form-select" required>
                                                 <option value="">-- Select Sub Category --</option>
                                                 <c:forEach var="s" items="${subCategories}">
@@ -106,7 +106,7 @@
 
                                         <div class="col-md-4">
                                             <label class="form-label">Vendor</label>
-                                            <select name="vendorId"
+                                           <select name="vendor.vendorId"
                                                     class="form-select" required>
                                                 <option value="">-- Select Vendor --</option>
                                                 <c:forEach var="v" items="${vendors}">
@@ -124,7 +124,7 @@
 
                                         <div class="col-md-4">
                                             <label class="form-label">Account</label>
-                                            <select name="accountId"
+                                            <select name="account.accountId"
                                                     class="form-select" required>
                                                 <option value="">-- Select Account --</option>
                                                 <c:forEach var="a" items="${accounts}">
@@ -137,7 +137,7 @@
 
                                         <div class="col-md-4">
                                             <label class="form-label">Status</label>
-                                            <select name="statusId"
+                                            <select name="status.statusId"
                                                     class="form-select" required>
                                                 <option value="">-- Select Status --</option>
                                                 <c:forEach var="st" items="${statuses}">

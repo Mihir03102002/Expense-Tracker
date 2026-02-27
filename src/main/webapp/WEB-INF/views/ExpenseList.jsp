@@ -8,7 +8,6 @@
 <meta charset="UTF-8">
 <title>My Expenses</title>
 
-<!-- Common Admin CSS -->
 <jsp:include page="AdminCSS.jsp"></jsp:include>
 
 </head>
@@ -29,14 +28,12 @@
         <div class="main-panel">
             <div class="content-wrapper">
 
-                <!-- PAGE TITLE -->
                 <div class="row mb-4">
                     <div class="col-md-12">
                         <h3>My Expenses</h3>
                     </div>
                 </div>
 
-                <!-- CARD -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card shadow-sm">
@@ -58,30 +55,43 @@
                                                 <th>Amount</th>
                                                 <th>Date</th>
                                                 <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
 
                                         <tbody>
 
-                                            <c:if test="${empty expenseList}">
-                                                <tr>
-                                                    <td colspan="6">
-                                                        No expenses found
-                                                    </td>
-                                                </tr>
-                                            </c:if>
+                                            <c:choose>
 
-					             <c:forEach var="e" items="${expenseList}">
-												    <tr>
-												        <td>${e.title}</td>
-												        <td>${e.category.categoryName}</td>
-												        <td>${e.vendor.vendorName}</td>
-												        <td>₹ ${e.amount}</td>
-												        <td>${e.date}</td>
-												        <td>${e.status.status}</td>
-												    </tr>
-												</c:forEach>
-                                           
+                                                <c:when test="${empty expenseList}">
+                                                    <tr>
+                                                        <td colspan="7" class="text-muted">
+                                                            No expenses found
+                                                        </td>
+                                                    </tr>
+                                                </c:when>
+
+                                                <c:otherwise>
+                                                    <c:forEach var="e" items="${expenseList}">
+                                                        <tr>
+                                                            <td>${e.title}</td>
+                                                            <td>${e.category.categoryName}</td>
+                                                            <td>${e.vendor.vendorName}</td>
+                                                            <td>₹ ${e.amount}</td>
+                                                            <td>${e.date}</td>
+                                                            <td>${e.status.status}</td>
+                                                            <td>
+                                                                <a href="/expense/delete?expenseId=${e.expenseId}"
+                                                                   class="btn btn-danger btn-sm"
+                                                                   onclick="return confirm('Are you sure you want to delete this expense?')">
+                                                                    <i class="mdi mdi-delete"></i> Delete
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </c:otherwise>
+
+                                            </c:choose>
 
                                         </tbody>
 
@@ -96,7 +106,6 @@
 
             </div>
 
-            <!-- FOOTER -->
             <jsp:include page="AdminFooter.jsp"></jsp:include>
 
         </div>
@@ -105,7 +114,6 @@
 
 </div>
 
-<!-- ADMIN JS -->
 <jsp:include page="AdminJS.jsp" />
 
 </body>

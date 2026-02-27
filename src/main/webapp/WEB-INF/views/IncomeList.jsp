@@ -30,7 +30,7 @@
 
                 <h3 class="mb-3">My Income</h3>
 
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-header bg-dark text-white">
                         Income List
                     </div>
@@ -38,7 +38,7 @@
                     <div class="card-body">
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover text-center">
+                            <table class="table table-bordered table-hover text-center align-middle">
 
                                 <thead class="table-light">
                                     <tr>
@@ -47,6 +47,7 @@
                                         <th>Amount</th>
                                         <th>Date</th>
                                         <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
 
@@ -56,20 +57,29 @@
 
                                         <c:when test="${empty incomes}">
                                             <tr>
-                                                <td colspan="5">No income records found</td>
+                                                <td colspan="6" class="text-muted">
+                                                    No income records found
+                                                </td>
                                             </tr>
                                         </c:when>
 
                                         <c:otherwise>
                                             <c:forEach var="i" items="${incomes}">
-												    <tr>
-												        <td>${i.title}</td>
-												        <td>${i.account.title}</td>
-												        <td>₹ ${i.amount}</td>
-												        <td>${i.date}</td>
-												        <td>${i.status.status}</td>
-												    </tr>
-												</c:forEach>
+                                                <tr>
+                                                    <td>${i.title}</td>
+                                                    <td>${i.account.title}</td>
+                                                    <td>₹ ${i.amount}</td>
+                                                    <td>${i.date}</td>
+                                                    <td>${i.status.status}</td>
+                                                    <td>
+                                                        <a href="/income/delete?incomeId=${i.incomeId}"
+                                                           class="btn btn-danger btn-sm"
+                                                           onclick="return confirm('Are you sure you want to delete this income?')">
+                                                            <i class="mdi mdi-delete"></i> Delete
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
                                         </c:otherwise>
 
                                     </c:choose>

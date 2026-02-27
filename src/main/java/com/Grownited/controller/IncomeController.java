@@ -16,15 +16,15 @@ import com.Grownited.repository.StatusRepository;
 public class IncomeController {
 
     @Autowired
-    IncomeRepository incomeRepository;
+    private IncomeRepository incomeRepository;
 
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
-    StatusRepository statusRepository;
+    private StatusRepository statusRepository;
 
-    // OPEN INCOME PAGE
+    // ================= OPEN INCOME PAGE =================
     @GetMapping("/income")
     public String openIncomePage(Model model) {
 
@@ -34,14 +34,26 @@ public class IncomeController {
         return "Income";
     }
 
-    // SAVE INCOME
+    // ================= SAVE INCOME =================
     @PostMapping("/income/save")
-    public String saveIncome(IncomeEntity income,
-                             @RequestParam Integer accountId,
-                             @RequestParam Integer statusId) {
+    public String saveIncome(IncomeEntity income) {
 
-        AccountEntity account = accountRepository.findById(accountId).orElse(null);
-        StatusEntity status = statusRepository.findById(statusId).orElse(null);
+        // Safety check
+        if (income.getAccount() == null || income.getStatus() == null) {
+            return "redirect:/income";
+        }
+
+        AccountEntity account = accountRepository
+                .findById(income.getAccount().getAccountId())
+                .orElse(null);
+
+        StatusEntity status = statusRepository
+                .findById(income.getStatus().getStatusId())
+                .orElse(null);
+
+        if (account == null || status == null) {
+            return "redirect:/income";
+        }
 
         income.setAccount(account);
         income.setStatus(status);
@@ -50,12 +62,24 @@ public class IncomeController {
 
         return "redirect:/incomeList";
     }
-    // INCOME LIST
+
+    // ================= INCOME LIST =================
     @GetMapping("/incomeList")
     public String incomeList(Model model) {
 
         model.addAttribute("incomes", incomeRepository.findAll());
 
         return "IncomeList";
+    }
+
+    // ================= DELETE INCOME =================
+    @GetMapping("/income/delete")
+    public String deleteIncome(@RequestParam Integer incomeId) {
+
+        if (incomeRepository.existsById(incomeId)) {
+            incomeRepository.deleteById(incomeId);
+        }
+
+        return "redirect:/incomeList";
     }
 }

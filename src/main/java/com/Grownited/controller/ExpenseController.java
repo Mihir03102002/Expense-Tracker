@@ -3,8 +3,7 @@ package com.Grownited.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.Grownited.entity.CategoryEntity;
 import com.Grownited.entity.ExpenseEntity;
@@ -21,23 +20,24 @@ import com.Grownited.repository.VendorRepository;
 public class ExpenseController {
 
     @Autowired
-    ExpenseRepository expenseRepository;
+    private ExpenseRepository expenseRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    SubCategoryRepository subCategoryRepository;
+    private SubCategoryRepository subCategoryRepository;
 
     @Autowired
-    VendorRepository vendorRepository;
+    private VendorRepository vendorRepository;
 
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
-    StatusRepository statusRepository;
+    private StatusRepository statusRepository;
 
+    // ================= OPEN EXPENSE PAGE =================
     @GetMapping("/expense")
     public String openExpensePage(Model model) {
 
@@ -50,8 +50,17 @@ public class ExpenseController {
         return "Expense";
     }
 
+    // ================= SAVE EXPENSE =================
     @PostMapping("/expense/save")
     public String saveExpense(ExpenseEntity expense) {
+
+        // Safety validation
+        if (expense.getCategory() == null ||
+            expense.getVendor() == null ||
+            expense.getStatus() == null) {
+
+            return "redirect:/expense";
+        }
 
         CategoryEntity category = categoryRepository
                 .findById(expense.getCategory().getCategoryId())
@@ -65,6 +74,10 @@ public class ExpenseController {
                 .findById(expense.getStatus().getStatusId())
                 .orElse(null);
 
+        if (category == null || vendor == null || status == null) {
+            return "redirect:/expense";
+        }
+
         expense.setCategory(category);
         expense.setVendor(vendor);
         expense.setStatus(status);
@@ -74,7 +87,7 @@ public class ExpenseController {
         return "redirect:/expense-list";
     }
 
-    
+    // ================= EXPENSE LIST =================
     @GetMapping("/expense-list")
     public String expenseList(Model model) {
 
@@ -83,4 +96,14 @@ public class ExpenseController {
         return "ExpenseList";
     }
 
+    // ================= DELETE EXPENSE =================
+    @GetMapping("/expense/delete")
+    public String deleteExpense(@RequestParam Integer expenseId) {
+
+        if (expenseRepository.existsById(expenseId)) {
+            expenseRepository.deleteById(expenseId);
+        }
+
+        return "redirect:/expense-list";
+    }
 }

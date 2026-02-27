@@ -1,6 +1,8 @@
 package com.Grownited.controller;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import com.Grownited.entity.UserEntity;
 import com.Grownited.repository.UserDetailRepository;
 import com.Grownited.repository.UserRepository;
 import com.Grownited.service.MailerService;
+import com.cloudinary.Cloudinary;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -35,9 +38,10 @@ public class SessionController {
     @Autowired
     PasswordEncoder passwordEncoder;
     
-  
+    @Autowired
+    Cloudinary cloudinary;
     
-
+    
     // ================= SIGNUP PAGE =================
     @GetMapping("/signup")
     public String openSignupPage() {
@@ -95,7 +99,7 @@ public class SessionController {
     // ================= REGISTER =================
     @PostMapping("/register")
     public String register(UserEntity userEntity,
-                           UserDetailEntity userDetailEntity,MultipartFile profilPic) {
+                           UserDetailEntity userDetailEntity,MultipartFile profilePic) {
 
     	
         System.out.println(userEntity.getFirstName());
@@ -114,8 +118,18 @@ public class SessionController {
      		userEntity.setPassword(encodedPassword);
         
      	// file uploading
-    		System.out.println(profilPic.getOriginalFilename());
-        
+    		System.out.println(profilePic.getOriginalFilename());
+            try {
+			Map map = cloudinary.uploader().upload(profilePic.getBytes() ,null);
+			String profilePicUrl = map.get("secure_url").toString(); 
+//			System.out.println(profilePicURL);
+			userEntity.setProfilePicURL(profilePicUrl);
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
         // Save user
         userRepository.save(userEntity);
 

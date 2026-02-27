@@ -2,6 +2,8 @@ package com.Grownited.entity;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,26 +16,25 @@ public class UserEntity {
 
 	@Id // primary key
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment
-	private Integer userId;
-	private String firstName;
-	private String lastName;
-	private String email;
-	private String password;
-	private LocalDate createdAt;  
-	private String role; //admin , customer
-	private String gender;
-	private Integer birthYear;
-	private String contactNum; 
-	private String profilePicURL;
-	private String otp; 
-	private Boolean active;
-	
-	public LocalDate getCreatedAt() {
-		return createdAt;
-	}
-	public void setCreatedAt(LocalDate createdAt) {
-		this.createdAt = createdAt;
-	}
+	 private Integer userId;
+
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+
+    private LocalDate createdAt;
+
+    private String role; 
+    private String gender;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;   // ✅ FIXED
+
+    private String contactNum;
+    private String profilePicURL;
+    private String otp;
+    private Boolean active;
 	public Integer getUserId() {
 		return userId;
 	}
@@ -64,6 +65,12 @@ public class UserEntity {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	public LocalDate getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDate createdAt) {
+		this.createdAt = createdAt;
+	}
 	public String getRole() {
 		return role;
 	}
@@ -76,11 +83,11 @@ public class UserEntity {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public Integer getBirthYear() {
-		return birthYear;
+	public LocalDate getBirthDate() {
+		return birthDate;
 	}
-	public void setBirthYear(Integer birthYear) {
-		this.birthYear = birthYear;
+	public void setBirthDate(LocalDate birthDate) {
+		this.birthDate = birthDate;
 	}
 	public String getContactNum() {
 		return contactNum;
@@ -106,15 +113,9 @@ public class UserEntity {
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
-	public boolean isPresent() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	public UserEntity get() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+    
+    
+    
 	
 	
 	
