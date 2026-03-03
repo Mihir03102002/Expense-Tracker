@@ -2,96 +2,92 @@ package com.Grownited.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity // create table
+import jakarta.persistence.*;
+@Entity
 @Table(name = "user_details")
 public class UserDetailEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer userDetailId;
-	private Integer userId;//
-	private String qualification;
-	private String city;
-	private String state;
-	private String country;
-	@Column(name = "otp")
-	private String otp;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userDetailId;
 
-	@Column(name = "otp_expiry")
-	private LocalDateTime otpExpiry;
-	
+    @OneToOne
+    @JoinColumn(name = "user_id")   // Foreign key column
+    private UserEntity user;
 
-	public Integer getUserDetailId() {
-		return userDetailId;
-	}
+    private String qualification;
+    private String city;
+    private String state;
+    private String country;
 
-	public void setUserDetailId(Integer userDetailId) {
-		this.userDetailId = userDetailId;
-	}
+    private String otp;
+    private LocalDateTime otpExpiry;
 
-	public Integer getUserId() {
-		return userId;
-	}
+    // Getters and Setters
 
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
+    public Integer getUserDetailId() {
+        return userDetailId;
+    }
 
-	public String getQualification() {
-		return qualification;
-	}
+    public void setUserDetailId(Integer userDetailId) {
+        this.userDetailId = userDetailId;
+    }
 
-	public void setQualification(String qualification) {
-		this.qualification = qualification;
-	}
+    public UserEntity getUser() {
+        return user;
+    }
 
-	public String getCity() {
-		return city;
-	}
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public String getQualification() {
+        return qualification;
+    }
 
-	public String getState() {
-		return state;
-	}
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
+    }
 
-	public void setState(String state) {
-		this.state = state;
-	}
+    public String getCity() {
+        return city;
+    }
 
-	public String getCountry() {
-		return country;
-	}
+    public void setCity(String city) {
+        this.city = city;
+    }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+    public String getState() {
+        return state;
+    }
 
-	public String getOtp() {
-		return otp;
-	}
+    public void setState(String state) {
+        this.state = state;
+    }
 
-	public void setOtp(String otp) {
-		this.otp = otp;
-	}
+    public String getCountry() {
+        return country;
+    }
 
-	public LocalDateTime getOtpExpiry() {
-		return otpExpiry;
-	}
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
-	public void setOtpExpiry(LocalDateTime otpExpiry) {
-		this.otpExpiry = otpExpiry;
-	}
+    public String getOtp() {
+        return otp;
+    }
 
-	
-	
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(LocalDateTime otpExpiry) {
+        this.otpExpiry = otpExpiry;
+    }
 }
+    
+    

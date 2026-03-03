@@ -1,51 +1,50 @@
 package com.Grownited.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table (name = "vendors")
+@Table(name = "vendors")
 public class VendorEntity {
 
-	
-	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	
-      private Integer vendorId;
-      
-      private String vendorName;
-      
-      private Integer userId; //FK
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "vendor_id")
+    private Integer vendorId;
 
-	  public Integer getVendorId() {
-		  return vendorId;
-	  }
+    private String vendorName;
 
-	  public void setVendorId(Integer vendorId) {
-		  this.vendorId = vendorId;
-	  }
+    // 🔥 Proper Foreign Key Mapping
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
-	  public String getVendorName() {
-		  return vendorName;
-	  }
+    // ================= GETTERS & SETTERS =================
 
-	  public void setVendorName(String vendorName) {
-		  this.vendorName = vendorName;
-	  }
+    public Integer getVendorId() {
+        return vendorId;
+    }
 
-	  public Integer getUserId() {
-		  return userId;
-	  }
+    public void setVendorId(Integer vendorId) {
+        this.vendorId = vendorId;
+    }
 
-	  public void setUserId(Integer userId) {
-		  this.userId = userId;
-	  }
-      
-      
-      
-      
-      
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+    
+    
+    
+    
 }

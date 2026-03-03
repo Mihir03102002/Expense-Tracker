@@ -71,7 +71,7 @@
                             </div>
                         </div>
 
-                        <!-- Date of Birth (FIXED) -->
+                        <!-- Date of Birth -->
                         <div class="mb-3">
                             <label class="form-label">Date of Birth</label>
                             <input type="date" name="birthDate" class="form-control" required>
@@ -86,6 +86,38 @@
                                    pattern="[0-9]{10}"
                                    title="Enter 10-digit mobile number"
                                    required>
+                        </div>
+
+                        <!-- Qualification -->
+                        <div class="mb-3">
+                            <label class="form-label">Qualification</label>
+                            <select name="qualification" class="form-select" required>
+                                <option value="">-- Select Qualification --</option>
+                                <option value="10th">10th</option>
+                                <option value="12th">12th</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Graduate">Graduate</option>
+                                <option value="Post Graduate">Post Graduate</option>
+                                <option value="PhD">PhD</option>
+                            </select>
+                        </div>
+
+                        <!-- City -->
+                        <div class="mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" name="city" class="form-control" required>
+                        </div>
+
+                        <!-- State -->
+                        <div class="mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" name="state" class="form-control" required>
+                        </div>
+
+                        <!-- Country -->
+                        <div class="mb-3">
+                            <label class="form-label">Country</label>
+                            <input type="text" name="country" class="form-control" required>
                         </div>
 
                         <!-- Profile Picture -->

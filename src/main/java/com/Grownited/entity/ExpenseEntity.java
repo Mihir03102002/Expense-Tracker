@@ -1,5 +1,7 @@
 package com.Grownited.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,9 +14,11 @@ public class ExpenseEntity {
 
     private String title;
 
-    private Float amount;
+    // Better for money calculations
+    private Double amount;
 
-    private String date;
+    // IMPORTANT FIX: Change String to LocalDate
+    private LocalDate date;
 
     private String description;
 
@@ -62,19 +66,19 @@ public class ExpenseEntity {
         this.title = title;
     }
 
-    public Float getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Float amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

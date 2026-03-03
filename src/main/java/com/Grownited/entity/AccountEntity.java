@@ -1,10 +1,6 @@
 package com.Grownited.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "accounts")
@@ -12,12 +8,16 @@ public class AccountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id")
     private Integer accountId;
 
     private String title;        // Account Name
     private String accountType;  // Cash, UPI, Credit Card, etc
     private Boolean isDefault;
     private Float amount;
+
+    // 🔥 IMPORTANT: Explicit Column Mapping
+    @Column(name = "user_id")
     private Integer userId;
 
     // ===== Getters & Setters =====

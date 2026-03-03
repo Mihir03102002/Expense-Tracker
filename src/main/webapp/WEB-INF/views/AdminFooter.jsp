@@ -3,9 +3,8 @@
 	<div
 		class="d-sm-flex justify-content-center justify-content-sm-between">
 		<span
-			class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright
-			© 2023. Premium <a href="https://www.bootstrapdash.com/"
-			target="_blank">© 2026 Expense Tracker | Add Expense</a> from BootstrapDash. All
+			class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+			 Expense Tracker | Add Expense from BootstrapDash. All
 			rights reserved.
 		</span> <span
 			class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted

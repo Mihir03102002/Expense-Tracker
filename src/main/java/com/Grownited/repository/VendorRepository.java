@@ -1,11 +1,14 @@
 package com.Grownited.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.Grownited.entity.UserEntity;
 import com.Grownited.entity.VendorEntity;
 
-@Repository
 public interface VendorRepository extends JpaRepository<VendorEntity, Integer> {
 
+    // 🔥 Fetch only logged-in user's vendors
+    List<VendorEntity> findByUser(UserEntity user);
 }

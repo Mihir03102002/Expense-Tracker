@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,21 +26,20 @@ import jakarta.servlet.http.HttpSession;
 public class SessionController {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    UserDetailRepository userDetailRepository;
+    private UserDetailRepository userDetailRepository;
 
     @Autowired
-    MailerService mailerService;
-    
+    private MailerService mailerService;
+
     @Autowired
-    PasswordEncoder passwordEncoder;
-    
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    Cloudinary cloudinary;
-    
-    
+    private Cloudinary cloudinary;
+
     // ================= SIGNUP PAGE =================
     @GetMapping("/signup")
     public String openSignupPage() {
@@ -62,19 +60,18 @@ public class SessionController {
                                HttpSession session) {
 
         Optional<UserEntity> op = userRepository.findByEmail(email);
-       
 
         if (op.isPresent()) {
 
             UserEntity dbUser = op.get();
-            
-            session.setAttribute("user", dbUser);
-            
+
+            // 🔥 Check password FIRST
             if (passwordEncoder.matches(password, dbUser.getPassword())) {
 
+                // Only set session if password correct
+                session.setAttribute("user", dbUser);
 
-         //   if (dbUser.getPassword().equals(password)) {
-
+                // Role based redirection
                 if ("ADMIN".equalsIgnoreCase(dbUser.getRole())) {
                     return "redirect:/AdminDashboard";
                 } 
@@ -87,66 +84,65 @@ public class SessionController {
         model.addAttribute("error", "Invalid Credentials");
         return "Login";
     }
-    // ================= FORGET PASSWORD =================
-//    @GetMapping("/Forgot-Password")
-//    public String openForgetPassword() {
-//        return "Forgot-Password";
-//    }
-    
-   
-    
 
     // ================= REGISTER =================
     @PostMapping("/register")
     public String register(UserEntity userEntity,
-                           UserDetailEntity userDetailEntity,MultipartFile profilePic) {
+                           UserDetailEntity userDetailEntity,
+                           MultipartFile profilePic,
+                           Model model) {
 
-    	
-        System.out.println(userEntity.getFirstName());
-        System.out.println(userEntity.getLastName());
-        System.out.println("Processor => " + Runtime.getRuntime().availableProcessors());
-        System.out.println(userDetailEntity.getCountry());
-        System.out.println(userDetailEntity.getState());
+        try {
 
-        userEntity.setRole("USER");
-        userEntity.setActive(true);
-        userEntity.setCreatedAt(LocalDate.now());
+            // Check if email already exists
+            if (userRepository.findByEmail(userEntity.getEmail()).isPresent()) {
+                model.addAttribute("error", "Email already registered");
+                return "Signup";
+            }
 
-     // encode password
-     		String encodedPassword = passwordEncoder.encode(userEntity.getPassword());
-     		System.out.println(encodedPassword);
-     		userEntity.setPassword(encodedPassword);
-        
-     	// file uploading
-    		System.out.println(profilePic.getOriginalFilename());
-            try {
-			Map map = cloudinary.uploader().upload(profilePic.getBytes() ,null);
-			String profilePicUrl = map.get("secure_url").toString(); 
-//			System.out.println(profilePicURL);
-			userEntity.setProfilePicURL(profilePicUrl);
-			
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		
-        // Save user
-        userRepository.save(userEntity);
+            // Set default values
+            userEntity.setRole("USER");
+            userEntity.setActive(true);
+            userEntity.setCreatedAt(LocalDate.now());
 
-        // Save user details
-        userDetailEntity.setUserId(userEntity.getUserId());
-        userDetailRepository.save(userDetailEntity);
+            // Encode password
+            String encodedPassword = passwordEncoder.encode(userEntity.getPassword());
+            userEntity.setPassword(encodedPassword);
 
-        // Send welcome mail
-        mailerService.sendWelcomeMail(userEntity);
+            // Upload profile picture if exists
+            if (profilePic != null && !profilePic.isEmpty()) {
 
-        return "redirect:/login";
+                Map<?, ?> uploadResult = cloudinary.uploader()
+                        .upload(profilePic.getBytes(), null);
+
+                String profilePicUrl = uploadResult.get("secure_url").toString();
+                userEntity.setProfilePicURL(profilePicUrl);
+            }
+
+            // Save user
+            userRepository.save(userEntity);
+
+            // Save user details
+            userDetailEntity.setUser(userEntity);
+            userDetailRepository.save(userDetailEntity);
+
+            // Send welcome mail
+            mailerService.sendWelcomeMail(userEntity);
+
+            return "redirect:/login";
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Registration failed. Try again.");
+            return "Signup";
+        }
     }
 
     // ================= LOGOUT =================
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();
+
+        session.invalidate();  // Destroy session
         return "redirect:/login";
     }
 }

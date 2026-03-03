@@ -1,5 +1,7 @@
 package com.Grownited.controller;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.Grownited.entity.CategoryEntity;
 import com.Grownited.entity.ExpenseEntity;
 import com.Grownited.entity.StatusEntity;
+import com.Grownited.entity.UserEntity;
 import com.Grownited.entity.VendorEntity;
 import com.Grownited.repository.AccountRepository;
 import com.Grownited.repository.CategoryRepository;
@@ -52,16 +55,18 @@ public class ExpenseController {
 
     // ================= SAVE EXPENSE =================
     @PostMapping("/expense/save")
-    public String saveExpense(ExpenseEntity expense) {
+    public String saveExpense(ExpenseEntity expense, HttpSession session) {
 
-        // Safety validation
-        if (expense.getCategory() == null ||
-            expense.getVendor() == null ||
-            expense.getStatus() == null) {
+        // 🔥 Get logged-in user from session
+        UserEntity user = (UserEntity) session.getAttribute("user");
 
-            return "redirect:/expense";
+        if (user == null) {
+            return "redirect:/login";
         }
 
+        expense.setUser(user);   // ✅ IMPORTANT LINE
+
+        // Fetch full objects from DB
         CategoryEntity category = categoryRepository
                 .findById(expense.getCategory().getCategoryId())
                 .orElse(null);
@@ -89,9 +94,17 @@ public class ExpenseController {
 
     // ================= EXPENSE LIST =================
     @GetMapping("/expense-list")
-    public String expenseList(Model model) {
+    public String expenseList(Model model, HttpSession session) {
 
-        model.addAttribute("expenseList", expenseRepository.findAll());
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // 🔥 Show only logged-in user's expenses
+        model.addAttribute("expenseList",
+                expenseRepository.findByUser(user));
 
         return "ExpenseList";
     }

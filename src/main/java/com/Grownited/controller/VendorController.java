@@ -2,13 +2,14 @@ package com.Grownited.controller;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import com.Grownited.entity.UserEntity;
 import com.Grownited.entity.VendorEntity;
 import com.Grownited.repository.VendorRepository;
 
@@ -16,44 +17,75 @@ import com.Grownited.repository.VendorRepository;
 public class VendorController {
 
     @Autowired
-    VendorRepository vendorRepository;
+    private VendorRepository vendorRepository;
 
-    // OPEN ADD VENDOR PAGE
+    // ================= ADD VENDOR PAGE =================
     @GetMapping("/vendor")
-    public String openVendorPage(Model model) {
+    public String openVendorPage(Model model, HttpSession session) {
 
-        List<VendorEntity> vendors = vendorRepository.findAll();
-        model.addAttribute("vendors", vendors);   // FIXED NAME
+        UserEntity user = (UserEntity) session.getAttribute("user");
 
-        return "Vendor";  // Vendor.jsp
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // 🔥 Get vendors of logged-in user
+        List<VendorEntity> vendors = vendorRepository.findByUser(user);
+
+        model.addAttribute("vendors", vendors);
+
+        return "Vendor";
     }
 
-    // SAVE VENDOR
+    // ================= SAVE VENDOR =================
     @PostMapping("/vendor")
-    public String saveVendor(VendorEntity vendorEntity) {
+    public String saveVendor(VendorEntity vendorEntity, HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // 🔥 Important: Set logged-in user
+        vendorEntity.setUser(user);
 
         vendorRepository.save(vendorEntity);
 
-        return "redirect:/vendor";  // ✅ VERY IMPORTANT
+        return "redirect:/listVendor";
     }
 
-
-    // LIST PAGE
+    // ================= VENDOR LIST PAGE =================
     @GetMapping("/listVendor")
-    public String listVendor(Model model) {
+    public String listVendor(Model model, HttpSession session) {
 
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // Optional: show only logged-in user's vendors
         List<VendorEntity> vendors = vendorRepository.findAll();
-        model.addAttribute("vendors", vendors);   // FIXED NAME
 
-        return "ListVendor";
+        model.addAttribute("vendors", vendors);
+
+        return "ListVendor";  // Must match JSP file name exactly
     }
 
-    // DELETE
+    // ================= DELETE VENDOR =================
     @GetMapping("/deleteVendor")
-    public String deleteVendor(@RequestParam("vendorId") Integer vendorId) {
+    public String deleteVendor(@RequestParam("vendorId") Integer vendorId,
+                               HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
 
         vendorRepository.deleteById(vendorId);
 
-        return "redirect:/listVendor";  // CORRECT REDIRECT
+        return "redirect:/listVendor";
     }
 }

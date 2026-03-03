@@ -1,5 +1,7 @@
 package com.Grownited.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -8,29 +10,33 @@ public class IncomeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "income_id")
     private Integer incomeId;
 
     private String title;
 
-    private String date;
+    private LocalDate date;
 
     private String description;
 
-    private Float amount;
+    private Double amount;
 
-    private Integer userId;
+    /* ================= RELATIONSHIPS ================= */
 
-    // 🔹 RELATION WITH ACCOUNT
+    // ✅ FIXED: Must match database column name exactly
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
     @ManyToOne
     @JoinColumn(name = "account_id")
     private AccountEntity account;
 
-    // 🔹 RELATION WITH STATUS
     @ManyToOne
     @JoinColumn(name = "status_id")
     private StatusEntity status;
 
-    // ================= GETTERS & SETTERS =================
+    /* ================= GETTERS & SETTERS ================= */
 
     public Integer getIncomeId() {
         return incomeId;
@@ -48,11 +54,11 @@ public class IncomeEntity {
         this.title = title;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -64,20 +70,20 @@ public class IncomeEntity {
         this.description = description;
     }
 
-    public Float getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Float amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public AccountEntity getAccount() {
