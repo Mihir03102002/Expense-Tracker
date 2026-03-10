@@ -12,9 +12,26 @@ import com.Grownited.entity.UserEntity;
 
 public interface IncomeRepository extends JpaRepository<IncomeEntity, Integer> {
 
-    @Query("SELECT SUM(i.amount) FROM IncomeEntity i WHERE i.date BETWEEN :startDate AND :endDate")
+    // Admin
+    @Query("""
+        select coalesce(sum(i.amount), 0)
+        from IncomeEntity i
+        where i.date between :startDate and :endDate
+    """)
     Double sumIncomeBetweenDates(@Param("startDate") LocalDate startDate,
                                  @Param("endDate") LocalDate endDate);
-    
+
+    // User
+    @Query("""
+        select coalesce(sum(i.amount), 0)
+        from IncomeEntity i
+        where i.user.userId = :userId
+          and i.date between :startDate and :endDate
+    """)
+    Double sumIncomeBetweenDatesByUser(@Param("userId") Integer userId,
+                                       @Param("startDate") LocalDate startDate,
+                                       @Param("endDate") LocalDate endDate);
+
+    // Get all income of a specific user
     List<IncomeEntity> findByUser(UserEntity user);
 }

@@ -69,4 +69,9 @@ public class AccountEntity {
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
+
+	public void setUser(UserEntity user) {
+		// TODO Auto-generated method stub
+		
+	}
 }

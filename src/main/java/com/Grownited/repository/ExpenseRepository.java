@@ -12,18 +12,50 @@ import com.Grownited.entity.UserEntity;
 
 public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer> {
 
-    @Query("SELECT SUM(e.amount) FROM ExpenseEntity e WHERE e.date BETWEEN :startDate AND :endDate")
+    // Admin
+    @Query("""
+        select coalesce(sum(e.amount), 0)
+        from ExpenseEntity e
+        where e.date between :startDate and :endDate
+    """)
     Double sumExpenseBetweenDates(@Param("startDate") LocalDate startDate,
                                   @Param("endDate") LocalDate endDate);
 
-
-    @Query("SELECT e.category.categoryName, SUM(e.amount) " +
-           "FROM ExpenseEntity e " +
-           "WHERE e.date BETWEEN :startDate AND :endDate " +
-           "GROUP BY e.category.categoryName " +
-           "ORDER BY SUM(e.amount) DESC")
+    @Query("""
+        select e.category.categoryName, sum(e.amount)
+        from ExpenseEntity e
+        where e.date between :startDate and :endDate
+        group by e.category.categoryName
+        order by sum(e.amount) desc
+    """)
     List<Object[]> findTopExpenseCategory(@Param("startDate") LocalDate startDate,
                                           @Param("endDate") LocalDate endDate);
-    
+
+    // User
+    @Query("""
+        select coalesce(sum(e.amount), 0)
+        from ExpenseEntity e
+        where e.user.userId = :userId
+          and e.date between :startDate and :endDate
+    """)
+    Double sumExpenseBetweenDatesByUser(@Param("userId") Integer userId,
+                                        @Param("startDate") LocalDate startDate,
+                                        @Param("endDate") LocalDate endDate);
+
+    @Query("""
+        select e.category.categoryName, sum(e.amount)
+        from ExpenseEntity e
+        where e.user.userId = :userId
+          and e.date between :startDate and :endDate
+        group by e.category.categoryName
+        order by sum(e.amount) desc
+    """)
+    List<Object[]> findTopExpenseCategoryByUser(@Param("userId") Integer userId,
+                                                @Param("startDate") LocalDate startDate,
+                                                @Param("endDate") LocalDate endDate);
+
+    // Get all expenses of a specific user
     List<ExpenseEntity> findByUser(UserEntity user);
+    
+    
 }
