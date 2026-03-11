@@ -1,6 +1,7 @@
 package com.Grownited.controller.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,7 @@ public class UserIncomeController {
     @Autowired
     private StatusRepository statusRepository;
 
+
     // ==========================
     // OPEN ADD INCOME PAGE
     // ==========================
@@ -37,7 +39,10 @@ public class UserIncomeController {
             return "redirect:/login";
         }
 
-        model.addAttribute("accounts", accountRepository.findAll());
+        // ✅ FIX: show only logged-in user's accounts
+        model.addAttribute("accounts",
+                accountRepository.findByUserId(user.getUserId()));
+
         model.addAttribute("statuses", statusRepository.findAll());
 
         model.addAttribute("income", new IncomeEntity());
@@ -45,11 +50,13 @@ public class UserIncomeController {
         return "User/AddIncome";
     }
 
+
     // ==========================
     // SAVE INCOME
     // ==========================
     @PostMapping("/saveIncome")
-    public String saveIncome(@ModelAttribute IncomeEntity income, HttpSession session) {
+    public String saveIncome(@ModelAttribute IncomeEntity income,
+                             HttpSession session) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -63,6 +70,7 @@ public class UserIncomeController {
 
         return "redirect:/user/incomeList";
     }
+
 
     // ==========================
     // INCOME LIST
@@ -83,13 +91,30 @@ public class UserIncomeController {
         return "User/UserIncomeList";
     }
 
+
     // ==========================
-    // DELETE INCOME
+    // DELETE INCOME (SECURE)
     // ==========================
     @GetMapping("/deleteIncome")
-    public String deleteIncome(@RequestParam Integer incomeId) {
+    public String deleteIncome(@RequestParam Integer incomeId,
+                               HttpSession session) {
 
-        incomeRepository.deleteById(incomeId);
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        Optional<IncomeEntity> incomeOpt =
+                incomeRepository.findById(incomeId);
+
+        if (incomeOpt.isPresent()) {
+
+            IncomeEntity income = incomeOpt.get();
+
+            // ✅ Ensure user deletes only their income
+            if (income.getUser().getUserId()
+                    .equals(user.getUserId())) {
+
+                incomeRepository.deleteById(incomeId);
+            }
+        }
 
         return "redirect:/user/incomeList";
     }

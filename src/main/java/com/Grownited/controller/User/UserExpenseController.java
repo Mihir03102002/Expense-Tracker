@@ -1,6 +1,7 @@
 package com.Grownited.controller.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,7 @@ public class UserExpenseController {
     @Autowired
     StatusRepository statusRepository;
 
+
     // =============================
     // OPEN ADD EXPENSE PAGE
     // =============================
@@ -49,7 +51,11 @@ public class UserExpenseController {
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("subCategories", subCategoryRepository.findAll());
         model.addAttribute("vendors", vendorRepository.findAll());
-        model.addAttribute("accounts", accountRepository.findAll());
+
+        // ✅ FIX: show only logged-in user's accounts
+        model.addAttribute("accounts",
+                accountRepository.findByUserId(user.getUserId()));
+
         model.addAttribute("statuses", statusRepository.findAll());
 
         model.addAttribute("expense", new ExpenseEntity());
@@ -57,11 +63,13 @@ public class UserExpenseController {
         return "User/AddExpense";
     }
 
+
     // =============================
     // SAVE EXPENSE
     // =============================
     @PostMapping("/saveExpense")
-    public String saveExpense(@ModelAttribute ExpenseEntity expense, HttpSession session) {
+    public String saveExpense(@ModelAttribute ExpenseEntity expense,
+                              HttpSession session) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -75,6 +83,7 @@ public class UserExpenseController {
 
         return "redirect:/user/expenseList";
     }
+
 
     // =============================
     // USER EXPENSE LIST
@@ -92,16 +101,33 @@ public class UserExpenseController {
 
         model.addAttribute("expenses", expenses);
 
-        return "User/UserExpenseList";   // ✅ updated JSP name
+        return "User/UserExpenseList";
     }
 
+
     // =============================
-    // DELETE EXPENSE
+    // DELETE EXPENSE (SECURE)
     // =============================
     @GetMapping("/deleteExpense")
-    public String deleteExpense(@RequestParam Integer expenseId) {
+    public String deleteExpense(@RequestParam Integer expenseId,
+                                HttpSession session) {
 
-        expenseRepository.deleteById(expenseId);
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        Optional<ExpenseEntity> expenseOpt =
+                expenseRepository.findById(expenseId);
+
+        if (expenseOpt.isPresent()) {
+
+            ExpenseEntity expense = expenseOpt.get();
+
+            // ✅ Ensure user deletes only their expense
+            if (expense.getUser().getUserId()
+                    .equals(user.getUserId())) {
+
+                expenseRepository.deleteById(expenseId);
+            }
+        }
 
         return "redirect:/user/expenseList";
     }

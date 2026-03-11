@@ -12,5 +12,7 @@ import com.Grownited.entity.UserEntity;
 public interface AccountRepository extends JpaRepository<AccountEntity, Integer>{
 
 	List<AccountEntity> findByUser(UserEntity user);
+	
+	List<AccountEntity> findByUserId(Integer userId);
 
 }

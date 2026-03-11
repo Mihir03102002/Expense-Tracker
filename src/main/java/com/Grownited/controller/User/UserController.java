@@ -2,7 +2,6 @@ package com.Grownited.controller.User;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +23,7 @@ public class UserController {
     @Autowired
     private IncomeRepository incomeRepository;
 
+    // ================= USER DASHBOARD =================
     @GetMapping("/user/dashboard")
     public String userDashboard(Model model, HttpSession session) {
 
@@ -35,7 +35,7 @@ public class UserController {
 
         Integer userId = user.getUserId();
 
-        // ===== CURRENT MONTH =====
+        // CURRENT MONTH
         YearMonth month = YearMonth.now();
         LocalDate startDate = month.atDay(1);
         LocalDate endDate = month.atEndOfMonth();
@@ -46,7 +46,7 @@ public class UserController {
         if(monthExpense == null) monthExpense = 0.0;
         if(monthIncome == null) monthIncome = 0.0;
 
-        // ===== QUARTER =====
+        // QUARTER
         LocalDate quarterStart = LocalDate.now().minusMonths(3);
 
         Double quarterExpense = expenseRepository.sumExpenseBetweenDatesByUser(userId,quarterStart,endDate);
@@ -55,12 +55,20 @@ public class UserController {
         if(quarterExpense == null) quarterExpense = 0.0;
         if(quarterIncome == null) quarterIncome = 0.0;
 
-        // ===== PASS TO JSP =====
         model.addAttribute("monthExpense", monthExpense);
         model.addAttribute("quarterExpense", quarterExpense);
         model.addAttribute("monthIncome", monthIncome);
         model.addAttribute("quarterIncome", quarterIncome);
 
         return "User/UserDashboard";
+    }
+
+    // ================= LOGOUT =================
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+
+        session.invalidate();   // destroy session
+
+        return "redirect:/login";
     }
 }
