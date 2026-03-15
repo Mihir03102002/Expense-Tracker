@@ -11,16 +11,13 @@ public class AccountEntity {
     @Column(name = "account_id")
     private Integer accountId;
 
-    private String title;        // Account Name
-    private String accountType;  // Cash, UPI, Credit Card, etc
+    private String title;
+    private String accountType;
     private Boolean isDefault;
     private Float amount;
 
-    // 🔥 IMPORTANT: Explicit Column Mapping
     @Column(name = "user_id")
     private Integer userId;
-
-    // ===== Getters & Setters =====
 
     public Integer getAccountId() {
         return accountId;
@@ -70,8 +67,4 @@ public class AccountEntity {
         this.userId = userId;
     }
 
-	public void setUser(UserEntity user) {
-		// TODO Auto-generated method stub
-		
-	}
 }

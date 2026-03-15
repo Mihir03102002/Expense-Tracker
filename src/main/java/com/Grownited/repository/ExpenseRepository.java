@@ -56,6 +56,8 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
 
     // Get all expenses of a specific user
     List<ExpenseEntity> findByUser(UserEntity user);
+
+	boolean existsByAccountAccountId(Integer accountId);
     
     
 }

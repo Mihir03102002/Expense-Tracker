@@ -34,4 +34,6 @@ public interface IncomeRepository extends JpaRepository<IncomeEntity, Integer> {
 
     // Get all income of a specific user
     List<IncomeEntity> findByUser(UserEntity user);
+
+	boolean existsByAccountAccountId(Integer accountId);
 }

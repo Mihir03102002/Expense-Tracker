@@ -1,9 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
@@ -17,111 +18,122 @@
 
 <div class="container-scroller">
 
-    <jsp:include page="UserHeader.jsp"></jsp:include>
+```
+<jsp:include page="UserHeader.jsp"></jsp:include>
 
-    <div class="container-fluid page-body-wrapper">
+<div class="container-fluid page-body-wrapper">
 
-        <jsp:include page="UserLeftSidebar.jsp"></jsp:include>
+    <jsp:include page="UserLeftSidebar.jsp"></jsp:include>
 
-        <div class="main-panel">
+    <div class="main-panel">
 
-            <div class="content-wrapper">
+        <div class="content-wrapper">
 
-                <div class="row mb-4">
-                    <div class="col-md-12">
-                        <h3>My Expenses</h3>
-                    </div>
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h3>My Expenses</h3>
                 </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
 
-                        <div class="card shadow-sm">
+                    <div class="card shadow-sm">
 
-                            <div class="card-header bg-primary text-white">
-                                Expense List
-                            </div>
+                        <!-- UPDATED HEADER -->
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
-                            <div class="card-body">
+                            <span>Expense List</span>
 
-                                <div class="table-responsive">
+                            <!-- Add New Expense Button -->
+                            <a href="${pageContext.request.contextPath}/user/addExpense"
+							   class="btn btn-success btn-sm">
+							   + Add New Expense
+							</a>
 
-                                    <table class="table table-bordered table-hover text-center align-middle">
+                        </div>
 
-                                        <thead class="table-light">
+                        <div class="card-body">
+
+                            <div class="table-responsive">
+
+                                <table class="table table-bordered table-hover text-center align-middle">
+
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Vendor</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        <!-- No expenses -->
+                                        <c:if test="${empty expenses}">
                                             <tr>
-                                                <th>Title</th>
-                                                <th>Category</th>
-                                                <th>Vendor</th>
-                                                <th>Amount</th>
-                                                <th>Date</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
+                                                <td colspan="7" class="text-muted">
+                                                    No expenses found
+                                                </td>
                                             </tr>
-                                        </thead>
+                                        </c:if>
 
-                                        <tbody>
+                                        <!-- Expense list -->
+                                        <c:forEach var="e" items="${expenses}">
+                                            <tr>
 
-                                            <!-- No expenses -->
-                                            <c:if test="${empty expenses}">
-                                                <tr>
-                                                    <td colspan="7" class="text-muted">
-                                                        No expenses found
-                                                    </td>
-                                                </tr>
-                                            </c:if>
+                                                <td>${e.title}</td>
 
-                                            <!-- Expense list -->
-                                            <c:forEach var="e" items="${expenses}">
-                                                <tr>
+                                                <td>${e.category.categoryName}</td>
 
-                                                    <td>${e.title}</td>
+                                                <td>${e.vendor.vendorName}</td>
 
-                                                    <td>${e.category.categoryName}</td>
+                                                <td>₹ ${e.amount}</td>
 
-                                                    <td>${e.vendor.vendorName}</td>
+                                                <td>${e.date}</td>
 
-                                                    <td>₹ ${e.amount}</td>
+                                                <td>${e.status.status}</td>
 
-                                                    <td>${e.date}</td>
+                                                <td>
 
-                                                    <td>${e.status.status}</td>
+                                                    <a href="${pageContext.request.contextPath}/user/deleteExpense?expenseId=${e.expenseId}"
+                                                       class="btn btn-danger btn-sm"
+                                                       onclick="return confirm('Delete this expense?')">
 
-                                                    <td>
+                                                        <i class="mdi mdi-delete"></i> Delete
 
-                                                        <a href="${pageContext.request.contextPath}/user/deleteExpense?expenseId=${e.expenseId}"
-                                                           class="btn btn-danger btn-sm"
-                                                           onclick="return confirm('Delete this expense?')">
+                                                    </a>
 
-                                                            <i class="mdi mdi-delete"></i> Delete
+                                                </td>
 
-                                                        </a>
+                                            </tr>
+                                        </c:forEach>
 
-                                                    </td>
+                                    </tbody>
 
-                                                </tr>
-                                            </c:forEach>
-
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
+                                </table>
 
                             </div>
 
                         </div>
 
                     </div>
+
                 </div>
-
             </div>
-
-            <jsp:include page="UserFooter.jsp"></jsp:include>
 
         </div>
 
+        <jsp:include page="UserFooter.jsp"></jsp:include>
+
     </div>
+
+</div>
+```
 
 </div>
 

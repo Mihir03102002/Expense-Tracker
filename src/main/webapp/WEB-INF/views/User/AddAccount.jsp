@@ -119,7 +119,7 @@ pageEncoding="UTF-8"%>
                             <thead class="table-light">
 
                                 <tr>
-                                    <th>ID</th>
+                                    <th>S.No</th>
                                     <th>Account</th>
                                     <th>Type</th>
                                     <th>Balance</th>
@@ -129,11 +129,11 @@ pageEncoding="UTF-8"%>
 
                             <tbody>
 
-                                <c:forEach var="a" items="${accounts}">
+                                <c:forEach var="a" items="${accounts}" varStatus="i">
 
                                     <tr>
 
-                                        <td>${a.accountId}</td>
+                                        <td>${i.index + 1}</td>
                                         <td>${a.title}</td>
                                         <td>${a.accountType}</td>
                                         <td>₹ ${a.amount}</td>

@@ -66,7 +66,7 @@
 								        <a href="signup" class="text-primary">Signup</a>
 								    </p>
 								
-								    <a href="Forgot-Password" class="text-decoration-none text-primary">
+								    <a href="forgot-password" class="text-decoration-none text-primary">
 								        Forgot Password?
 								    </a>
 								</div>

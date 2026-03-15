@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import com.Grownited.entity.AccountEntity;
 import com.Grownited.entity.UserEntity;
 import com.Grownited.repository.AccountRepository;
+import com.Grownited.repository.ExpenseRepository;
+import com.Grownited.repository.IncomeRepository;
 
 @Controller
 @RequestMapping("/user")
@@ -19,6 +21,12 @@ public class UserAccountController {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private ExpenseRepository expenseRepository;
+
+    @Autowired
+    private IncomeRepository incomeRepository;
 
     // ================= OPEN ADD ACCOUNT PAGE =================
     @GetMapping("/account")
@@ -30,7 +38,6 @@ public class UserAccountController {
             return "redirect:/login";
         }
 
-        // Load only logged-in user's accounts
         List<AccountEntity> accounts =
                 accountRepository.findByUserId(user.getUserId());
 
@@ -50,7 +57,6 @@ public class UserAccountController {
             return "redirect:/login";
         }
 
-        // Set logged-in user id
         accountEntity.setUserId(user.getUserId());
 
         accountRepository.save(accountEntity);
@@ -58,7 +64,7 @@ public class UserAccountController {
         return "redirect:/user/account";
     }
 
-    // ================= ACCOUNT LIST PAGE =================
+    // ================= ACCOUNT LIST =================
     @GetMapping("/accountList")
     public String openAccountListPage(Model model,
                                       HttpSession session) {
@@ -80,7 +86,8 @@ public class UserAccountController {
     // ================= DELETE ACCOUNT =================
     @GetMapping("/account/delete")
     public String deleteAccount(@RequestParam Integer accountId,
-                                HttpSession session) {
+                                HttpSession session,
+                                Model model) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -88,8 +95,25 @@ public class UserAccountController {
             return "redirect:/login";
         }
 
+        // check if account has expenses
+        boolean hasExpense =
+                expenseRepository.existsByAccountAccountId(accountId);
+
+        // check if account has income
+        boolean hasIncome =
+                incomeRepository.existsByAccountAccountId(accountId);
+
+        if (hasExpense || hasIncome) {
+
+            model.addAttribute("error",
+                    "Cannot delete account. Please delete transactions first.");
+
+            return "redirect:/user/accountList";
+        }
+
         accountRepository.deleteById(accountId);
 
-        return "redirect:/user/account";
+        return "redirect:/user/accountList";
     }
+
 }

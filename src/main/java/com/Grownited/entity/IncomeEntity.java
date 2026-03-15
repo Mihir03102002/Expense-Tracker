@@ -19,7 +19,7 @@ public class IncomeEntity {
 
     private String description;
 
-    private Double amount;
+    private Float amount;
 
     /* ================= RELATIONSHIPS ================= */
 
@@ -70,11 +70,11 @@ public class IncomeEntity {
         this.description = description;
     }
 
-    public Double getAmount() {
+    public Float getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(Float amount) {
         this.amount = amount;
     }
 

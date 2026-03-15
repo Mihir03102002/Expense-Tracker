@@ -13,7 +13,7 @@
 <title>Expense Tracker User</title>
 
 <!-- Admin Template CSS -->
-<jsp:include page="../Admin/AdminCSS.jsp"/>
+<jsp:include page="UserCSS.jsp"></jsp:include>
 
 </head>
 
@@ -203,7 +203,7 @@
 
 
         <!-- ================= FOOTER ================= -->
-        <jsp:include page="../Admin/AdminFooter.jsp"/>
+        <jsp:include page="UserFooter.jsp"/>
 
         </div>
 
@@ -213,8 +213,7 @@
 
 
 <!-- ================= JS ================= -->
-<jsp:include page="UserJS.jsp"/>
-
+<jsp:include page="UserJS.jsp"></jsp:include>
 
 </body>
 </html>

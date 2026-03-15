@@ -79,12 +79,46 @@ public class UserExpenseController {
 
         expense.setUser(user);
 
+        Optional<AccountEntity> accOpt =
+                accountRepository.findById(expense.getAccount().getAccountId());
+
+        Optional<StatusEntity> statusOpt =
+                statusRepository.findById(expense.getStatus().getStatusId());
+
+        if (accOpt.isPresent() && statusOpt.isPresent()) {
+
+            AccountEntity account = accOpt.get();
+            StatusEntity statusEntity = statusOpt.get();
+
+            Float balance = account.getAmount();
+            if(balance == null){
+                balance = 0f;
+            }
+
+            Float expenseAmount = expense.getAmount();
+
+            String status = statusEntity.getStatus();
+
+            if("Paid".equalsIgnoreCase(status)){
+
+                balance = balance - expenseAmount;
+
+            } 
+            else if("Partial".equalsIgnoreCase(status)){
+
+                balance = balance - (expenseAmount / 2);
+
+            }
+            // Unpaid → no balance change
+
+            account.setAmount(balance);
+            accountRepository.save(account);
+        }
+
         expenseRepository.save(expense);
 
         return "redirect:/user/expenseList";
     }
-
-
     // =============================
     // USER EXPENSE LIST
     // =============================
@@ -114,18 +148,39 @@ public class UserExpenseController {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
-        Optional<ExpenseEntity> expenseOpt =
-                expenseRepository.findById(expenseId);
+        Optional<ExpenseEntity> expenseOpt = expenseRepository.findById(expenseId);
 
         if (expenseOpt.isPresent()) {
 
             ExpenseEntity expense = expenseOpt.get();
 
-            // ✅ Ensure user deletes only their expense
-            if (expense.getUser().getUserId()
-                    .equals(user.getUserId())) {
+            if (expense.getUser().getUserId().equals(user.getUserId())) {
 
-                expenseRepository.deleteById(expenseId);
+                AccountEntity account = expense.getAccount();
+
+                Float balance = account.getAmount();
+                if(balance == null){
+                    balance = 0f;
+                }
+
+                Float expenseAmount = expense.getAmount();
+
+                String status = "";
+                if(expense.getStatus() != null){
+                    status = expense.getStatus().getStatus();
+                }
+
+                if("Paid".equalsIgnoreCase(status)){
+                    balance = balance + expenseAmount;
+                }
+                else if("Partial".equalsIgnoreCase(status)){
+                    balance = balance + (expenseAmount / 2);
+                }
+
+                account.setAmount(balance);
+                accountRepository.save(account);
+
+                expenseRepository.delete(expense);
             }
         }
 

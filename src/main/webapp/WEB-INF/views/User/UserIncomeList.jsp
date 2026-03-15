@@ -1,15 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
 <title>My Income | Expense Tracker</title>
 
 <!-- USER CSS -->
+
 <jsp:include page="UserCSS.jsp"></jsp:include>
 
 </head>
@@ -18,90 +20,98 @@
 
 <div class="container-scroller">
 
-    <!-- USER HEADER -->
-    <jsp:include page="UserHeader.jsp"></jsp:include>
+```
+<!-- USER HEADER -->
+<jsp:include page="UserHeader.jsp"></jsp:include>
 
-    <div class="container-fluid page-body-wrapper">
+<div class="container-fluid page-body-wrapper">
 
-        <!-- USER SIDEBAR -->
-        <jsp:include page="UserLeftSidebar.jsp"></jsp:include>
+    <!-- USER SIDEBAR -->
+    <jsp:include page="UserLeftSidebar.jsp"></jsp:include>
 
-        <!-- MAIN PANEL -->
-        <div class="main-panel">
-            <div class="content-wrapper">
+    <!-- MAIN PANEL -->
+    <div class="main-panel">
+        <div class="content-wrapper">
 
-                <h3 class="mb-3">My Income</h3>
+            <h3 class="mb-3">My Income</h3>
 
-                <div class="card shadow-sm">
+            <div class="card shadow-sm">
 
-                    <div class="card-header bg-primary text-white">
-                        Income List
-                    </div>
+                <!-- UPDATED HEADER -->
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
-                    <div class="card-body">
+                    <span>Income List</span>
 
-                        <div class="table-responsive">
+                    <!-- Add New Income Button -->
+                    <a href="${pageContext.request.contextPath}/user/addIncome"
+					   class="btn btn-success btn-sm">
+					   + Add New Income
+					</a>
 
-                            <table class="table table-bordered table-hover text-center align-middle">
+                </div>
 
-                                <thead class="table-light">
+                <div class="card-body">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-hover text-center align-middle">
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Account</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <!-- No income -->
+                                <c:if test="${empty incomes}">
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Account</th>
-                                        <th>Amount</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <td colspan="6" class="text-muted">
+                                            No income records found
+                                        </td>
                                     </tr>
-                                </thead>
+                                </c:if>
 
-                                <tbody>
+                                <!-- Income list -->
+                                <c:forEach var="i" items="${incomes}">
 
-                                    <!-- No income -->
-                                    <c:if test="${empty incomes}">
-                                        <tr>
-                                            <td colspan="6" class="text-muted">
-                                                No income records found
-                                            </td>
-                                        </tr>
-                                    </c:if>
+                                    <tr>
 
-                                    <!-- Income list -->
-                                    <c:forEach var="i" items="${incomes}">
+                                        <td>${i.title}</td>
 
-                                        <tr>
+                                        <td>${i.account.title}</td>
 
-                                            <td>${i.title}</td>
+                                        <td>₹ ${i.amount}</td>
 
-                                            <td>${i.account.title}</td>
+                                        <td>${i.date}</td>
 
-                                            <td>₹ ${i.amount}</td>
+                                        <td>${i.status.status}</td>
 
-                                            <td>${i.date}</td>
+                                        <td>
 
-                                            <td>${i.status.status}</td>
+                                            <a href="${pageContext.request.contextPath}/user/deleteIncome?incomeId=${i.incomeId}"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Delete this income?')">
 
-                                            <td>
+                                                <i class="mdi mdi-delete"></i> Delete
 
-                                                <a href="${pageContext.request.contextPath}/user/deleteIncome?incomeId=${i.incomeId}"
-                                                   class="btn btn-danger btn-sm"
-                                                   onclick="return confirm('Delete this income?')">
+                                            </a>
 
-                                                    <i class="mdi mdi-delete"></i> Delete
+                                        </td>
 
-                                                </a>
+                                    </tr>
 
-                                            </td>
+                                </c:forEach>
 
-                                        </tr>
+                            </tbody>
 
-                                    </c:forEach>
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
+                        </table>
 
                     </div>
 
@@ -109,16 +119,20 @@
 
             </div>
 
-            <!-- USER FOOTER -->
-            <jsp:include page="UserFooter.jsp"></jsp:include>
-
         </div>
+
+        <!-- USER FOOTER -->
+        <jsp:include page="UserFooter.jsp"></jsp:include>
 
     </div>
 
 </div>
+```
+
+</div>
 
 <!-- USER JS -->
+
 <jsp:include page="UserJS.jsp"></jsp:include>
 
 </body>

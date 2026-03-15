@@ -66,11 +66,31 @@ public class UserIncomeController {
 
         income.setUser(user);
 
+        // Save Income
         incomeRepository.save(income);
+
+        // ===== UPDATE ACCOUNT BALANCE =====
+        Optional<AccountEntity> accOpt =
+                accountRepository.findById(income.getAccount().getAccountId());
+
+        if(accOpt.isPresent()) {
+
+            AccountEntity account = accOpt.get();
+
+            Float balance = account.getAmount();
+            if(balance == null){
+                balance = 0f;
+            }
+
+            Float incomeAmount = income.getAmount();
+
+            account.setAmount(balance + incomeAmount);
+
+            accountRepository.save(account);
+        }
 
         return "redirect:/user/incomeList";
     }
-
 
     // ==========================
     // INCOME LIST
@@ -108,15 +128,27 @@ public class UserIncomeController {
 
             IncomeEntity income = incomeOpt.get();
 
-            // ✅ Ensure user deletes only their income
-            if (income.getUser().getUserId()
-                    .equals(user.getUserId())) {
+            if (income.getUser().getUserId().equals(user.getUserId())) {
 
-                incomeRepository.deleteById(incomeId);
+                AccountEntity account = income.getAccount();
+
+                Float balance = account.getAmount();
+                if(balance == null){
+                    balance = 0f;
+                }
+
+                Float incomeAmount = income.getAmount();
+
+                account.setAmount(balance - incomeAmount);
+
+                accountRepository.save(account);
+
+                incomeRepository.delete(income);
             }
         }
 
         return "redirect:/user/incomeList";
     }
+
 
 }

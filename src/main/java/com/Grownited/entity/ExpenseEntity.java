@@ -15,7 +15,7 @@ public class ExpenseEntity {
     private String title;
 
     // Better for money calculations
-    private Double amount;
+    private Float amount;
 
     // IMPORTANT FIX: Change String to LocalDate
     private LocalDate date;
@@ -66,11 +66,11 @@ public class ExpenseEntity {
         this.title = title;
     }
 
-    public Double getAmount() {
+    public Float getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(Float amount) {
         this.amount = amount;
     }
 
