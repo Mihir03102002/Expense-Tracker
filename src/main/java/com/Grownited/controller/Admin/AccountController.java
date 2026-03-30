@@ -1,6 +1,7 @@
 package com.Grownited.controller.Admin;
 
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -13,19 +14,36 @@ import com.Grownited.entity.AccountEntity;
 import com.Grownited.entity.UserEntity;
 import com.Grownited.repository.AccountRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 @Controller
+@RequestMapping("/admin")
 public class AccountController {
 
     @Autowired
     private AccountRepository accountRepository;
 
-    // ================= OPEN ACCOUNT PAGE (Add + List) =================
-    @GetMapping("/admin/account")
-    public String openAccountPage(Model model, HttpSession session) {
 
+    // ================= HELPER METHOD =================
+    private UserEntity getAdmin(HttpSession session) {
         UserEntity user = (UserEntity) session.getAttribute("user");
 
-        if (user == null) {
+        if (user == null || !"ADMIN".equals(user.getRole())) {
+            return null;
+        }
+        return user;
+    }
+
+
+    // ================= OPEN ACCOUNT PAGE =================
+    @GetMapping("/account")
+    public String openAccountPage(Model model, HttpSession session) {
+
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
             return "redirect:/login";
         }
 
@@ -35,55 +53,99 @@ public class AccountController {
         return "Admin/Account";
     }
 
+
     // ================= SAVE ACCOUNT =================
-    @PostMapping("/admin/account")
+    @PostMapping("/account")
     public String saveAccount(AccountEntity accountEntity,
                               HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
+        UserEntity admin = getAdmin(session);
 
-        if (user == null) {
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        // 🔥 IMPORTANT FIX
-        accountEntity.setUserId(user.getUserId());
+        // ✅ SET USER
+        accountEntity.setUserId(admin.getUserId());
+
+        // ✅ NULL SAFETY
+        if (accountEntity.getAmount() == null) {
+            accountEntity.setAmount(0.0);
+        }
+
+        // ✅ NEGATIVE CHECK
+        if (accountEntity.getAmount() < 0) {
+            return "redirect:/admin/account?error=invalidAmount";
+        }
 
         accountRepository.save(accountEntity);
 
         return "redirect:/admin/account";
     }
 
-    // ================= OPEN ACCOUNT LIST PAGE =================
-    @GetMapping("/admin/accountList")
-    public String openAccountListPage(Model model,
-                                      HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
+    // ================= ACCOUNT LIST =================
+    @GetMapping("/accountList")
+    public String openAccountListPage(
+            @RequestParam(defaultValue = "0") int page,      // ✅ ADDED
+            @RequestParam(required = false) String keyword,  // ✅ ADDED
+            Model model,
+            HttpSession session) {
 
-        if (user == null) {
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        List<AccountEntity> accounts = accountRepository.findAll();
-        model.addAttribute("accounts", accounts);
+        int size = 10;
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AccountEntity> accountPage;
+
+        // 🔍 SEARCH LOGIC
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            accountPage = accountRepository
+                    .findByTitleContainingIgnoreCase(keyword, pageable);
+        } else {
+            accountPage = accountRepository.findAll(pageable);
+        }
+
+        model.addAttribute("accounts", accountPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", accountPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
 
         return "Admin/AccountList";
     }
-
     // ================= DELETE ACCOUNT =================
-    @GetMapping("/admin/account/delete")
+    @GetMapping("/account/delete")
     public String deleteAccount(@RequestParam Integer accountId,
                                 HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
+        UserEntity admin = getAdmin(session);
 
-        if (user == null) {
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        accountRepository.deleteById(accountId);
+        Optional<AccountEntity> accountOpt =
+                accountRepository.findById(accountId);
+
+        if (accountOpt.isPresent()) {
+
+            AccountEntity account = accountOpt.get();
+
+            // ⚠️ OPTIONAL SAFETY CHECK
+            // If account has balance → prevent delete
+            if (account.getAmount() != null && account.getAmount() > 0) {
+                return "redirect:/admin/account?error=hasBalance";
+            }
+
+            accountRepository.deleteById(accountId);
+        }
 
         return "redirect:/admin/account";
     }
+
 }

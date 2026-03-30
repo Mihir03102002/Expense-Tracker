@@ -44,13 +44,9 @@
 
 				<!-- ================= PAGE TITLE ================= -->
 				<div class="row mb-4">
-
 					<div class="col-md-12">
-
 						<h3>All Vendors</h3>
-
 					</div>
-
 				</div>
 
 
@@ -71,13 +67,9 @@
 									Vendor List
 								</span>
 
-
-								<!-- GREEN ADD BUTTON (UNCHANGED) -->
 								<a href="${ctx}/admin/vendor"
 								   class="btn btn-success btn-sm rounded-pill">
-
 									+ Add New Vendor
-
 								</a>
 
 							</div>
@@ -87,72 +79,72 @@
 							<!-- ================= CARD BODY ================= -->
 							<div class="card-body">
 
-								<div class="table-responsive">
+								<!-- ================= SEARCH BAR ================= -->
+								<form method="get" action="${ctx}/admin/listVendor" class="mb-3 d-flex">
 
+									<input type="text"
+									       name="keyword"
+									       value="${keyword}"
+									       placeholder="Search vendor..."
+									       class="form-control me-2"/>
+
+									<button type="submit" class="btn btn-primary">Search</button>
+
+								</form>
+
+
+
+								<div class="table-responsive">
 
 									<!-- ================= VENDOR TABLE ================= -->
 									<table class="table table-bordered table-hover text-center align-middle">
 
-
 										<!-- ================= TABLE HEADER ================= -->
 										<thead class="table-light">
-
 											<tr>
-												<th>#</th>
+												<th>Sr. No</th>
 												<th>Vendor Name</th>
 												<th>Actions</th>
 											</tr>
-
 										</thead>
-
 
 
 										<!-- ================= TABLE BODY ================= -->
 										<tbody>
 
-
 											<!-- IF EMPTY -->
 											<c:if test="${empty vendors}">
-
 												<tr>
-
 													<td colspan="3" class="text-muted">
 														No vendors found
 													</td>
-
 												</tr>
-
 											</c:if>
 
 
-
 											<!-- LOOP DATA -->
-											<c:forEach var="v" items="${vendors}" varStatus="i">
+											<c:forEach var="v" items="${vendors}" varStatus="status">
 
 												<tr>
 
-													<td>${i.count}</td>
+													<!-- SERIAL NUMBER (FIXED WITH PAGINATION) -->
+													<td>
+														${currentPage * 10 + status.index + 1}
+													</td>
 
 													<td>${v.vendorName}</td>
 
 													<td>
 
-														<!-- EDIT BUTTON -->
 														<a href="${ctx}/admin/editVendor?vendorId=${v.vendorId}"
 														   class="btn btn-warning btn-sm rounded-pill">
-
 															Edit
-
 														</a>
 
-
-														<!-- DELETE BUTTON -->
 														<a href="${ctx}/admin/deleteVendor?vendorId=${v.vendorId}"
 														   class="btn btn-danger btn-sm rounded-pill"
 														   onclick="return confirm('Are you sure you want to delete this vendor?')">
-
 															Delete
-
 														</a>
 
 													</td>
@@ -167,6 +159,44 @@
 
 								</div>
 
+
+
+								<!-- ================= PAGINATION ================= -->
+								<c:if test="${totalPages > 1}">
+									<nav class="mt-3">
+										<ul class="pagination justify-content-center">
+
+											<!-- PREVIOUS -->
+											<li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+												<a class="page-link"
+												   href="${ctx}/admin/listVendor?page=${currentPage - 1}&keyword=${keyword}">
+													Previous
+												</a>
+											</li>
+
+											<!-- PAGE NUMBERS -->
+											<c:forEach begin="0" end="${totalPages - 1}" var="i">
+												<li class="page-item ${i == currentPage ? 'active' : ''}">
+													<a class="page-link"
+													   href="${ctx}/admin/listVendor?page=${i}&keyword=${keyword}">
+														${i + 1}
+													</a>
+												</li>
+											</c:forEach>
+
+											<!-- NEXT -->
+											<li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+												<a class="page-link"
+												   href="${ctx}/admin/listVendor?page=${currentPage + 1}&keyword=${keyword}">
+													Next
+												</a>
+											</li>
+
+										</ul>
+									</nav>
+								</c:if>
+
+
 							</div>
 
 						</div>
@@ -179,24 +209,18 @@
 			</div>
 
 
-
 			<!-- ================= FOOTER ================= -->
 			<jsp:include page="AdminFooter.jsp"></jsp:include>
 
-
 		</div>
 
-
 	</div>
-
 
 </div>
 
 
-
 <!-- ================= ADMIN JS ================= -->
 <jsp:include page="AdminJS.jsp"></jsp:include>
-
 
 </body>
 

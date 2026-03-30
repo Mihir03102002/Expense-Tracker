@@ -3,6 +3,8 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+
 <!DOCTYPE html>
 <html>
 
@@ -72,12 +74,9 @@
                                     Category List
                                 </span>
 
-                                <!-- ADD CATEGORY BUTTON -->
-                                <a href="/admin/category"
+                                <a href="${ctx}/admin/category"
                                    class="btn btn-success btn-sm rounded-pill">
-
                                     + Add New Category
-
                                 </a>
 
                             </div>
@@ -87,80 +86,103 @@
                             <!-- ================= CARD BODY ================= -->
                             <div class="card-body">
 
+                                <!-- 🔍 SEARCH BAR -->
+                                <form method="get" action="${ctx}/admin/listCategory" class="mb-3 d-flex">
+
+                                    <input type="text"
+                                           name="keyword"
+                                           value="${keyword}"
+                                           placeholder="Search category..."
+                                           class="form-control me-2"/>
+
+                                    <button class="btn btn-primary">Search</button>
+
+                                </form>
+
                                 <div class="table-responsive">
 
-
-                                    <!-- ================= CATEGORY TABLE ================= -->
                                     <table class="table table-bordered table-hover text-center align-middle">
 
-
-                                        <!-- ================= TABLE HEADER ================= -->
                                         <thead class="table-light">
-
                                             <tr>
-                                                <th>ID</th>
+                                                <th>Sr. No</th>
                                                 <th>Category Name</th>
                                                 <th>Action</th>
                                             </tr>
-
                                         </thead>
 
-
-
-                                        <!-- ================= TABLE BODY ================= -->
                                         <tbody>
-
 
                                             <!-- IF EMPTY -->
                                             <c:if test="${empty listCategory}">
-
                                                 <tr>
-
                                                     <td colspan="3" class="text-muted">
                                                         No categories found
                                                     </td>
-
                                                 </tr>
-
                                             </c:if>
 
-
-
                                             <!-- LOOP DATA -->
-                                            <c:forEach var="cat" items="${listCategory}">
+                                            <c:forEach var="cat" items="${listCategory}" varStatus="status">
 
                                                 <tr>
 
-                                                    <td>${cat.categoryId}</td>
+                                                    <!-- ✅ SERIAL FIX -->
+                                                    <td>${currentPage * 10 + status.index + 1}</td>
 
                                                     <td>${cat.categoryName}</td>
 
                                                     <td>
-
-                                                        <a href="deleteCategory?categoryId=${cat.categoryId}"
+                                                        <a href="${ctx}/admin/deleteCategory?categoryId=${cat.categoryId}"
                                                            class="btn btn-danger btn-sm rounded-pill"
                                                            onclick="return confirm('Are you sure you want to delete this category?')">
-
                                                             Delete
-
                                                         </a>
-
                                                     </td>
 
                                                 </tr>
 
                                             </c:forEach>
 
-
                                         </tbody>
 
                                     </table>
 
-
                                 </div>
 
-                            </div>
+                                <!-- 🔢 PAGINATION -->
+                                <c:if test="${totalPages > 1}">
+                                    <nav class="mt-3">
+                                        <ul class="pagination justify-content-center">
 
+                                            <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+                                                <a class="page-link"
+                                                   href="${ctx}/admin/listCategory?page=${currentPage - 1}&keyword=${keyword}">
+                                                    Previous
+                                                </a>
+                                            </li>
+
+                                            <c:forEach begin="0" end="${totalPages - 1}" var="i">
+                                                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                                    <a class="page-link"
+                                                       href="${ctx}/admin/listCategory?page=${i}&keyword=${keyword}">
+                                                        ${i + 1}
+                                                    </a>
+                                                </li>
+                                            </c:forEach>
+
+                                            <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                                <a class="page-link"
+                                                   href="${ctx}/admin/listCategory?page=${currentPage + 1}&keyword=${keyword}">
+                                                    Next
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </nav>
+                                </c:if>
+
+                            </div>
 
                         </div>
 
@@ -168,9 +190,7 @@
 
                 </div>
 
-
             </div>
-
 
 
             <!-- ================= FOOTER ================= -->
@@ -184,7 +204,6 @@
 
 
 </div>
-
 
 
 <!-- ================= ADMIN JS ================= -->

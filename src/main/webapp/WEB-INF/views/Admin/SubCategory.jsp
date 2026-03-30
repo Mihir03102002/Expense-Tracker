@@ -183,10 +183,9 @@
 										<thead class="table-light">
 
 											<tr>
-												<th>ID</th>
+												<th>Sr. No</th>
 												<th>Sub-Category</th>
 												<th>Category</th>
-												<th>Action</th>
 											</tr>
 
 										</thead>
@@ -196,28 +195,15 @@
 										<!-- TABLE DATA -->
 										<tbody>
 
-											<c:forEach var="sub" items="${subCategories}">
+											<c:forEach var="sub" items="${subCategories}" varStatus="status">
 
 												<tr>
 
-													<td>${sub.subCategoryId}</td>
+													<td>${status.index + 1}</td>
 
 													<td>${sub.subCategoryName}</td>
 
 													<td>${sub.category.categoryName}</td>
-
-													<td>
-
-														<a href="deleteSubCategory?subCategoryId=${sub.subCategoryId}"
-														   class="btn btn-danger btn-sm"
-														   onclick="return confirm('Are you sure?')">
-
-															<i class="bi bi-trash"></i>
-															Delete
-
-														</a>
-
-													</td>
 
 												</tr>
 
@@ -230,7 +216,7 @@
 
 												<tr>
 
-													<td colspan="4" class="text-muted">
+													<td colspan="3" class="text-muted">
 														No sub-categories found
 													</td>
 

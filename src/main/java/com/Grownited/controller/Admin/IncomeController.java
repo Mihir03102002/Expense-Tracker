@@ -1,5 +1,8 @@
 package com.Grownited.controller.Admin;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,12 @@ import com.Grownited.repository.IncomeRepository;
 import com.Grownited.repository.AccountRepository;
 import com.Grownited.repository.StatusRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 @Controller
+@RequestMapping("/admin")
 public class IncomeController {
 
     @Autowired
@@ -27,12 +35,26 @@ public class IncomeController {
     @Autowired
     private StatusRepository statusRepository;
 
+
+    // ================= HELPER METHOD =================
+    private UserEntity getAdmin(HttpSession session) {
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null || !"ADMIN".equals(user.getRole())) {
+            return null;
+        }
+
+        return user;
+    }
+
+
     // ================= OPEN INCOME PAGE =================
-    @GetMapping("/admin/income")
+    @GetMapping("/income")
     public String openIncomePage(Model model, HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
-        if (user == null) {
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
             return "redirect:/login";
         }
 
@@ -42,17 +64,19 @@ public class IncomeController {
         return "Admin/Income";
     }
 
+
     // ================= SAVE INCOME =================
-    @PostMapping("/admin/income/save")
-    public String saveIncome(IncomeEntity income, HttpSession session) {
+    @PostMapping("/income/save")
+    public String saveIncome(IncomeEntity income,
+                             HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
+        UserEntity admin = getAdmin(session);
 
-        if (user == null) {
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        income.setUser(user);
+        income.setUser(admin);
 
         if (income.getAccount() == null || income.getStatus() == null) {
             return "redirect:/admin/income";
@@ -78,34 +102,73 @@ public class IncomeController {
         return "redirect:/admin/incomeList";
     }
 
+
     // ================= INCOME LIST =================
-    @GetMapping("/admin/incomeList")
-    public String incomeList(Model model, HttpSession session) {
+    @GetMapping("/incomeList")
+    public String incomeList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            Model model,
+            HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
+        UserEntity admin = getAdmin(session);
 
-        if (user == null) {
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        model.addAttribute("incomes",
-                incomeRepository.findByUser(user));
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<IncomeEntity> incomePage;
+
+        if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
+
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+
+            incomePage = incomeRepository
+                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end,
+                            keyword == null ? "" : keyword, pageable);
+
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
+
+            incomePage = incomeRepository
+                    .findByTitleContainingIgnoreCase(keyword, pageable);
+
+        } else {
+            incomePage = incomeRepository.findAll(pageable);
+        }
+
+        model.addAttribute("incomes", incomePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", incomePage.getTotalPages());
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
 
         return "Admin/IncomeList";
     }
 
     // ================= DELETE INCOME =================
-    @GetMapping("/admin/income/delete")
+    @GetMapping("/income/delete")
     public String deleteIncome(@RequestParam Integer incomeId,
                                HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
+        UserEntity admin = getAdmin(session);
 
-        if (user == null) {
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        incomeRepository.deleteById(incomeId);
+        Optional<IncomeEntity> incomeOpt =
+                incomeRepository.findById(incomeId);
+
+        if (incomeOpt.isPresent()) {
+            incomeRepository.deleteById(incomeId);
+        }
 
         return "redirect:/admin/incomeList";
     }

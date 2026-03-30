@@ -138,9 +138,8 @@ pageEncoding="UTF-8"%>
 										<thead class="table-light">
 
 											<tr>
-												<th>ID</th>
+												<th>Sr. No</th>
 												<th>Category Name</th>
-												<th>Action</th>
 											</tr>
 
 										</thead>
@@ -150,33 +149,20 @@ pageEncoding="UTF-8"%>
 
 											<c:if test="${empty listCategory}">
 												<tr>
-													<td colspan="3" class="text-muted">
+													<td colspan="2" class="text-muted">
 														No categories found
 													</td>
 												</tr>
 											</c:if>
 
 
-											<c:forEach var="cat" items="${listCategory}">
+											<c:forEach var="cat" items="${listCategory}" varStatus="status">
 
 												<tr>
 
-													<td>${cat.categoryId}</td>
+													<td>${status.index + 1}</td>
 
 													<td>${cat.categoryName}</td>
-
-													<td>
-
-														<a href="${ctx}/admin/deleteCategory?categoryId=${cat.categoryId}"
-														   class="btn btn-danger btn-sm rounded-pill"
-														   onclick="return confirm('Are you sure you want to delete this category?')">
-
-															<i class="bi bi-trash"></i>
-															Delete
-
-														</a>
-
-													</td>
 
 												</tr>
 

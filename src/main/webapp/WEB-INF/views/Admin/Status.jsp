@@ -154,9 +154,8 @@
 										<thead class="table-light">
 
 											<tr>
-												<th>ID</th>
+												<th>Sr. No</th>
 												<th>Status</th>
-												<th>Action</th>
 											</tr>
 
 										</thead>
@@ -172,7 +171,7 @@
 
 												<tr>
 
-													<td colspan="3">
+													<td colspan="2">
 														No status records found
 													</td>
 
@@ -183,25 +182,13 @@
 
 
 											<!-- LOOP DATA -->
-											<c:forEach var="s" items="${statuses}">
+											<c:forEach var="s" items="${statuses}" varStatus="status">
 
 												<tr>
 
-													<td>${s.statusId}</td>
+													<td>${status.index + 1}</td>
 
 													<td>${s.status}</td>
-
-													<td>
-
-														<a href="deleteStatus?statusId=${s.statusId}"
-														   class="btn btn-danger btn-sm"
-														   onclick="return confirm('Are you sure?')">
-
-															Delete
-
-														</a>
-
-													</td>
 
 												</tr>
 

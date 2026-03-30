@@ -1,9 +1,11 @@
 package com.Grownited.controller.Admin;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;          // ✅ ADDED
+import org.springframework.data.domain.PageRequest;  // ✅ ADDED
+import org.springframework.data.domain.Pageable;     // ✅ ADDED
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +21,31 @@ public class AdminUserController {
     UserRepository userRepository;
 
     @GetMapping("/admin/users")
-    public String listUsers(Model model) {
+    public String listUsers(
+            @RequestParam(defaultValue = "0") int page,     // ✅ ADDED
+            @RequestParam(required = false) String keyword, // ✅ ADDED
+            Model model) {
 
-        List<UserEntity> users = userRepository.findAll();
+        int size = 10;
 
-        model.addAttribute("users", users);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> userPage;
 
-        return "Admin/Users";  // Users.jsp
+        // 🔍 SEARCH LOGIC
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            userPage = userRepository
+                    .findByFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                            keyword, keyword, pageable);
+        } else {
+            userPage = userRepository.findAll(pageable);
+        }
+
+        model.addAttribute("users", userPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
+
+        return "Admin/Users";
     }
     
     @GetMapping("/admin/viewUser")
@@ -35,7 +55,7 @@ public class AdminUserController {
 
         if (op.isPresent()) {
             model.addAttribute("user", op.get());
-            return "Admin/ViewUser";   // JSP Name
+            return "Admin/ViewUser";
         }
 
         return "redirect:/admin/users";

@@ -76,7 +76,7 @@
 							<!-- ================= CARD BODY ================= -->
 							<div class="card-body">
 
-								<form action="/expense/save" method="post">
+								<form action="${pageContext.request.contextPath}/admin/expense/save" method="post">
 
 
 									<!-- ================= ROW 1 ================= -->

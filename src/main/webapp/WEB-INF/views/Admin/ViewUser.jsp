@@ -8,6 +8,16 @@
 
     <!-- Common Admin CSS -->
     <jsp:include page="AdminCSS.jsp"></jsp:include>
+
+    <style>
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #4e73df;
+        }
+    </style>
 </head>
 
 <body>
@@ -34,11 +44,29 @@
                                 <h4 class="mb-0">User Details</h4>
                             </div>
 
-                            <div class="card-body">
+                            <div class="card-body text-center">
 
-                                <table class="table table-bordered table-hover">
+                                <!-- ✅ PROFILE IMAGE -->
+                                <c:choose>
+                                    <c:when test="${not empty user.profilePicURL}">
+                                        <img src="${pageContext.request.contextPath}${user.profilePicURL}" 
+                                             class="profile-img shadow mb-3">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img src="${pageContext.request.contextPath}/images/default.png" 
+                                             class="profile-img shadow mb-3">
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <!-- ✅ USER NAME -->
+                                <h5>${user.firstName} ${user.lastName}</h5>
+
+                                <hr>
+
+                                <!-- ✅ USER DETAILS TABLE -->
+                                <table class="table table-bordered table-hover text-start mt-3">
                                     <tr>
-                                        <th width="30%">User ID</th>
+                                        <th width="30%">Serial No</th>
                                         <td>${user.userId}</td>
                                     </tr>
 
@@ -91,12 +119,13 @@
                                     </tr>
                                 </table>
 
+                                <!-- ✅ BACK BUTTON -->
                                 <div class="text-end mt-3">
-								    <a href="${pageContext.request.contextPath}/admin/users" 
-								       class="btn btn-secondary">
-								        Back to List
-								    </a>
-								</div>
+                                    <a href="${pageContext.request.contextPath}/admin/users" 
+                                       class="btn btn-secondary">
+                                        Back to List
+                                    </a>
+                                </div>
 
                             </div>
                         </div>
@@ -104,16 +133,16 @@
                     </div>
                 </div>
 
-            </div> <!-- content-wrapper -->
+            </div>
 
             <!-- ================= FOOTER ================= -->
             <jsp:include page="AdminFooter.jsp"></jsp:include>
 
-        </div> <!-- main-panel -->
+        </div>
 
-    </div> <!-- page-body-wrapper -->
+    </div>
 
-</div> <!-- container-scroller -->
+</div>
 
 <!-- ================= COMMON JS ================= -->
 <jsp:include page="AdminJS.jsp"></jsp:include>

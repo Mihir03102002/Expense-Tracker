@@ -4,67 +4,90 @@ pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 
-<!-- ================= HEAD SECTION ================= -->
 <head>
 
 <meta charset="UTF-8">
 <title>User Registration | Expense Tracker</title>
 
-<!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 rel="stylesheet">
 
-<!-- Custom Styling -->
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+rel="stylesheet">
+
 <style>
 
-    /* Page Background */
-    body{
-        background:#f4f6fb;
-        font-family: "Segoe UI", sans-serif;
-    }
+/* Background */
+body{
+    background:#f4f6fb;
+    font-family:"Segoe UI",sans-serif;
+}
 
-    /* Page Title */
-    .logo-title{
-        font-weight:600;
-        color:#4B49AC;
+/* Animation */
+@keyframes fadeSlide {
+    from{
+        opacity:0;
+        transform: translateY(30px);
     }
+    to{
+        opacity:1;
+        transform: translateY(0);
+    }
+}
 
-    /* Card Style */
-    .register-card{
-        border-radius:12px;
-        border:none;
-    }
+/* Title */
+.logo-title{
+    font-weight:600;
+    color:#4B49AC;
+}
 
-    /* Card Header */
-    .card-header{
-        background:#4B49AC;
-        color:white;
-        font-weight:600;
-        font-size:18px;
-    }
+/* Card */
+.register-card{
+    border-radius:12px;
+    border:none;
+    animation: fadeSlide 0.6s ease;
+}
 
-    /* Register Button */
-    .btn-register{
-        background:#4B49AC;
-        border:none;
-        font-weight:500;
-    }
+/* Header */
+.card-header{
+    background:#4B49AC;
+    color:white;
+    font-weight:600;
+    font-size:18px;
+}
 
-    .btn-register:hover{
-        background:#3d3aa3;
-    }
+/* Button */
+.btn-register{
+    background:#4B49AC;
+    border:none;
+    font-weight:500;
+}
 
-    /* Input Focus Style */
-    .form-control:focus{
-        border-color:#4B49AC;
-        box-shadow:none;
-    }
+.btn-register:hover{
+    background:#3d3aa3;
+}
+
+/* Input focus */
+.form-control:focus{
+    border-color:#4B49AC;
+    box-shadow:none;
+}
+
+/* Input with icon */
+.input-group-text{
+    background:white;
+    border-right:none;
+}
+
+.form-control{
+    border-left:none;
+}
 
 </style>
 
 </head>
 
-<!-- ================= BODY SECTION ================= -->
 <body>
 
 <div class="container mt-5">
@@ -73,167 +96,104 @@ rel="stylesheet">
 
 <div class="col-lg-6 col-md-8 col-sm-12">
 
-<!-- Page Title -->
 <h3 class="text-center mb-4 logo-title">
 Expense Tracker
 </h3>
 
-<!-- ================= REGISTRATION CARD ================= -->
-
 <div class="card shadow register-card">
 
-<!-- Card Header -->
 <div class="card-header text-center">
 Create Your Account
 </div>
 
-<!-- Card Body -->
 <div class="card-body">
-
-<!-- ================= REGISTRATION FORM ================= -->
 
 <form action="register" method="post" enctype="multipart/form-data">
 
-<!-- ---------- FIRST NAME ---------- -->
+<!-- FIRST NAME -->
 <div class="mb-3">
 <label class="form-label">First Name</label>
-
-<input type="text"
-name="firstName"
-class="form-control"
-placeholder="Enter first name"
-required>
-
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-person"></i></span>
+<input type="text" name="firstName" class="form-control" placeholder="Enter first name" required>
+</div>
 </div>
 
-
-<!-- ---------- LAST NAME ---------- -->
+<!-- LAST NAME -->
 <div class="mb-3">
 <label class="form-label">Last Name</label>
-
-<input type="text"
-name="lastName"
-class="form-control"
-placeholder="Enter last name"
-required>
-
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-person"></i></span>
+<input type="text" name="lastName" class="form-control" placeholder="Enter last name" required>
+</div>
 </div>
 
-
-<!-- ---------- EMAIL ---------- -->
+<!-- EMAIL -->
 <div class="mb-3">
 <label class="form-label">Email Address</label>
-
-<input type="email"
-name="email"
-class="form-control"
-placeholder="Enter email address"
-required>
-
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-envelope"></i></span>
+<input type="email" name="email" class="form-control" placeholder="Enter email address" required>
+</div>
 </div>
 
-
-<!-- ---------- PASSWORD ---------- -->
+<!-- PASSWORD -->
 <div class="mb-3">
 <label class="form-label">Password</label>
-
-<input type="password"
-name="password"
-class="form-control"
-placeholder="Create password"
-required>
-
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-lock"></i></span>
+<input type="password" name="password" class="form-control" placeholder="Create password" required>
+</div>
 </div>
 
-
-<!-- ---------- GENDER ---------- -->
+<!-- GENDER -->
 <div class="mb-3">
-
 <label class="form-label d-block">Gender</label>
 
 <div class="form-check form-check-inline">
-<input class="form-check-input"
-type="radio"
-name="gender"
-value="Male"
-required>
-
+<input class="form-check-input" type="radio" name="gender" value="Male" required>
 <label class="form-check-label">Male</label>
 </div>
 
 <div class="form-check form-check-inline">
-<input class="form-check-input"
-type="radio"
-name="gender"
-value="Female">
-
+<input class="form-check-input" type="radio" name="gender" value="Female">
 <label class="form-check-label">Female</label>
 </div>
 
 <div class="form-check form-check-inline">
-<input class="form-check-input"
-type="radio"
-name="gender"
-value="Other">
-
+<input class="form-check-input" type="radio" name="gender" value="Other">
 <label class="form-check-label">Other</label>
 </div>
 
 </div>
 
-
-<!-- ---------- DATE OF BIRTH ---------- -->
+<!-- DOB -->
 <div class="mb-3">
-
 <label class="form-label">Date of Birth</label>
-
-<input type="date"
-name="birthDate"
-class="form-control"
-required>
-
+<input type="date" name="birthDate" class="form-control" required>
 </div>
 
-
-<!-- ---------- MOBILE NUMBER ---------- -->
+<!-- MOBILE -->
 <div class="mb-3">
-
 <label class="form-label">Mobile Number</label>
-
-<input type="text"
-name="contactNum"
-class="form-control"
-placeholder="Enter 10 digit mobile number"
-pattern="[0-9]{10}"
-title="Enter 10-digit mobile number"
-required>
-
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-telephone"></i></span>
+<input type="text" name="contactNum" class="form-control" placeholder="Enter 10 digit mobile number"
+pattern="[0-9]{10}" required>
+</div>
 </div>
 
-
-<!-- ---------- PROFILE PICTURE ---------- -->
+<!-- PROFILE PIC -->
 <div class="mb-3">
-
 <label class="form-label">Profile Picture</label>
-
-<input type="file"
-name="profilePic"
-class="form-control"
-accept="image/*">
-
+<input type="file" name="profilePic" class="form-control" accept="image/*">
 </div>
 
-
-<!-- ---------- REGISTER BUTTON ---------- -->
+<!-- BUTTON -->
 <div class="d-grid">
-
-<button type="submit"
-class="btn btn-register text-white">
-
+<button type="submit" class="btn btn-register text-white">
 Register Account
-
 </button>
-
 </div>
 
 </form>
@@ -242,20 +202,12 @@ Register Account
 
 </div>
 
-
-<!-- ================= LOGIN LINK ================= -->
-
+<!-- LOGIN LINK -->
 <div class="text-center mt-3">
-
 Already have an account?
-
-<a href="login"
-style="color:#4B49AC; font-weight:500;">
-
+<a href="login" style="color:#4B49AC; font-weight:500;">
 Login Here
-
 </a>
-
 </div>
 
 </div>
@@ -263,9 +215,6 @@ Login Here
 </div>
 
 </div>
-
-
-<!-- ================= BOOTSTRAP JS ================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

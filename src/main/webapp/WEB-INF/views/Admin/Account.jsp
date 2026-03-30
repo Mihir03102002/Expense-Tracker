@@ -77,7 +77,13 @@
 
                                         <div class="col-md-3">
                                             <label class="form-label">Initial Amount</label>
-                                            <input type="number" name="amount" class="form-control" required>
+                                            <input type="number" 
+                                               name="amount" 
+                                               class="form-control" 
+                                               step="0.01"
+                                               min="0"
+                                               placeholder="Enter amount"
+                                               required>
                                         </div>
 
                                         <div class="col-md-3 d-flex align-items-end">
@@ -86,6 +92,17 @@
                                             </button>
                                         </div>
 
+                                        <c:if test="${param.error == 'invalidAmount'}">
+                                            <div class="alert alert-danger">
+                                                Amount cannot be negative!
+                                            </div>
+                                        </c:if>
+                                        
+                                        <c:if test="${param.error == 'hasBalance'}">
+                                            <div class="alert alert-warning">
+                                                Cannot delete account with balance!
+                                            </div>
+                                        </c:if>
                                     </div>
 
                                 </form>
@@ -116,7 +133,7 @@
 
                                         <thead class="table-light">
                                             <tr>
-                                                <th>ID</th>
+                                                <th>Sr. No</th>
                                                 <th>Account</th>
                                                 <th>Type</th>
                                                 <th>Balance</th>
@@ -125,9 +142,9 @@
 
                                         <tbody>
 
-                                            <c:forEach var="a" items="${accounts}">
+                                            <c:forEach var="a" items="${accounts}" varStatus="status">
                                                 <tr>
-                                                    <td>${a.accountId}</td>
+                                                    <td>${status.index + 1}</td>
                                                     <td>${a.title}</td>
                                                     <td>${a.accountType}</td>
                                                     <td>₹ ${a.amount}</td>

@@ -3,11 +3,13 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<!-- ================= CONTEXT PATH ================= -->
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+
 <!DOCTYPE html>
 <html>
 
 <head>
-
 <meta charset="UTF-8">
 <title>My Income | Expense Tracker</title>
 
@@ -16,8 +18,6 @@
 
 </head>
 
-
-
 <body>
 
 <div class="container-scroller">
@@ -25,172 +25,180 @@
 	<!-- ================= HEADER ================= -->
 	<jsp:include page="AdminHeader.jsp"></jsp:include>
 
-
 	<div class="container-fluid page-body-wrapper">
 
 		<!-- ================= SIDEBAR ================= -->
 		<jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
-
-
 
 		<!-- ================= MAIN PANEL ================= -->
 		<div class="main-panel">
 
 			<div class="content-wrapper">
 
-
 				<!-- ================= PAGE TITLE ================= -->
 				<div class="row mb-4">
-
 					<div class="col-md-12">
-
 						<h3>My Income</h3>
+					</div>
+				</div>
+
+				<!-- ================= CARD ================= -->
+				<div class="card shadow-sm">
+
+					<!-- ================= HEADER ================= -->
+					<div class="card-header bg-primary text-white d-flex justify-content-between">
+
+						<span>
+							<i class="ti-wallet"></i> Income List
+						</span>
+
+						<a href="${ctx}/admin/income"
+						   class="btn btn-success btn-sm">
+						   + Add New Income
+						</a>
 
 					</div>
 
-				</div>
+					<!-- ================= BODY ================= -->
+					<div class="card-body">
 
+						<!-- ================= SEARCH + DATE FILTER ================= -->
+						<form method="get" action="${ctx}/admin/incomeList" class="mb-3 row g-2">
 
+						    <div class="col-md-3">
+						        <input type="text" name="keyword" value="${keyword}"
+						               class="form-control" placeholder="Search..."/>
+						    </div>
 
-				<!-- ================= INCOME CARD ================= -->
-				<div class="row">
+						    <div class="col-md-3">
+						        <input type="date" name="startDate" value="${startDate}"
+						               class="form-control"/>
+						    </div>
 
-					<div class="col-md-12">
+						    <div class="col-md-3">
+						        <input type="date" name="endDate" value="${endDate}"
+						               class="form-control"/>
+						    </div>
 
-						<div class="card shadow-sm">
+						    <div class="col-md-3">
+						        <button class="btn btn-primary w-100">Filter</button>
+						    </div>
 
+						</form>
 
-							<!-- ================= CARD HEADER ================= -->
-							<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+						<!-- ================= TABLE ================= -->
+						<div class="table-responsive">
 
-								<span>
-									<i class="ti-wallet"></i> Income List
-								</span>
+							<table class="table table-bordered table-hover text-center align-middle">
 
+								<thead class="table-light">
+									<tr>
+										<th>Sr. No</th>
+										<th>Title</th>
+										<th>Account</th>
+										<th>Amount</th>
+										<th>Date</th>
+										<th>Status</th>
+										<th>Action</th>
+									</tr>
+								</thead>
 
-								<!-- GREEN BUTTON (UNCHANGED) -->
-								<a href="${pageContext.request.contextPath}/admin/income"
-								   class="btn btn-success btn-sm">
+								<tbody>
 
-									+ Add New Income
+									<c:choose>
 
-								</a>
-
-							</div>
-
-
-
-							<!-- ================= CARD BODY ================= -->
-							<div class="card-body">
-
-								<div class="table-responsive">
-
-
-									<table class="table table-bordered table-hover text-center align-middle">
-
-
-										<!-- ================= TABLE HEADER ================= -->
-										<thead class="table-light">
-
+										<c:when test="${empty incomes}">
 											<tr>
-												<th>Title</th>
-												<th>Account</th>
-												<th>Amount</th>
-												<th>Date</th>
-												<th>Status</th>
-												<th>Action</th>
+												<td colspan="7">No income records found</td>
 											</tr>
+										</c:when>
 
-										</thead>
+										<c:otherwise>
 
+											<c:forEach var="i" items="${incomes}" varStatus="status">
 
+												<tr>
 
-										<!-- ================= TABLE BODY ================= -->
-										<tbody>
+													<!-- ================= SERIAL ================= -->
+													<td>${currentPage * 10 + status.index + 1}</td>
 
-											<c:choose>
+													<td>${i.title}</td>
+													<td>${i.account.title}</td>
+													<td>₹ ${i.amount}</td>
+													<td>${i.date}</td>
+													<td>${i.status.status}</td>
 
-												<c:when test="${empty incomes}">
+													<td>
+														<a href="${ctx}/admin/income/delete?incomeId=${i.incomeId}"
+														   class="btn btn-danger btn-sm"
+														   onclick="return confirm('Are you sure?')">
+															Delete
+														</a>
+													</td>
 
-													<tr>
+												</tr>
 
-														<td colspan="6" class="text-muted">
-															No income records found
-														</td>
+											</c:forEach>
 
-													</tr>
+										</c:otherwise>
 
-												</c:when>
+									</c:choose>
 
+								</tbody>
 
-
-												<c:otherwise>
-
-													<c:forEach var="i" items="${incomes}">
-
-														<tr>
-
-															<td>${i.title}</td>
-
-															<td>${i.account.title}</td>
-
-															<td>₹ ${i.amount}</td>
-
-															<td>${i.date}</td>
-
-															<td>${i.status.status}</td>
-
-															<td>
-
-																<a href="${pageContext.request.contextPath}/income/delete?incomeId=${i.incomeId}"
-																   class="btn btn-danger btn-sm"
-																   onclick="return confirm('Are you sure you want to delete this income?')">
-
-																	<i class="mdi mdi-delete"></i>
-																	Delete
-
-																</a>
-
-															</td>
-
-														</tr>
-
-													</c:forEach>
-
-												</c:otherwise>
-
-											</c:choose>
-
-										</tbody>
-
-									</table>
-
-								</div>
-
-							</div>
+							</table>
 
 						</div>
 
+						<!-- ================= PAGINATION ================= -->
+						<c:if test="${totalPages > 1}">
+							<nav class="mt-3">
+								<ul class="pagination justify-content-center">
+
+									<!-- PREVIOUS -->
+									<li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+										<a class="page-link"
+										   href="${ctx}/admin/incomeList?page=${currentPage - 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
+											Previous
+										</a>
+									</li>
+
+									<!-- PAGE NUMBERS -->
+									<c:forEach begin="0" end="${totalPages - 1}" var="i">
+										<li class="page-item ${i == currentPage ? 'active' : ''}">
+											<a class="page-link"
+											   href="${ctx}/admin/incomeList?page=${i}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
+												${i + 1}
+											</a>
+										</li>
+									</c:forEach>
+
+									<!-- NEXT -->
+									<li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+										<a class="page-link"
+										   href="${ctx}/admin/incomeList?page=${currentPage + 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
+											Next
+										</a>
+									</li>
+
+								</ul>
+							</nav>
+						</c:if>
+
 					</div>
 
 				</div>
 
-
 			</div>
-
-
 
 			<!-- ================= FOOTER ================= -->
 			<jsp:include page="AdminFooter.jsp"></jsp:include>
-
 
 		</div>
 
 	</div>
 
 </div>
-
-
 
 <!-- ================= ADMIN JS ================= -->
 <jsp:include page="AdminJS.jsp"></jsp:include>

@@ -3,16 +3,15 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+
 <!DOCTYPE html>
 <html>
 
 <head>
-
 <meta charset="UTF-8">
-
 <title>Account List | Expense Tracker</title>
 
-<!-- ================= ADMIN CSS ================= -->
 <jsp:include page="AdminCSS.jsp"></jsp:include>
 
 </head>
@@ -21,126 +20,105 @@
 
 <div class="container-scroller">
 
-	<!-- ================= HEADER ================= -->
 	<jsp:include page="AdminHeader.jsp"></jsp:include>
 
 	<div class="container-fluid page-body-wrapper">
 
-		<!-- ================= SIDEBAR ================= -->
 		<jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
-
-		<!-- ================= MAIN PANEL ================= -->
 		<div class="main-panel">
 
 			<div class="content-wrapper">
 
-				<!-- ================= PAGE TITLE ================= -->
 				<div class="row mb-4">
-
 					<div class="col-md-12">
-
 						<h3>Account List</h3>
-
-						<p class="text-muted">
-							View and manage all accounts
-						</p>
-
+						<p class="text-muted">View and manage all accounts</p>
 					</div>
-
 				</div>
 
-
-
-				<!-- ================= ACCOUNT TABLE ================= -->
 				<div class="row">
-
 					<div class="col-md-12">
 
 						<div class="card shadow-sm">
 
-
-							<!-- CARD HEADER -->
 							<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-
 								<span>
 									<i class="ti-wallet mr-2"></i>
 									All Accounts
 								</span>
 
-								<!-- ADD ACCOUNT BUTTON -->
-								<a href="${pageContext.request.contextPath}/admin/account"
+								<a href="${ctx}/admin/accountList"
 								   class="btn btn-success btn-sm rounded-pill">
 								   + Add New Account
 								</a>
 							</div>
 
-
-
-							<!-- CARD BODY -->
 							<div class="card-body">
+
+								<!-- 🔍 SEARCH -->
+								<form method="get" action="${ctx}/admin/accountList" class="mb-3 d-flex">
+
+									<input type="text"
+									       name="keyword"
+									       value="${keyword}"
+									       placeholder="Search account..."
+									       class="form-control me-2"/>
+
+									<button class="btn btn-primary">Search</button>
+
+								</form>
 
 								<div class="table-responsive">
 
 									<table class="table table-bordered table-hover text-center align-middle">
 
-
-										<!-- TABLE HEADER -->
 										<thead class="table-light">
-
 											<tr>
-												<th>ID</th>
+												<th>Sr. No</th>
 												<th>Account Title</th>
 												<th>Account Type</th>
 												<th>Balance</th>
 												<th>Action</th>
 											</tr>
-
 										</thead>
 
-
-
-										<!-- TABLE BODY -->
 										<tbody>
 
-											<!-- IF EMPTY -->
 											<c:if test="${empty accounts}">
-
 												<tr>
-
-													<td colspan="5" class="text-muted">
-														No accounts found
-													</td>
-
+													<td colspan="5">No accounts found</td>
 												</tr>
-
 											</c:if>
 
-
-
-											<!-- LOOP DATA -->
-											<c:forEach var="a" items="${accounts}">
+											<c:forEach var="a" items="${accounts}" varStatus="status">
 
 												<tr>
 
-													<td>${a.accountId}</td>
+													<!-- ✅ SERIAL FIX -->
+													<td>${currentPage * 10 + status.index + 1}</td>
 
 													<td>${a.title}</td>
-
 													<td>${a.accountType}</td>
 
-													<td>₹ ${a.amount}</td>
+													<td>
+													    ₹ 
+													    <c:choose>
+													        <c:when test="${a.amount != null}">
+													            ${a.amount}
+													        </c:when>
+													        <c:otherwise>
+													            0.00
+													        </c:otherwise>
+													    </c:choose>
+													</td>
 
 													<td>
-
-														<a href="${pageContext.request.contextPath}/admin/account/delete?accountId=${a.accountId}"
+														<a href="${ctx}/admin/account/delete?accountId=${a.accountId}"
 														   class="btn btn-danger btn-sm rounded-pill"
-														   onclick="return confirm('Are you sure you want to delete this account?')">
-
+														   onclick="return confirm('Are you sure?')">
 															Delete
-
 														</a>
-
 													</td>
 
 												</tr>
@@ -153,19 +131,47 @@
 
 								</div>
 
+								<!-- 🔢 PAGINATION -->
+								<c:if test="${totalPages > 1}">
+									<nav class="mt-3">
+										<ul class="pagination justify-content-center">
+
+											<li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+												<a class="page-link"
+												   href="${ctx}/admin/accountList?page=${currentPage - 1}&keyword=${keyword}">
+													Previous
+												</a>
+											</li>
+
+											<c:forEach begin="0" end="${totalPages - 1}" var="i">
+												<li class="page-item ${i == currentPage ? 'active' : ''}">
+													<a class="page-link"
+													   href="${ctx}/admin/accountList?page=${i}&keyword=${keyword}">
+														${i + 1}
+													</a>
+												</li>
+											</c:forEach>
+
+											<li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+												<a class="page-link"
+												   href="${ctx}/admin/accountList?page=${currentPage + 1}&keyword=${keyword}">
+													Next
+												</a>
+											</li>
+
+										</ul>
+									</nav>
+								</c:if>
+
 							</div>
 
 						</div>
 
 					</div>
-
 				</div>
 
 			</div>
 
-
-
-			<!-- ================= FOOTER ================= -->
 			<jsp:include page="AdminFooter.jsp"></jsp:include>
 
 		</div>
@@ -174,9 +180,6 @@
 
 </div>
 
-
-
-<!-- ================= ADMIN JS ================= -->
 <jsp:include page="AdminJS.jsp"></jsp:include>
 
 </body>

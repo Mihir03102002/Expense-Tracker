@@ -14,7 +14,7 @@ public class AccountEntity {
     private String title;
     private String accountType;
     private Boolean isDefault;
-    private Float amount;
+    private Double amount;
 
     @Column(name = "user_id")
     private Integer userId;
@@ -51,11 +51,11 @@ public class AccountEntity {
         this.isDefault = isDefault;
     }
 
-    public Float getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Float amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 

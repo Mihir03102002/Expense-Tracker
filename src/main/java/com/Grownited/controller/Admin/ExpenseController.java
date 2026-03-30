@@ -1,5 +1,8 @@
 package com.Grownited.controller.Admin;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,19 +10,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.Grownited.entity.CategoryEntity;
-import com.Grownited.entity.ExpenseEntity;
-import com.Grownited.entity.StatusEntity;
-import com.Grownited.entity.UserEntity;
-import com.Grownited.entity.VendorEntity;
-import com.Grownited.repository.AccountRepository;
-import com.Grownited.repository.CategoryRepository;
-import com.Grownited.repository.ExpenseRepository;
-import com.Grownited.repository.StatusRepository;
-import com.Grownited.repository.SubCategoryRepository;
-import com.Grownited.repository.VendorRepository;
+import com.Grownited.entity.*;
+import com.Grownited.repository.*;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 
 @Controller
+@RequestMapping("/admin")
 public class ExpenseController {
 
     @Autowired
@@ -40,9 +40,28 @@ public class ExpenseController {
     @Autowired
     private StatusRepository statusRepository;
 
+
+    // ================= HELPER METHOD =================
+    private UserEntity getAdmin(HttpSession session) {
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null || !"ADMIN".equals(user.getRole())) {
+            return null;
+        }
+
+        return user;
+    }
+
+
     // ================= OPEN EXPENSE PAGE =================
-    @GetMapping("/admin/expense")
-    public String openExpensePage(Model model) {
+    @GetMapping("/expense")
+    public String openExpensePage(Model model, HttpSession session) {
+
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
 
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("subCategories", subCategoryRepository.findAll());
@@ -53,20 +72,20 @@ public class ExpenseController {
         return "Admin/Expense";
     }
 
+
     // ================= SAVE EXPENSE =================
-    @PostMapping("/admin/expense/save")
-    public String saveExpense(ExpenseEntity expense, HttpSession session) {
+    @PostMapping("/expense/save")
+    public String saveExpense(ExpenseEntity expense,
+                              HttpSession session) {
 
-        // 🔥 Get logged-in user from session
-        UserEntity user = (UserEntity) session.getAttribute("user");
+        UserEntity admin = getAdmin(session);
 
-        if (user == null) {
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        expense.setUser(user);
+        expense.setUser(admin);
 
-        // Fetch full objects from DB
         CategoryEntity category = categoryRepository
                 .findById(expense.getCategory().getCategoryId())
                 .orElse(null);
@@ -92,27 +111,72 @@ public class ExpenseController {
         return "redirect:/admin/expense-list";
     }
 
+
     // ================= EXPENSE LIST =================
-    @GetMapping("/admin/expense-list")
-    public String expenseList(Model model, HttpSession session) {
+    @GetMapping("/expense-list")
+    public String expenseList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            Model model,
+            HttpSession session) {
 
-        UserEntity user = (UserEntity) session.getAttribute("user");
+        UserEntity admin = getAdmin(session);
 
-        if (user == null) {
+        if (admin == null) {
             return "redirect:/login";
         }
 
-        model.addAttribute("expenseList",
-                expenseRepository.findByUser(user));
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ExpenseEntity> expensePage;
+
+        // 🔥 DATE + SEARCH LOGIC
+        if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
+
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+
+            expensePage = expenseRepository
+                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end,
+                            keyword == null ? "" : keyword, pageable);
+
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
+
+            expensePage = expenseRepository
+                    .findByTitleContainingIgnoreCase(keyword, pageable);
+
+        } else {
+            expensePage = expenseRepository.findAll(pageable);
+        }
+
+        model.addAttribute("expenseList", expensePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", expensePage.getTotalPages());
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
 
         return "Admin/ExpenseList";
     }
 
     // ================= DELETE EXPENSE =================
-    @GetMapping("/admin/expense/delete")
-    public String deleteExpense(@RequestParam Integer expenseId) {
+    @GetMapping("/expense/delete")
+    public String deleteExpense(@RequestParam Integer expenseId,
+                                HttpSession session) {
 
-        if (expenseRepository.existsById(expenseId)) {
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
+        Optional<ExpenseEntity> expenseOpt =
+                expenseRepository.findById(expenseId);
+
+        if (expenseOpt.isPresent()) {
             expenseRepository.deleteById(expenseId);
         }
 

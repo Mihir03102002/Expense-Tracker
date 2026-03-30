@@ -1,6 +1,9 @@
 package com.Grownited.controller.Admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;          // ✅ ADDED
+import org.springframework.data.domain.PageRequest;  // ✅ ADDED
+import org.springframework.data.domain.Pageable;     // ✅ ADDED
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,11 +49,30 @@ public class SubCategoryController {
         return "redirect:/admin/listSubCategory";
     }
 
-    // ================= LIST PAGE =================
+    // ================= LIST PAGE (UPDATED 🔥) =================
     @GetMapping("/admin/listSubCategory")
-    public String listSubCategory(Model model) {
+    public String listSubCategory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            Model model) {
 
-        model.addAttribute("subCategories", subCategoryRepository.findAll());
+        int size = 10;
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SubCategoryEntity> subCategoryPage;
+
+        // 🔍 SEARCH
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            subCategoryPage = subCategoryRepository
+                    .findBySubCategoryNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            subCategoryPage = subCategoryRepository.findAll(pageable);
+        }
+
+        model.addAttribute("subCategories", subCategoryPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", subCategoryPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
 
         return "Admin/ListSubCategory";
     }
@@ -63,5 +85,4 @@ public class SubCategoryController {
 
         return "redirect:/admin/listSubCategory";
     }
-
 }

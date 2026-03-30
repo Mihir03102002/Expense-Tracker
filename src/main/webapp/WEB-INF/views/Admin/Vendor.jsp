@@ -154,9 +154,8 @@
 										<thead class="table-light">
 
 											<tr>
-												<th>ID</th>
+												<th>Sr. No</th>
 												<th>Vendor Name</th>
-												<th>Action</th>
 											</tr>
 
 										</thead>
@@ -172,7 +171,7 @@
 
 												<tr>
 
-													<td colspan="3" class="text-muted">
+													<td colspan="2" class="text-muted">
 														No vendors found
 													</td>
 
@@ -183,26 +182,13 @@
 
 
 											<!-- LOOP DATA -->
-											<c:forEach var="v" items="${vendors}">
+											<c:forEach var="v" items="${vendors}" varStatus="status">
 
 												<tr>
 
-													<td>${v.vendorId}</td>
+													<td>${status.index + 1}</td>
 
 													<td>${v.vendorName}</td>
-
-													<td>
-
-														<a href="deleteVendor?vendorId=${v.vendorId}"
-														   class="btn btn-danger btn-sm"
-														   onclick="return confirm('Are you sure?')">
-
-															<i class="bi bi-trash"></i>
-															Delete
-
-														</a>
-
-													</td>
 
 												</tr>
 

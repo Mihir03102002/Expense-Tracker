@@ -77,9 +77,9 @@ public class UserIncomeController {
 
             AccountEntity account = accOpt.get();
 
-            Float balance = account.getAmount();
+            Double balance = account.getAmount();
             if(balance == null){
-                balance = 0f;
+                balance = (double) 0f;
             }
 
             Float incomeAmount = income.getAmount();
@@ -132,9 +132,9 @@ public class UserIncomeController {
 
                 AccountEntity account = income.getAccount();
 
-                Float balance = account.getAmount();
+                Double balance = account.getAmount();
                 if(balance == null){
-                    balance = 0f;
+                    balance = (double) 0f;
                 }
 
                 Float incomeAmount = income.getAmount();

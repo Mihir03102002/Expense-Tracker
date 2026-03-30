@@ -10,16 +10,21 @@ import org.springframework.data.repository.query.Param;
 import com.Grownited.entity.ExpenseEntity;
 import com.Grownited.entity.UserEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
 public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer> {
 
-    // Admin
+    // ================= ADMIN =================
     @Query("""
         select coalesce(sum(e.amount), 0)
         from ExpenseEntity e
         where e.date between :startDate and :endDate
     """)
     Double sumExpenseBetweenDates(@Param("startDate") LocalDate startDate,
-                                  @Param("endDate") LocalDate endDate);
+                                 @Param("endDate") LocalDate endDate);
+
 
     @Query("""
         select e.category.categoryName, sum(e.amount)
@@ -29,9 +34,10 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
         order by sum(e.amount) desc
     """)
     List<Object[]> findTopExpenseCategory(@Param("startDate") LocalDate startDate,
-                                          @Param("endDate") LocalDate endDate);
+                                         @Param("endDate") LocalDate endDate);
 
-    // User
+
+    // ================= USER =================
     @Query("""
         select coalesce(sum(e.amount), 0)
         from ExpenseEntity e
@@ -39,8 +45,9 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
           and e.date between :startDate and :endDate
     """)
     Double sumExpenseBetweenDatesByUser(@Param("userId") Integer userId,
-                                        @Param("startDate") LocalDate startDate,
-                                        @Param("endDate") LocalDate endDate);
+                                       @Param("startDate") LocalDate startDate,
+                                       @Param("endDate") LocalDate endDate);
+
 
     @Query("""
         select e.category.categoryName, sum(e.amount)
@@ -51,13 +58,46 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
         order by sum(e.amount) desc
     """)
     List<Object[]> findTopExpenseCategoryByUser(@Param("userId") Integer userId,
-                                                @Param("startDate") LocalDate startDate,
-                                                @Param("endDate") LocalDate endDate);
+                                               @Param("startDate") LocalDate startDate,
+                                               @Param("endDate") LocalDate endDate);
+
+
+    // ================= COMMON =================
 
     // Get all expenses of a specific user
     List<ExpenseEntity> findByUser(UserEntity user);
 
-	boolean existsByAccountAccountId(Integer accountId);
+    // Check account used in expense
+    boolean existsByAccountAccountId(Integer accountId);
+
+
+    // ⭐ NEW (OPTION 3 READY - MONTHLY GRAPH)
+    @Query("""
+        select month(e.date), coalesce(sum(e.amount),0)
+        from ExpenseEntity e
+        group by month(e.date)
+        order by month(e.date)
+    """)
+    List<Object[]> getMonthlyExpense();
     
-    
+    @Query("""
+    	    select e.category.categoryName, sum(e.amount)
+    	    from ExpenseEntity e
+    	    where year(e.date) = :year
+    	    group by e.category.categoryName
+    	""")
+    	List<Object[]> findCategoryYearWise(@Param("year") Integer year);
+    	
+    	 @Query("SELECT SUM(e.amount) FROM ExpenseEntity e")
+    	    Double getTotalExpense();
+    	 
+    	// 🔍 SEARCH + PAGINATION
+    	 Page<ExpenseEntity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    	 
+    	 Page<ExpenseEntity> findByDateBetweenAndTitleContainingIgnoreCase(
+    		        LocalDate startDate,
+    		        LocalDate endDate,
+    		        String title,
+    		        Pageable pageable
+    		);
 }

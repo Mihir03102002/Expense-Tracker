@@ -3,36 +3,88 @@ pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 
-<meta charset="utf-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta charset="UTF-8">
+<title>Verify OTP | Expense Tracker</title>
 
-<title>Verify OTP | ExpenseTracker</title>
-
-<!-- plugins:css -->
-<link rel="stylesheet" href="../../assets/vendors/feather/feather.css">
-<link rel="stylesheet" href="../../assets/vendors/ti-icons/css/themify-icons.css">
-<link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
-<link rel="stylesheet" href="../../assets/vendors/font-awesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
-
-<!-- inject:css -->
-<link rel="stylesheet" href="../../assets/css/style.css">
-
-<link rel="shortcut icon" href="../../assets/images/favicon.png"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 
+:root{
+    --primary:#4B49AC;
+}
+
+body{
+    background:#f4f6fb;
+    font-family:"Segoe UI";
+}
+
+.card{
+    border-radius:12px;
+}
+
+/* HEADER FIX (NO BLUE) */
+.card-header{
+    background:var(--primary);
+    color:white;
+    font-weight:600;
+}
+
+/* OTP BOX */
 .otp-input{
-width:45px;
-height:50px;
-font-size:22px;
-text-align:center;
-margin:5px;
-border-radius:8px;
+    width:45px;
+    height:50px;
+    font-size:22px;
+    text-align:center;
+    margin:5px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+.otp-input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 8px rgba(75,73,172,0.4);
+    outline:none;
+}
+
+/* BUTTON */
+.btn-main{
+    background:var(--primary);
+    color:white;
+    border:none;
+}
+
+.btn-main:hover{
+    background:#3d3aa3;
+}
+
+/* SHAKE */
+@keyframes shake {
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-5px);}
+    50%{transform:translateX(5px);}
+    75%{transform:translateX(-5px);}
+    100%{transform:translateX(0);}
+}
+
+.shake{
+    animation:shake 0.3s;
+}
+
+/* LOADER */
+.loader{
+    display:none;
+}
+
+/* TOAST */
+.toast-container{
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:9999;
 }
 
 </style>
@@ -41,141 +93,189 @@ border-radius:8px;
 
 <body>
 
-<div class="container-scroller">
-<div class="container-fluid page-body-wrapper full-page-wrapper">
-<div class="content-wrapper d-flex align-items-center auth px-0">
-<div class="row w-100 mx-0">
-<div class="col-lg-4 mx-auto">
+<!-- 🔔 TOAST -->
+<div class="toast-container">
+    <div id="toastMsg" class="toast text-white border-0">
+        <div class="d-flex">
+            <div class="toast-body" id="toastText"></div>
+            <button type="button" class="btn-close btn-close-white m-auto me-2" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
 
-<div class="auth-form-light text-center py-5 px-4 px-sm-5">
+<div class="container mt-5">
+<div class="row justify-content-center">
+<div class="col-md-5">
 
-<h4>Verify OTP</h4>
+<h3 class="text-center mb-4" style="color:#4B49AC;">
+Expense Tracker
+</h3>
 
-<h6 class="font-weight-light">
-Enter the 6-digit code sent to your email
-</h6>
+<div class="card shadow">
 
-<form class="pt-3" action="verify-otp" method="post" onsubmit="combineOTP()">
+<div class="card-header text-center">
+Verify OTP
+</div>
 
-<div class="d-flex justify-content-center mt-4">
+<div class="card-body text-center">
 
-<input type="password" maxlength="1"
-class="form-control otp-input"
-onkeyup="moveNext(this,event)"
-inputmode="numeric">
+<form id="otpForm" action="verify-otp" method="post">
 
-<input type="password" maxlength="1"
-class="form-control otp-input"
-onkeyup="moveNext(this,event)"
-inputmode="numeric">
+<div id="otpBox" class="d-flex justify-content-center">
 
-<input type="password" maxlength="1"
-class="form-control otp-input"
-onkeyup="moveNext(this,event)"
-inputmode="numeric">
-
-<input type="password" maxlength="1"
-class="form-control otp-input"
-onkeyup="moveNext(this,event)"
-inputmode="numeric">
-
-<input type="password" maxlength="1"
-class="form-control otp-input"
-onkeyup="moveNext(this,event)"
-inputmode="numeric">
-
-<input type="password" maxlength="1"
-class="form-control otp-input"
-onkeyup="moveNext(this,event)"
-inputmode="numeric">
+<input type="password" maxlength="1" class="otp-input" onkeyup="handleOTP(this,event)">
+<input type="password" maxlength="1" class="otp-input" onkeyup="handleOTP(this,event)">
+<input type="password" maxlength="1" class="otp-input" onkeyup="handleOTP(this,event)">
+<input type="password" maxlength="1" class="otp-input" onkeyup="handleOTP(this,event)">
+<input type="password" maxlength="1" class="otp-input" onkeyup="handleOTP(this,event)">
+<input type="password" maxlength="1" class="otp-input" onkeyup="handleOTP(this,event)">
 
 </div>
 
-<!-- Hidden OTP -->
 <input type="hidden" name="otp" id="finalOtp">
 
-<!-- Error message -->
-<c:if test="${not empty error}">
-<div class="text-danger mt-3">
-${error}
-</div>
-</c:if>
+<div class="mt-4 d-grid">
 
-<div class="mt-4 d-grid gap-2">
+<button id="verifyBtn" class="btn btn-main">
 
-<button type="submit"
-class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-
-VERIFY OTP
+<span id="btnText">Verify OTP</span>
+<span id="loader" class="spinner-border spinner-border-sm loader"></span>
 
 </button>
 
 </div>
 
-<div class="text-center mt-3">
-
-<a href="forgot-password" class="text-primary">
-Back
-</a>
-
+<!-- TIMER -->
+<div class="mt-3">
+<span id="timerText">Resend OTP in 30s</span><br>
+<a href="#" id="resendLink" style="display:none; color:#4B49AC;">Resend OTP</a>
 </div>
 
 </form>
 
 </div>
 </div>
-</div>
+
 </div>
 </div>
 </div>
 
-<!-- plugins:js -->
-<script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
-
-<!-- inject:js -->
-<script src="../../assets/js/off-canvas.js"></script>
-<script src="../../assets/js/template.js"></script>
-<script src="../../assets/js/settings.js"></script>
-<script src="../../assets/js/todolist.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
-function moveNext(current,event){
+let inputs=document.querySelectorAll(".otp-input");
 
-if(event.key === "Backspace" && current.value === ""){
+// 🔥 HANDLE INPUT
+function handleOTP(current,event){
 
+if(event.key==="Backspace" && current.value===""){
 if(current.previousElementSibling){
 current.previousElementSibling.focus();
 }
-
 return;
-
 }
 
-if(current.value.length === 1){
-
+if(current.value.length===1){
 if(current.nextElementSibling){
 current.nextElementSibling.focus();
 }
-
 }
 
+combineAndSubmit();
 }
 
-function combineOTP(){
+// 🔥 AUTO SUBMIT
+function combineAndSubmit(){
+let otp="";
+inputs.forEach(i=>otp+=i.value);
 
-let inputs = document.querySelectorAll(".otp-input");
-let otp = "";
+if(otp.length===6){
+document.getElementById("finalOtp").value=otp;
 
-inputs.forEach(function(input){
+// loader
+document.getElementById("btnText").style.display="none";
+document.getElementById("loader").style.display="inline-block";
+document.getElementById("verifyBtn").disabled=true;
 
-otp += input.value;
+document.getElementById("otpForm").submit();
+}
+}
 
+// 🔥 PASTE SUPPORT
+inputs[0].addEventListener("paste",function(e){
+let paste=e.clipboardData.getData("text").trim();
+
+if(paste.length===6){
+for(let i=0;i<6;i++){
+inputs[i].value=paste[i];
+}
+combineAndSubmit();
+}
 });
 
-document.getElementById("finalOtp").value = otp;
+// 🔥 TIMER
+let time=30;
+let timerText=document.getElementById("timerText");
+let resendLink=document.getElementById("resendLink");
 
+let interval=setInterval(()=>{
+time--;
+timerText.innerText="Resend OTP in "+time+"s";
+
+if(time<=0){
+clearInterval(interval);
+timerText.style.display="none";
+resendLink.style.display="inline";
 }
+},1000);
+
+// 🔥 TOAST FUNCTION
+function showToast(msg,type="success"){
+let toastEl=document.getElementById("toastMsg");
+let toastText=document.getElementById("toastText");
+
+toastText.innerText=msg;
+
+toastEl.classList.remove("bg-success","bg-danger");
+toastEl.classList.add(type==="error" ? "bg-danger" : "bg-success");
+
+let toast=new bootstrap.Toast(toastEl);
+toast.show();
+}
+
+// 🔥 AJAX RESEND (NO RELOAD)
+resendLink.addEventListener("click",function(e){
+e.preventDefault();
+
+fetch("send-otp",{method:"POST"})
+.then(()=>{
+
+showToast("OTP Resent Successfully");
+
+time=30;
+timerText.style.display="inline";
+resendLink.style.display="none";
+
+interval=setInterval(()=>{
+time--;
+timerText.innerText="Resend OTP in "+time+"s";
+
+if(time<=0){
+clearInterval(interval);
+timerText.style.display="none";
+resendLink.style.display="inline";
+}
+},1000);
+
+});
+});
+
+// 🔥 SHAKE ON ERROR
+<c:if test="${not empty error}">
+document.getElementById("otpBox").classList.add("shake");
+showToast("${error}", "error");
+</c:if>
 
 </script>
 

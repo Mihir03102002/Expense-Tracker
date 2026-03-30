@@ -76,7 +76,8 @@
 							<!-- ================= CARD BODY ================= -->
 							<div class="card-body">
 
-								<form action="/income/save" method="post">
+								<!-- ================= FORM ================= -->
+                    <form action="${pageContext.request.contextPath}/admin/income/save" method="post">
 
 
 									<!-- ================= ROW 1 ================= -->

@@ -3,192 +3,166 @@ pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<!-- ================= CONTEXT PATH ================= -->
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <!DOCTYPE html>
 <html>
 
 <head>
-
 <meta charset="UTF-8">
 <title>List Sub-Categories | Expense Tracker</title>
 
-<!-- ================= ADMIN CSS ================= -->
 <jsp:include page="AdminCSS.jsp"></jsp:include>
 
 </head>
-
 
 <body>
 
 <div class="container-scroller">
 
-    <!-- ================= HEADER ================= -->
     <jsp:include page="AdminHeader.jsp"></jsp:include>
-
 
     <div class="container-fluid page-body-wrapper">
 
-        <!-- ================= SIDEBAR ================= -->
         <jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
-
-
-        <!-- ================= MAIN PANEL ================= -->
         <div class="main-panel">
 
             <div class="content-wrapper">
 
-
-                <!-- ================= PAGE TITLE ================= -->
                 <div class="row mb-4">
-
                     <div class="col-md-12">
-
                         <h3>All Sub-Categories</h3>
+                        <p class="text-muted">Manage all sub-categories</p>
+                    </div>
+                </div>
 
-                        <p class="text-muted">
-                            Manage all sub-categories
-                        </p>
+                <div class="card shadow-sm">
+
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+                        <span>
+                            <i class="ti-list mr-2"></i>
+                            Sub-Category List
+                        </span>
+
+                        <a href="${ctx}/admin/subCategory"
+                           class="btn btn-success btn-sm rounded-pill">
+                           + Add New Sub-Category
+                        </a>
 
                     </div>
 
-                </div>
+                    <div class="card-body">
 
+                        <!-- 🔍 SEARCH -->
+                        <form method="get" action="${ctx}/admin/listSubCategory" class="mb-3 d-flex">
 
+                            <input type="text"
+                                   name="keyword"
+                                   value="${keyword}"
+                                   placeholder="Search sub-category..."
+                                   class="form-control me-2"/>
 
-                <!-- ================= SUB CATEGORY CARD ================= -->
-                <div class="row">
+                            <button class="btn btn-primary">Search</button>
 
-                    <div class="col-md-12">
+                        </form>
 
-                        <div class="card shadow-sm">
+                        <div class="table-responsive">
 
+                            <table class="table table-bordered table-hover text-center align-middle">
 
-                            <!-- ================= CARD HEADER ================= -->
-                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Sr. No</th>
+                                        <th>Sub-Category Name</th>
+                                        <th>Category</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
 
-                                <span>
-                                    <i class="ti-list mr-2"></i>
-                                    Sub-Category List
-                                </span>
+                                <tbody>
 
+                                    <c:if test="${empty subCategories}">
+                                        <tr>
+                                            <td colspan="4">No sub-categories found</td>
+                                        </tr>
+                                    </c:if>
 
-                                <!-- GREEN ADD BUTTON -->
-                                <a href="${ctx}/admin/subCategory"
-                                   class="btn btn-success btn-sm rounded-pill">
+                                    <c:forEach var="s" items="${subCategories}" varStatus="status">
 
-                                   + Add New Sub-Category
+                                        <tr>
 
-                                </a>
+                                            <!-- ✅ SERIAL FIX -->
+                                            <td>${currentPage * 10 + status.index + 1}</td>
 
-                            </div>
+                                            <td>${s.subCategoryName}</td>
+                                            <td>${s.category.categoryName}</td>
 
+                                            <td>
 
+                                                <a href="${ctx}/admin/editSubCategory?subCategoryId=${s.subCategoryId}"
+                                                   class="btn btn-warning btn-sm rounded-pill">
+                                                    Edit
+                                                </a>
 
-                            <!-- ================= CARD BODY ================= -->
-                            <div class="card-body">
+                                                <a href="${ctx}/admin/deleteSubCategory?subCategoryId=${s.subCategoryId}"
+                                                   class="btn btn-danger btn-sm rounded-pill"
+                                                   onclick="return confirm('Are you sure?')">
+                                                    Delete
+                                                </a>
 
-                                <div class="table-responsive">
+                                            </td>
 
+                                        </tr>
 
-                                    <!-- ================= TABLE ================= -->
-                                    <table class="table table-bordered table-hover text-center align-middle">
+                                    </c:forEach>
 
+                                </tbody>
 
-                                        <!-- ================= TABLE HEADER ================= -->
-                                        <thead class="table-light">
-
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Sub-Category Name</th>
-                                                <th>Category</th>
-                                                <th>Actions</th>
-                                            </tr>
-
-                                        </thead>
-
-
-
-                                        <!-- ================= TABLE BODY ================= -->
-                                        <tbody>
-
-
-                                            <!-- IF EMPTY -->
-                                            <c:if test="${empty subCategories}">
-
-                                                <tr>
-
-                                                    <td colspan="4" class="text-muted">
-                                                        No sub-categories found
-                                                    </td>
-
-                                                </tr>
-
-                                            </c:if>
-
-
-
-                                            <!-- LOOP DATA -->
-                                            <c:forEach var="s" items="${subCategories}" varStatus="i">
-
-                                                <tr>
-
-                                                    <td>${i.count}</td>
-
-                                                    <td>${s.subCategoryName}</td>
-
-                                                    <td>${s.category.categoryName}</td>
-
-                                                    <td>
-
-                                                        <!-- EDIT BUTTON -->
-                                                        <a href="${ctx}/admin/editSubCategory?subCategoryId=${s.subCategoryId}"
-                                                           class="btn btn-warning btn-sm rounded-pill">
-
-                                                            Edit
-
-                                                        </a>
-
-
-                                                        <!-- DELETE BUTTON -->
-                                                        <a href="${ctx}/admin/deleteSubCategory?subCategoryId=${s.subCategoryId}"
-                                                           class="btn btn-danger btn-sm rounded-pill"
-                                                           onclick="return confirm('Are you sure you want to delete this sub-category?')">
-
-                                                            Delete
-
-                                                        </a>
-
-                                                    </td>
-
-                                                </tr>
-
-                                            </c:forEach>
-
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
-
-                            </div>
+                            </table>
 
                         </div>
 
+                        <!-- 🔢 PAGINATION -->
+                        <c:if test="${totalPages > 1}">
+                            <nav class="mt-3">
+                                <ul class="pagination justify-content-center">
+
+                                    <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+                                        <a class="page-link"
+                                           href="${ctx}/admin/listSubCategory?page=${currentPage - 1}&keyword=${keyword}">
+                                            Previous
+                                        </a>
+                                    </li>
+
+                                    <c:forEach begin="0" end="${totalPages - 1}" var="i">
+                                        <li class="page-item ${i == currentPage ? 'active' : ''}">
+                                            <a class="page-link"
+                                               href="${ctx}/admin/listSubCategory?page=${i}&keyword=${keyword}">
+                                                ${i + 1}
+                                            </a>
+                                        </li>
+                                    </c:forEach>
+
+                                    <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                        <a class="page-link"
+                                           href="${ctx}/admin/listSubCategory?page=${currentPage + 1}&keyword=${keyword}">
+                                            Next
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </nav>
+                        </c:if>
+
                     </div>
 
                 </div>
 
-
             </div>
 
-
-
-            <!-- ================= FOOTER ================= -->
             <jsp:include page="AdminFooter.jsp"></jsp:include>
-
 
         </div>
 
@@ -196,11 +170,7 @@ pageEncoding="UTF-8"%>
 
 </div>
 
-
-
-<!-- ================= ADMIN JS ================= -->
 <jsp:include page="AdminJS.jsp"></jsp:include>
-
 
 </body>
 </html>

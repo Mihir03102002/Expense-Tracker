@@ -5,10 +5,14 @@ import java.util.List;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;          // ✅ ADDED
+import org.springframework.data.domain.PageRequest;  // ✅ ADDED
+import org.springframework.data.domain.Pageable;     // ✅ ADDED
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.Grownited.entity.CategoryEntity;
 import com.Grownited.entity.UserEntity;
@@ -47,7 +51,6 @@ public class CategoryController {
             return "redirect:/login";
         }
 
-        // 🔥 FIX: Set logged-in user's ID
         categoryEntity.setUserId(user.getUserId());
 
         categoryRepository.save(categoryEntity);
@@ -55,9 +58,13 @@ public class CategoryController {
         return "redirect:/admin/category";
     }
 
-    // ================= LIST CATEGORY PAGE =================
+    // ================= LIST CATEGORY PAGE (UPDATED 🔥) =================
     @GetMapping("/admin/listCategory")
-    public String listCategory(Model model, HttpSession session) {
+    public String listCategory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            Model model,
+            HttpSession session) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -65,8 +72,23 @@ public class CategoryController {
             return "redirect:/login";
         }
 
-        List<CategoryEntity> listCategory = categoryRepository.findAll();
-        model.addAttribute("listCategory", listCategory);
+        int size = 10;
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CategoryEntity> categoryPage;
+
+        // 🔍 SEARCH LOGIC
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            categoryPage = categoryRepository
+                    .findByCategoryNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            categoryPage = categoryRepository.findAll(pageable);
+        }
+
+        model.addAttribute("listCategory", categoryPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", categoryPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
 
         return "Admin/ListCategory";
     }

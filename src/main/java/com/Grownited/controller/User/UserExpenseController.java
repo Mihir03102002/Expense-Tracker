@@ -90,9 +90,9 @@ public class UserExpenseController {
             AccountEntity account = accOpt.get();
             StatusEntity statusEntity = statusOpt.get();
 
-            Float balance = account.getAmount();
+            Double balance = account.getAmount();
             if(balance == null){
-                balance = 0f;
+                balance = (double) 0f;
             }
 
             Float expenseAmount = expense.getAmount();
@@ -158,9 +158,9 @@ public class UserExpenseController {
 
                 AccountEntity account = expense.getAccount();
 
-                Float balance = account.getAmount();
+                Double balance = account.getAmount();
                 if(balance == null){
-                    balance = 0f;
+                    balance = (double) 0f;
                 }
 
                 Float expenseAmount = expense.getAmount();

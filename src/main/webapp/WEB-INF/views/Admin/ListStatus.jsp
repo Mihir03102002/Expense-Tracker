@@ -96,7 +96,7 @@
 										<thead class="table-light">
 
 											<tr>
-												<th>#</th>
+												<th>Sr. No</th>
 												<th>Status Name</th>
 												<th>Preview</th>
 												<th>Actions</th>
@@ -126,11 +126,11 @@
 
 
 											<!-- LOOP DATA -->
-											<c:forEach var="s" items="${statuses}" varStatus="i">
+											<c:forEach var="s" items="${statuses}" varStatus="status">
 
 												<tr>
 
-													<td>${i.count}</td>
+													<td>${status.index + 1}</td>
 
 													<td>${s.status}</td>
 
