@@ -67,18 +67,43 @@ pageEncoding="UTF-8"%>
                     <div class="table-responsive">
                     
                        <form method="get"
-						      action="${pageContext.request.contextPath}/user/incomeList"
-						      class="mb-3 d-flex">
-						
-						    <input type="text"
-						           name="keyword"
-						           value="${keyword}"
-						           placeholder="Search income..."
-						           class="form-control me-2"/>
-						
-						    <button class="btn btn-primary">Search</button>
-						
-						</form>
+				      action="${pageContext.request.contextPath}/user/incomeList"
+				      class="row g-2 align-items-center mb-3">
+				
+				    <!-- SEARCH -->
+				    <div class="col-md-5">
+				        <input type="text"
+				               name="keyword"
+				               value="${keyword}"
+				               placeholder="Search income..."
+				               class="form-control"/>
+				    </div>
+				
+				    <!-- SORT -->
+				    <div class="col-md-2">
+				        <select name="sort" class="form-select">
+				            <option value="">Sort</option>
+				            <option value="asc" ${sort == 'asc' ? 'selected' : ''}>Low → High</option>
+				            <option value="desc" ${sort == 'desc' ? 'selected' : ''}>High → Low</option>
+				        </select>
+				    </div>
+				
+				    <!-- STATUS FILTER -->
+				    <div class="col-md-2">
+				        <select name="status" class="form-select">
+				            <option value="">All Status</option>
+				            <option value="Paid" ${status == 'Paid' ? 'selected' : ''}>Paid</option>
+				            <option value="Partial" ${status == 'Partial' ? 'selected' : ''}>Partial</option>
+				            <option value="Unpaid" ${status == 'Unpaid' ? 'selected' : ''}>Unpaid</option>
+				        </select>
+				    </div>
+
+    <!-- BUTTON -->
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100">Search</button>
+    </div>
+
+</form>
 						
 						<!-- ================= FILTER + PDF ================= -->
 
@@ -174,14 +199,14 @@ pageEncoding="UTF-8"%>
 
         </div>
         
-        <c:if test="${totalPages > 1}">
+       <c:if test="${totalPages > 1}">
     <nav class="mt-3">
         <ul class="pagination justify-content-center">
 
             <!-- PREVIOUS -->
             <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/user/incomeList?page=${currentPage - 1}&keyword=${keyword}">
+                   href="${pageContext.request.contextPath}/user/incomeList?page=${currentPage - 1}&keyword=${keyword}&sort=${sort}&status=${status}">
                     Previous
                 </a>
             </li>
@@ -190,7 +215,7 @@ pageEncoding="UTF-8"%>
             <c:forEach begin="0" end="${totalPages - 1}" var="i">
                 <li class="page-item ${i == currentPage ? 'active' : ''}">
                     <a class="page-link"
-                       href="${pageContext.request.contextPath}/user/incomeList?page=${i}&keyword=${keyword}">
+                       href="${pageContext.request.contextPath}/user/incomeList?page=${i}&keyword=${keyword}&sort=${sort}&status=${status}">
                         ${i + 1}
                     </a>
                 </li>
@@ -199,7 +224,7 @@ pageEncoding="UTF-8"%>
             <!-- NEXT -->
             <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/user/incomeList?page=${currentPage + 1}&keyword=${keyword}">
+                   href="${pageContext.request.contextPath}/user/incomeList?page=${currentPage + 1}&keyword=${keyword}&sort=${sort}&status=${status}">
                     Next
                 </a>
             </li>
@@ -207,7 +232,6 @@ pageEncoding="UTF-8"%>
         </ul>
     </nav>
 </c:if>
-
         <!-- USER FOOTER -->
         <jsp:include page="UserFooter.jsp"></jsp:include>
 

@@ -1,6 +1,8 @@
 package com.Grownited.controller.Admin;
 
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.servlet.http.HttpSession;
@@ -17,10 +19,16 @@ import com.Grownited.entity.UserEntity;
 import com.Grownited.repository.IncomeRepository;
 import com.Grownited.repository.AccountRepository;
 import com.Grownited.repository.StatusRepository;
+import com.Grownited.repository.UserRepository;
+import com.Grownited.util.PdfGenerator;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
+
+import java.io.ByteArrayInputStream;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -34,6 +42,9 @@ public class IncomeController {
 
     @Autowired
     private StatusRepository statusRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
 
     // ================= HELPER METHOD =================
@@ -113,47 +124,117 @@ public class IncomeController {
     @GetMapping("/incomeList")
     public String incomeList(
             @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
-            Model model,
-            HttpSession session) {
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String sort,
+            Model model) {
 
-        UserEntity admin = getAdmin(session);
+        List<IncomeEntity> list;
 
-        if (admin == null) {
-            return "redirect:/login";
+        keyword = (keyword == null) ? "" : keyword.trim();
+        status = (status == null) ? "" : status.trim();
+        startDate = (startDate == null) ? "" : startDate.trim();
+        endDate = (endDate == null) ? "" : endDate.trim();
+        sort = (sort == null) ? "" : sort.trim();
+
+        LocalDate start = null;
+        LocalDate end = null;
+
+        try {
+            if (!startDate.isEmpty() && !endDate.isEmpty()) {
+                start = LocalDate.parse(startDate);
+                end = LocalDate.parse(endDate);
+            }
+        } catch (Exception e) {
+            start = null;
+            end = null;
         }
 
-        int size = 10;
-        Pageable pageable = PageRequest.of(page, size);
-        Page<IncomeEntity> incomePage;
+        UserEntity user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId).orElse(null);
+        }
 
-        if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
+        // ✅ SAME AS EXPENSE LOGIC
+        if (keyword.isEmpty() && status.isEmpty() && user == null && start == null) {
 
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
+            list = incomeRepository.findAll();
 
-            incomePage = incomeRepository
-                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end,
-                            keyword == null ? "" : keyword, pageable);
+        } else if (user != null && !status.isEmpty() && start != null) {
 
-        } else if (keyword != null && !keyword.trim().isEmpty()) {
+            list = incomeRepository
+                    .findByUserAndStatus_StatusAndDateBetweenAndTitleContainingIgnoreCase(
+                            user, status, start, end, keyword
+                    );
 
-            incomePage = incomeRepository
-                    .findByTitleContainingIgnoreCase(keyword, pageable);
+        } else if (user != null && !status.isEmpty()) {
+
+            list = incomeRepository.findByUserAndStatus_Status(user, status);
+
+        } else if (!status.isEmpty()) {
+
+            list = incomeRepository.findByStatus_Status(status);
+
+        } else if (user != null) {
+
+            list = incomeRepository.findByUser(user);
+
+        } else if (start != null) {
+
+            list = incomeRepository
+                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end, keyword);
 
         } else {
-            incomePage = incomeRepository.findAll(pageable);
+
+            list = incomeRepository.findByTitleContainingIgnoreCase(keyword);
         }
 
-        model.addAttribute("incomes", incomePage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", incomePage.getTotalPages());
+        // ✅ SORT
+        if (!sort.isEmpty()) {
+            switch (sort) {
+                case "amountAsc":
+                    list.sort(Comparator.comparing(IncomeEntity::getAmount));
+                    break;
+                case "amountDesc":
+                    list.sort(Comparator.comparing(IncomeEntity::getAmount).reversed());
+                    break;
+                case "dateAsc":
+                    list.sort(Comparator.comparing(IncomeEntity::getDate));
+                    break;
+                case "dateDesc":
+                    list.sort(Comparator.comparing(IncomeEntity::getDate).reversed());
+                    break;
+            }
+        }
+
+        // ✅ PAGINATION (MANUAL)
+        int startIndex = page * size;
+        if (startIndex > list.size()) startIndex = 0;
+
+        int endIndex = Math.min(startIndex + size, list.size());
+
+        List<IncomeEntity> paginatedList = list.subList(startIndex, endIndex);
+
+        int totalPages = (int) Math.ceil((double) list.size() / size);
+
+        model.addAttribute("incomes", paginatedList);
+        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("statuses", statusRepository.findAll());
 
         model.addAttribute("keyword", keyword);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+        model.addAttribute("status", status);
+        model.addAttribute("userId", userId);
+        model.addAttribute("sort", sort);
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", totalPages);
 
         return "Admin/IncomeList";
     }
@@ -224,5 +305,99 @@ public class IncomeController {
         incomeRepository.save(income);
 
         return "redirect:/admin/incomeList?success=updated";
+    }
+    
+    @GetMapping("/income/pdf")
+    public ResponseEntity<InputStreamResource> exportIncomePdf() {
+
+        List<IncomeEntity> list = incomeRepository.findAll();
+
+        ByteArrayInputStream pdf =
+                PdfGenerator.generateIncomePdf(list);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "inline; filename=income.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
+    }
+    
+    @GetMapping("/income/pdf/filter")
+    public ResponseEntity<InputStreamResource> exportFilteredIncomePdf(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer userId
+    ) {
+
+        keyword = (keyword == null) ? "" : keyword.trim();
+        status = (status == null) ? "" : status.trim();
+
+        LocalDate start = null;
+        LocalDate end = null;
+
+        try {
+            if (startDate != null && !startDate.isEmpty() &&
+                endDate != null && !endDate.isEmpty()) {
+
+                start = LocalDate.parse(startDate);
+                end = LocalDate.parse(endDate);
+            }
+        } catch (Exception e) {
+            start = null;
+            end = null;
+        }
+
+        UserEntity user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId).orElse(null);
+        }
+
+        List<IncomeEntity> list;
+
+        // ✅ SAME LOGIC AS UI (IMPORTANT)
+        if (user != null && !status.isEmpty() && start != null) {
+
+            list = incomeRepository
+                    .findByUserAndTitleContainingIgnoreCaseAndStatus_Status(
+                            user, keyword, status, Pageable.unpaged()
+                    ).getContent();
+
+        } else if (user != null && !status.isEmpty()) {
+
+            list = incomeRepository
+                    .findByUserAndStatus_Status(user, status, Pageable.unpaged())
+                    .getContent();
+
+        } else if (!status.isEmpty()) {
+
+            list = incomeRepository.findByStatus_Status(status);
+
+        } else if (user != null) {
+
+            list = incomeRepository.findByUser(user);
+
+        } else if (start != null) {
+
+            list = incomeRepository
+                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end, keyword);
+
+        } else if (!keyword.isEmpty()) {
+
+            list = incomeRepository
+                    .findByTitleContainingIgnoreCase(keyword, Pageable.unpaged())
+                    .getContent();
+
+        } else {
+
+            list = incomeRepository.findAll();
+        }
+
+        ByteArrayInputStream pdf = PdfGenerator.generateIncomePdf(list);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "inline; filename=filtered_income.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
     }
 }

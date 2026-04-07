@@ -81,6 +81,8 @@ public class UserAccountController {
     public String openAccountListPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String type,
             Model model,
             HttpSession session) {
 
@@ -92,15 +94,37 @@ public class UserAccountController {
 
         int size = 10;
 
-        Pageable pageable = PageRequest.of(page, size);
+        org.springframework.data.domain.Sort sorting = org.springframework.data.domain.Sort.unsorted();
+
+        if ("asc".equals(sort)) {
+            sorting = org.springframework.data.domain.Sort.by("amount").ascending();
+        } else if ("desc".equals(sort)) {
+            sorting = org.springframework.data.domain.Sort.by("amount").descending();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sorting);
         Page<AccountEntity> accountPage;
 
-        // 🔍 SEARCH
-        if (keyword != null && !keyword.trim().isEmpty()) {
+        if (keyword != null && !keyword.trim().isEmpty() && type != null && !type.isEmpty()) {
+
+            accountPage = accountRepository
+                    .findByUserIdAndTitleContainingIgnoreCaseAndAccountType(
+                            user.getUserId(), keyword, type, pageable);
+
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
+
             accountPage = accountRepository
                     .findByUserIdAndTitleContainingIgnoreCase(
                             user.getUserId(), keyword, pageable);
+
+        } else if (type != null && !type.isEmpty()) {
+
+            accountPage = accountRepository
+                    .findByUserIdAndAccountType(
+                            user.getUserId(), type, pageable);
+
         } else {
+
             accountPage = accountRepository
                     .findByUserId(user.getUserId(), pageable);
         }
@@ -109,6 +133,9 @@ public class UserAccountController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", accountPage.getTotalPages());
         model.addAttribute("keyword", keyword);
+
+        model.addAttribute("sort", sort);
+        model.addAttribute("type", type);
 
         return "User/UserAccountList";
     }
@@ -188,4 +215,5 @@ public class UserAccountController {
 
         return "redirect:/user/accountList?success=updated";
     }
+    
 }

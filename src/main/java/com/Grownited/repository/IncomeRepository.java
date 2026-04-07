@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,6 +13,8 @@ import com.Grownited.entity.UserEntity;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import org.springframework.transaction.annotation.Transactional;
 
 public interface IncomeRepository extends JpaRepository<IncomeEntity, Integer> {
 
@@ -80,5 +83,57 @@ public interface IncomeRepository extends JpaRepository<IncomeEntity, Integer> {
             LocalDate endDate
     );
     
+    Page<IncomeEntity> findByUserAndStatus_Status(
+            UserEntity user, String status, Pageable pageable);
+
+    Page<IncomeEntity> findByUserAndTitleContainingIgnoreCaseAndStatus_Status(
+            UserEntity user, String title, String status, Pageable pageable);
     
+ // ✅ STATUS FILTER (ADMIN)
+    Page<IncomeEntity> findByStatus_Status(String status, Pageable pageable);
+
+    // ✅ DATE + STATUS + SEARCH (ADMIN)
+    Page<IncomeEntity> findByDateBetweenAndStatus_StatusAndTitleContainingIgnoreCase(
+            LocalDate startDate,
+            LocalDate endDate,
+            String status,
+            String title,
+            Pageable pageable
+    );
+    
+    List<IncomeEntity> findByStatus_Status(String status);
+
+    List<IncomeEntity> findByDateBetweenAndStatus_StatusAndTitleContainingIgnoreCase(
+            LocalDate startDate,
+            LocalDate endDate,
+            String status,
+            String keyword
+    );
+    
+ // ✅ FOR PDF (NO PAGINATION)
+    List<IncomeEntity> findByDateBetweenAndTitleContainingIgnoreCase(
+            LocalDate startDate,
+            LocalDate endDate,
+            String keyword
+    );
+
+
+	List<IncomeEntity> findByTitleContainingIgnoreCase(String keyword);
+    
+	List<IncomeEntity> findByUserAndStatus_Status(UserEntity user, String status);
+
+	List<IncomeEntity> findByUserAndStatus_StatusAndDateBetweenAndTitleContainingIgnoreCase(
+	        UserEntity user,
+	        String status,
+	        LocalDate startDate,
+	        LocalDate endDate,
+	        String keyword
+	);
+	@Transactional
+	void deleteByUser_UserId(Integer userId);
+	
+	@Transactional
+	@Modifying
+	@Query("DELETE FROM IncomeEntity i WHERE i.user.userId = :userId")
+	void deleteIncomeByUserId(@Param("userId") Integer userId);
 }

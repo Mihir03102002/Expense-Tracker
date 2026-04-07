@@ -75,16 +75,35 @@ pageEncoding="UTF-8"%>
 				    </div>
 				</c:if>
 				
-				<form method="get" action="${pageContext.request.contextPath}/user/accountList"
-				      class="mb-3 d-flex">
+				<form method="get"
+				      action="${pageContext.request.contextPath}/user/accountList"
+				      class="mb-3 d-flex flex-wrap gap-2">
 				
+				    <!-- SEARCH -->
 				    <input type="text"
 				           name="keyword"
 				           value="${keyword}"
 				           placeholder="Search account..."
-				           class="form-control me-2"/>
+				           class="form-control me-2"
+				           style="max-width: 200px;"/>
 				
-				    <button class="btn btn-primary">Search</button>
+				    <!-- SORT -->
+				    <select name="sort" class="form-select" style="max-width: 180px;">
+				        <option value="">Sort By</option>
+				        <option value="asc" ${sort == 'asc' ? 'selected' : ''}>Balance Low → High</option>
+				        <option value="desc" ${sort == 'desc' ? 'selected' : ''}>Balance High → Low</option>
+				    </select>
+				
+				    <!-- ACCOUNT TYPE FILTER -->
+				    <select name="type" class="form-select" style="max-width: 180px;">
+				        <option value="">All Types</option>
+				        <option value="UPI" ${type == 'UPI' ? 'selected' : ''}>UPI</option>
+				        <option value="Cash" ${type == 'Cash' ? 'selected' : ''}>Cash</option>
+				        <option value="Debit Card" ${type == 'Debit Card' ? 'selected' : ''}>Debit Card</option>
+				        <option value="Credit Card" ${type == 'Credit Card' ? 'selected' : ''}>Credit Card</option>
+				    </select>
+				
+				    <button class="btn btn-primary">Apply</button>
 				
 				</form>
 
@@ -154,39 +173,39 @@ pageEncoding="UTF-8"%>
 
         </div>
         
-        <c:if test="${totalPages > 1}">
-    <nav class="mt-3">
-        <ul class="pagination justify-content-center">
-
-            <!-- PREVIOUS -->
-            <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
-                <a class="page-link"
-                   href="${pageContext.request.contextPath}/user/accountList?page=${currentPage - 1}&keyword=${keyword}">
-                    Previous
-                </a>
-            </li>
-
-            <!-- PAGE NUMBERS -->
-            <c:forEach begin="0" end="${totalPages - 1}" var="p">
-                <li class="page-item ${p == currentPage ? 'active' : ''}">
-                    <a class="page-link"
-                       href="${pageContext.request.contextPath}/user/accountList?page=${p}&keyword=${keyword}">
-                        ${p + 1}
-                    </a>
-                </li>
-            </c:forEach>
-
-            <!-- NEXT -->
-            <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                <a class="page-link"
-                   href="${pageContext.request.contextPath}/user/accountList?page=${currentPage + 1}&keyword=${keyword}">
-                    Next
-                </a>
-            </li>
-
-        </ul>
-    </nav>
-</c:if>
+		<c:if test="${totalPages > 1}">
+		    <nav class="mt-3">
+		        <ul class="pagination justify-content-center">
+		
+		            <!-- PREVIOUS -->
+		            <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+		                <a class="page-link"
+		                   href="${pageContext.request.contextPath}/user/accountList?page=${currentPage - 1}&keyword=${keyword}&sort=${sort}&type=${type}">
+		                    Previous
+		                </a>
+		            </li>
+		
+		            <!-- PAGE NUMBERS -->
+		            <c:forEach begin="0" end="${totalPages - 1}" var="p">
+		                <li class="page-item ${p == currentPage ? 'active' : ''}">
+		                    <a class="page-link"
+		                       href="${pageContext.request.contextPath}/user/accountList?page=${p}&keyword=${keyword}&sort=${sort}&type=${type}">
+		                        ${p + 1}
+		                    </a>
+		                </li>
+		            </c:forEach>
+		
+		            <!-- NEXT -->
+		            <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+		                <a class="page-link"
+		                   href="${pageContext.request.contextPath}/user/accountList?page=${currentPage + 1}&keyword=${keyword}&sort=${sort}&type=${type}">
+		                    Next
+		                </a>
+		            </li>
+		
+		        </ul>
+		    </nav>
+		</c:if>
 
         <!-- USER FOOTER -->
         <jsp:include page="UserFooter.jsp"></jsp:include>

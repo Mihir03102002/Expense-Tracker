@@ -15,7 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.Grownited.entity.UserEntity;
+import com.Grownited.repository.AccountRepository;
+import com.Grownited.repository.ExpenseRepository;
+import com.Grownited.repository.IncomeRepository;
+import com.Grownited.repository.UserDetailRepository;
 import com.Grownited.repository.UserRepository;
+
+import org.springframework.transaction.annotation.Transactional;
 
 /* ================= CONTROLLER ================= */
 
@@ -25,6 +31,18 @@ public class AdminUserController {
     /* ================= DEPENDENCY ================= */
     @Autowired
     UserRepository userRepository;
+    
+    @Autowired
+    IncomeRepository incomeRepository;
+    
+    @Autowired
+    ExpenseRepository expenseRepository;
+    
+    @Autowired
+    UserDetailRepository userDetailRepository;
+    
+    @Autowired
+    AccountRepository accountRepository;
 
     /* =========================================================
        ✅ USER LIST + SEARCH + PAGINATION
@@ -128,14 +146,21 @@ public class AdminUserController {
     /* =========================================================
        ✅ DELETE USER
        ========================================================= */
+    @Transactional
     @GetMapping("/admin/deleteUser")
-    public String deleteUser(Integer userId) {
+    public String deleteUser(@RequestParam Integer userId) {
+
+        incomeRepository.deleteIncomeByUserId(userId);
+        expenseRepository.deleteExpenseByUserId(userId);
+        userDetailRepository.deleteUserDetailsByUserId(userId);
+
+        // ✅ FIXED HERE
+        accountRepository.deleteByUserId(userId);
 
         userRepository.deleteById(userId);
 
         return "redirect:/admin/users?success=deleted";
     }
-
     /* =========================================================
        ✅ ADD USER (SAVE)
        ========================================================= */

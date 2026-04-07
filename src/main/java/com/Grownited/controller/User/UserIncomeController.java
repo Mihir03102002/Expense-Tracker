@@ -113,6 +113,8 @@ public class UserIncomeController {
     public String incomeList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String status,
             Model model,
             HttpSession session) {
 
@@ -124,14 +126,37 @@ public class UserIncomeController {
 
         int size = 10;
 
-        Pageable pageable = PageRequest.of(page, size);
+        // ✅ SORT
+        org.springframework.data.domain.Sort sorting = org.springframework.data.domain.Sort.unsorted();
+
+        if ("asc".equals(sort)) {
+            sorting = org.springframework.data.domain.Sort.by("amount").ascending();
+        } else if ("desc".equals(sort)) {
+            sorting = org.springframework.data.domain.Sort.by("amount").descending();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sorting);
         Page<IncomeEntity> incomePage;
 
-        // 🔍 SEARCH
-        if (keyword != null && !keyword.trim().isEmpty()) {
+        // ✅ FILTER LOGIC
+        if (keyword != null && !keyword.trim().isEmpty() && status != null && !status.isEmpty()) {
+
+            incomePage = incomeRepository
+                    .findByUserAndTitleContainingIgnoreCaseAndStatus_Status(
+                            user, keyword, status, pageable);
+
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
+
             incomePage = incomeRepository
                     .findByUserAndTitleContainingIgnoreCase(user, keyword, pageable);
+
+        } else if (status != null && !status.isEmpty()) {
+
+            incomePage = incomeRepository
+                    .findByUserAndStatus_Status(user, status, pageable);
+
         } else {
+
             incomePage = incomeRepository
                     .findByUser(user, pageable);
         }
@@ -140,6 +165,10 @@ public class UserIncomeController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", incomePage.getTotalPages());
         model.addAttribute("keyword", keyword);
+
+        // NEW
+        model.addAttribute("sort", sort);
+        model.addAttribute("status", status);
 
         return "User/UserIncomeList";
     }

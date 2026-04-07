@@ -138,6 +138,8 @@ public class UserExpenseController {
     public String expenseList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String status,
             Model model,
             HttpSession session) {
 
@@ -149,14 +151,37 @@ public class UserExpenseController {
 
         int size = 10;
 
-        Pageable pageable = PageRequest.of(page, size);
+        // ✅ SORT
+        org.springframework.data.domain.Sort sorting = org.springframework.data.domain.Sort.unsorted();
+
+        if ("asc".equals(sort)) {
+            sorting = org.springframework.data.domain.Sort.by("amount").ascending();
+        } else if ("desc".equals(sort)) {
+            sorting = org.springframework.data.domain.Sort.by("amount").descending();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sorting);
         Page<ExpenseEntity> expensePage;
 
-        // 🔍 SEARCH
-        if (keyword != null && !keyword.trim().isEmpty()) {
+        // ✅ FILTER LOGIC
+        if (keyword != null && !keyword.trim().isEmpty() && status != null && !status.isEmpty()) {
+
+            expensePage = expenseRepository
+                    .findByUserAndTitleContainingIgnoreCaseAndStatus_Status(
+                            user, keyword, status, pageable);
+
+        } else if (keyword != null && !keyword.trim().isEmpty()) {
+
             expensePage = expenseRepository
                     .findByUserAndTitleContainingIgnoreCase(user, keyword, pageable);
+
+        } else if (status != null && !status.isEmpty()) {
+
+            expensePage = expenseRepository
+                    .findByUserAndStatus_Status(user, status, pageable);
+
         } else {
+
             expensePage = expenseRepository
                     .findByUser(user, pageable);
         }
@@ -166,9 +191,12 @@ public class UserExpenseController {
         model.addAttribute("totalPages", expensePage.getTotalPages());
         model.addAttribute("keyword", keyword);
 
+        // NEW
+        model.addAttribute("sort", sort);
+        model.addAttribute("status", status);
+
         return "User/UserExpenseList";
     }
-
 
     // =============================
     // DELETE EXPENSE (SECURE)

@@ -76,28 +76,82 @@
 					<div class="card-body">
 
 						<!-- ================= SEARCH + DATE FILTER ================= -->
-						<form method="get" action="${ctx}/admin/incomeList" class="mb-3 row g-2">
+						
+			<form method="get" action="${ctx}/admin/incomeList" class="row g-2 align-items-center mb-3">
 
-						    <div class="col-md-3">
-						        <input type="text" name="keyword" value="${keyword}"
-						               class="form-control" placeholder="Search..."/>
-						    </div>
-
-						    <div class="col-md-3">
-						        <input type="date" name="startDate" value="${startDate}"
-						               class="form-control"/>
-						    </div>
-
-						    <div class="col-md-3">
-						        <input type="date" name="endDate" value="${endDate}"
-						               class="form-control"/>
-						    </div>
-
-						    <div class="col-md-3">
-						        <button class="btn btn-primary w-100">Filter</button>
-						    </div>
-
-						</form>
+				    <!-- SEARCH -->
+				    <div class="col-md-2">
+				        <input type="text" name="keyword" value="${keyword}"
+				               class="form-control form-control-sm" placeholder="Search..."/>
+				    </div>
+				
+				    <!-- START DATE -->
+				    <div class="col-md-2">
+				        <input type="date" name="startDate" value="${startDate}"
+				               class="form-control form-control-sm"/>
+				    </div>
+				
+				    <!-- END DATE -->
+				    <div class="col-md-2">
+				        <input type="date" name="endDate" value="${endDate}"
+				               class="form-control form-control-sm"/>
+				    </div>
+				
+				    <!-- SORT -->
+				    <div class="col-md-2">
+				        <select name="sort" class="form-select form-select-sm">
+				            <option value="">Sort</option>
+				            <option value="amountAsc" ${sort=='amountAsc'?'selected':''}>Amount ↑</option>
+				            <option value="amountDesc" ${sort=='amountDesc'?'selected':''}>Amount ↓</option>
+				            <option value="dateAsc" ${sort=='dateAsc'?'selected':''}>Date ↑</option>
+				            <option value="dateDesc" ${sort=='dateDesc'?'selected':''}>Date ↓</option>
+				        </select>
+				    </div>
+				
+				    <!-- STATUS -->
+				    <div class="col-md-2">
+				        <select name="status" class="form-select form-select-sm">
+				            <option value="">All Status</option>
+				            <option value="Paid" ${status=='Paid'?'selected':''}>Paid</option>
+				            <option value="Unpaid" ${status=='Unpaid'?'selected':''}>Unpaid</option>
+				            <option value="Partial" ${status=='Partial'?'selected':''}>Partial</option>
+				        </select>
+				    </div>
+				
+				    <!-- USER -->
+				    <div class="col-md-2">
+				        <select name="userId" class="form-select form-select-sm">
+				            <option value="">All Users</option>
+				            <c:forEach var="u" items="${users}">
+				                <option value="${u.userId}" ${u.userId == userId ? 'selected' : ''}>
+				                    ${u.firstName}
+				                </option>
+				            </c:forEach>
+				        </select>
+				    </div>
+				
+				    <!-- FILTER BUTTON -->
+				    <div class="col-md-2">
+				        <button class="btn btn-primary btn-sm w-100">Filter</button>
+				    </div>
+				
+				</form>
+				
+				<div class="mb-3">
+				
+				    <a href="${ctx}/admin/income/pdf"
+				       class="btn btn-success btn-sm me-2">
+				        Export PDF
+				    </a>
+				
+				    <a href="${ctx}/admin/income/pdf/filter?keyword=${keyword}&startDate=${startDate}&endDate=${endDate}&status=${status}&userId=${userId}"
+				       class="btn btn-dark btn-sm">
+				        Filtered PDF
+				    </a>
+				
+				</div>
+						
+					
 
 						<!-- ================= TABLE ================= -->
 						<div class="table-responsive">
@@ -172,38 +226,38 @@
 
 						<!-- ================= PAGINATION ================= -->
 						<c:if test="${totalPages > 1}">
-							<nav class="mt-3">
-								<ul class="pagination justify-content-center">
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
 
-									<!-- PREVIOUS -->
-									<li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
-										<a class="page-link"
-										   href="${ctx}/admin/incomeList?page=${currentPage - 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
-											Previous
-										</a>
-									</li>
+            <!-- PREVIOUS -->
+            <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+                <a class="page-link"
+                   href="${ctx}/admin/incomeList?page=${currentPage - 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}&status=${status}&sort=${sort}&userId=${userId}">
+                    Previous
+                </a>
+            </li>
 
-									<!-- PAGE NUMBERS -->
-									<c:forEach begin="0" end="${totalPages - 1}" var="i">
-										<li class="page-item ${i == currentPage ? 'active' : ''}">
-											<a class="page-link"
-											   href="${ctx}/admin/incomeList?page=${i}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
-												${i + 1}
-											</a>
-										</li>
-									</c:forEach>
+            <!-- PAGE NUMBERS -->
+            <c:forEach begin="0" end="${totalPages - 1}" var="i">
+                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                    <a class="page-link"
+                       href="${ctx}/admin/incomeList?page=${i}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}&status=${status}&sort=${sort}&userId=${userId}">
+                        ${i + 1}
+                    </a>
+                </li>
+            </c:forEach>
 
-									<!-- NEXT -->
-									<li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
-										<a class="page-link"
-										   href="${ctx}/admin/incomeList?page=${currentPage + 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
-											Next
-										</a>
-									</li>
+            <!-- NEXT -->
+            <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                <a class="page-link"
+                   href="${ctx}/admin/incomeList?page=${currentPage + 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}&status=${status}&sort=${sort}&userId=${userId}">
+                    Next
+                </a>
+            </li>
 
-								</ul>
-							</nav>
-						</c:if>
+        </ul>
+    </nav>
+</c:if>
 
 					</div>
 

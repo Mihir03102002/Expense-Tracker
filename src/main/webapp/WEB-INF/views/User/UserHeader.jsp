@@ -45,16 +45,18 @@
              aria-labelledby="profileDropdown">
 
           <!-- Settings -->
-          <a class="dropdown-item" href="#">
-            <i class="ti-settings text-primary"></i>
-            Settings
-          </a>
+			<a class="dropdown-item"
+			   href="${pageContext.request.contextPath}/user/settings">
+			    <i class="ti-settings text-primary"></i>
+			    Settings
+			</a>
 
           <!-- Logout -->
-          <a class="dropdown-item" href="<c:url value='/logout'/>">
-            <i class="ti-power-off text-primary"></i>
-            Logout
-          </a>
+			<a class="dropdown-item"
+			   href="${pageContext.request.contextPath}/user/logout">
+			    <i class="ti-power-off text-danger"></i>
+			    Logout
+			</a>
 
         </div>
 

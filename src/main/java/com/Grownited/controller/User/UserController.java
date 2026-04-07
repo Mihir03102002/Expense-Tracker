@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.Grownited.entity.UserEntity;
 import com.Grownited.repository.ExpenseRepository;
@@ -32,10 +31,7 @@ public class UserController {
 
     // ================= USER DASHBOARD =================
     @GetMapping("/user/dashboard")
-    public String userDashboard(
-            @RequestParam(value = "year", required = false) Integer year,
-            Model model,
-            HttpSession session) throws Exception {
+    public String userDashboard(Model model, HttpSession session) throws Exception {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -45,9 +41,8 @@ public class UserController {
 
         Integer userId = user.getUserId();
 
-        if (year == null) {
-            year = LocalDate.now().getYear();
-        }
+        // ✅ FIXED CURRENT YEAR
+        int year = LocalDate.now().getYear();
 
         // ================= CURRENT MONTH =================
         YearMonth currentMonth = YearMonth.now();

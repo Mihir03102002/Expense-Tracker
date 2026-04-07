@@ -1,21 +1,25 @@
 package com.Grownited.controller.Admin;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.Comparator;
+import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.Grownited.entity.*;
 import com.Grownited.repository.*;
+import com.Grownited.util.PdfGenerator;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import com.Grownited.repository.UserRepository;
 
 
 @Controller
@@ -24,6 +28,9 @@ public class ExpenseController {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+    
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -39,8 +46,8 @@ public class ExpenseController {
 
     @Autowired
     private StatusRepository statusRepository;
-
-
+    
+   
     // ================= HELPER METHOD =================
     private UserEntity getAdmin(HttpSession session) {
         UserEntity user = (UserEntity) session.getAttribute("user");
@@ -128,71 +135,125 @@ public class ExpenseController {
     @GetMapping("/expense-list")
     public String expenseList(
             @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
-            Model model,
-            HttpSession session) {
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String sort,   // ✅ ADDED
+            Model model) {
 
-        UserEntity admin = getAdmin(session);
+        List<ExpenseEntity> list;
 
-        if (admin == null) {
-            return "redirect:/login";
+        // ✅ CLEAN VALUES (FIX)
+        keyword = (keyword == null) ? "" : keyword.trim();
+        status = (status == null) ? "" : status.trim();
+        startDate = (startDate == null) ? "" : startDate.trim();
+        endDate = (endDate == null) ? "" : endDate.trim();
+        sort = (sort == null) ? "" : sort.trim(); // ✅ ADDED
+
+        LocalDate start = null;
+        LocalDate end = null;
+
+        // ✅ SAFE DATE PARSE (FIXED ERROR)
+        if (!startDate.isEmpty() && !endDate.isEmpty()) {
+            try {
+                start = LocalDate.parse(startDate);
+                end = LocalDate.parse(endDate);
+            } catch (Exception e) {
+                start = null;
+                end = null;
+            }
         }
 
-        int size = 10;
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ExpenseEntity> expensePage;
+        UserEntity user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId).orElse(null);
+        }
 
-        // 🔥 DATE + SEARCH LOGIC
-        if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
+        // ✅ YOUR ORIGINAL LOGIC (UNCHANGED)
+        if (keyword.isEmpty() && status.isEmpty() && user == null && start == null) {
 
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
+            list = expenseRepository.findAll();
 
-            expensePage = expenseRepository
-                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end,
-                            keyword == null ? "" : keyword, pageable);
+        } else if (user != null && !status.isEmpty() && start != null) {
 
-        } else if (keyword != null && !keyword.trim().isEmpty()) {
+            list = expenseRepository
+                    .findByUserAndStatus_StatusAndDateBetweenAndTitleContainingIgnoreCase(
+                            user, status, start, end, keyword
+                    );
 
-            expensePage = expenseRepository
-                    .findByTitleContainingIgnoreCase(keyword, pageable);
+        } else if (user != null && !status.isEmpty()) {
+
+            list = expenseRepository.findByUserAndStatus_Status(user, status);
+
+        } else if (!status.isEmpty()) {
+
+            list = expenseRepository.findByStatus_Status(status);
+
+        } else if (user != null) {
+
+            list = expenseRepository.findByUser(user);
+
+        } else if (start != null) {
+
+            list = expenseRepository
+                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end, keyword);
 
         } else {
-            expensePage = expenseRepository.findAll(pageable);
+
+            list = expenseRepository.findByTitleContainingIgnoreCase(keyword);
         }
 
-        model.addAttribute("expenseList", expensePage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", expensePage.getTotalPages());
+        // ✅ SORT LOGIC (ADDED ONLY)
+        if (!sort.isEmpty()) {
+            switch (sort) {
+                case "amountAsc":
+                    list.sort(Comparator.comparing(ExpenseEntity::getAmount));
+                    break;
+                case "amountDesc":
+                    list.sort(Comparator.comparing(ExpenseEntity::getAmount).reversed());
+                    break;
+                case "dateAsc":
+                    list.sort(Comparator.comparing(ExpenseEntity::getDate));
+                    break;
+                case "dateDesc":
+                    list.sort(Comparator.comparing(ExpenseEntity::getDate).reversed());
+                    break;
+            }
+        }
+
+        // ✅ PAGINATION LOGIC (SAFE FIX ADDED)
+        int startIndex = page * size;
+
+        if (startIndex > list.size()) {
+            startIndex = 0;
+        }
+
+        int endIndex = Math.min(startIndex + size, list.size());
+
+        List<ExpenseEntity> paginatedList = list.subList(startIndex, endIndex);
+
+        int totalPages = (int) Math.ceil((double) list.size() / size);
+
+        // ✅ SEND DATA
+        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("list", paginatedList);
 
         model.addAttribute("keyword", keyword);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+        model.addAttribute("status", status);
+        model.addAttribute("userId", userId);
+        model.addAttribute("sort", sort); // ✅ ADDED
+
+        // ✅ PAGINATION DATA
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", totalPages);
 
         return "Admin/ExpenseList";
-    }
-
-    // ================= DELETE EXPENSE =================
-    @GetMapping("/expense/delete")
-    public String deleteExpense(@RequestParam Integer expenseId,
-                                HttpSession session) {
-
-        UserEntity admin = getAdmin(session);
-
-        if (admin == null) {
-            return "redirect:/login";
-        }
-
-        Optional<ExpenseEntity> expenseOpt =
-                expenseRepository.findById(expenseId);
-
-        if (expenseOpt.isPresent()) {
-            expenseRepository.deleteById(expenseId);
-        }
-
-        return "redirect:/admin/expense-list?success=deleted";
     }
     
  // ================= EDIT EXPENSE =================
@@ -255,5 +316,116 @@ public class ExpenseController {
         expenseRepository.save(expense);
 
         return "redirect:/admin/expense-list?success=updated";
+    }
+    
+ // ================= PDF EXPENSE =================
+    
+    @GetMapping("/expense/pdf")
+    public ResponseEntity<InputStreamResource> exportPdf() {
+
+        List<ExpenseEntity> list = expenseRepository.findAll();
+
+        ByteArrayInputStream pdf =
+                PdfGenerator.generateExpensePdf(list);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "inline; filename=expense.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
+    }
+    
+ // ================= FILTER EXPENSE =================
+    
+    @GetMapping("/expense/pdf/filter")
+    public ResponseEntity<InputStreamResource> exportFilteredPdf(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer userId) {
+
+        List<ExpenseEntity> list;
+
+        LocalDate start = null;
+        LocalDate end = null;
+
+        if (startDate != null && !startDate.isEmpty() &&
+            endDate != null && !endDate.isEmpty()) {
+
+            start = LocalDate.parse(startDate);
+            end = LocalDate.parse(endDate);
+        }
+
+        UserEntity user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId).orElse(null);
+        }
+
+        if (keyword == null) keyword = "";
+        if (status == null) status = "";
+
+     // ✅ SAME LOGIC AS LIST (FIXED)
+        if (user != null && !status.isEmpty() && start != null) {
+
+            list = expenseRepository
+                    .findByUserAndStatus_StatusAndDateBetweenAndTitleContainingIgnoreCase(
+                            user, status, start, end, keyword
+                    );
+
+        } else if (user != null && !status.isEmpty()) {
+
+            list = expenseRepository.findByUserAndStatus_Status(user, status);
+
+        } else if (!status.isEmpty()) {
+
+            list = expenseRepository.findByStatus_Status(status);
+
+        } else if (user != null) {
+
+            list = expenseRepository.findByUser(user);
+
+        } else if (start != null) {
+
+            list = expenseRepository
+                    .findByDateBetweenAndTitleContainingIgnoreCase(start, end, keyword);
+
+        } else if (!keyword.isEmpty()) {
+
+            list = expenseRepository.findByTitleContainingIgnoreCase(keyword);
+
+        } else {
+
+            list = expenseRepository.findAll();
+        }
+
+        ByteArrayInputStream pdf =
+                PdfGenerator.generateExpensePdf(list);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "inline; filename=filtered_expense.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
+    }
+    
+ // ================= DELETE EXPENSE =================
+    @GetMapping("/expense/delete")
+    public String deleteExpense(@RequestParam Integer expenseId) {
+
+        ExpenseEntity expense = expenseRepository.findById(expenseId).orElse(null);
+
+        if (expense != null) {
+
+            // 🔥 OPTIONAL (balance restore)
+            AccountEntity account = expense.getAccount();
+
+            if (account != null && account.getAmount() != null) {
+                account.setAmount(account.getAmount() + expense.getAmount());
+                accountRepository.save(account);
+            }
+
+            expenseRepository.deleteById(expenseId);
+        }
+
+        return "redirect:/admin/expense-list?success=deleted";
     }
 }

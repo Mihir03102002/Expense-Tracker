@@ -3,6 +3,7 @@ package com.Grownited.controller.Admin;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.Grownited.entity.UserEntity;
 import com.Grownited.entity.VendorEntity;
+import com.Grownited.repository.ExpenseRepository;
 import com.Grownited.repository.VendorRepository;
 
 @Controller
@@ -21,6 +23,9 @@ public class VendorController {
 
     @Autowired
     private VendorRepository vendorRepository;
+    
+    @Autowired
+    private ExpenseRepository expenseRepository;
 
     // ================= ADD PAGE =================
     @GetMapping("/admin/vendor")
@@ -91,6 +96,7 @@ public class VendorController {
     }
 
     // ================= DELETE =================
+    @Transactional
     @GetMapping("/admin/deleteVendor")
     public String deleteVendor(@RequestParam("vendorId") Integer vendorId,
                                HttpSession session) {
@@ -101,9 +107,13 @@ public class VendorController {
             return "redirect:/login";
         }
 
+        // 🔥 STEP 1: delete all expenses of this vendor
+        expenseRepository.deleteByVendorId(vendorId);
+
+        // 🔥 STEP 2: delete vendor
         vendorRepository.deleteById(vendorId);
 
-        return "redirect:/admin/listVendor?success=deleted"; // ✅ added
+        return "redirect:/admin/listVendor?success=deleted";
     }
 
     // ================= EDIT =================

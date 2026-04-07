@@ -68,20 +68,48 @@ pageEncoding="UTF-8"%>
 						</c:if>
 
                             <div class="table-responsive">
-                            <form method="get"
+                          
+                          
+                          <form method="get"
 						      action="${pageContext.request.contextPath}/user/expenseList"
-						      class="mb-3 d-flex">
+						      class="row g-2 align-items-center mb-3">
 						
-						    <input type="text"
-						           name="keyword"
-						           value="${keyword}"
-						           placeholder="Search expense..."
-						           class="form-control me-2"/>
+						    <!-- SEARCH -->
+						    <div class="col-md-5">
+						        <input type="text"
+						               name="keyword"
+						               value="${keyword}"
+						               placeholder="Search expense..."
+						               class="form-control"/>
+						    </div>
 						
-						    <button class="btn btn-primary">Search</button>
-						    
-						    
+						    <!-- SORT -->
+						    <div class="col-md-2">
+						        <select name="sort" class="form-select">
+						            <option value="">Sort</option>
+						            <option value="asc" ${sort == 'asc' ? 'selected' : ''}>Low → High</option>
+						            <option value="desc" ${sort == 'desc' ? 'selected' : ''}>High → Low</option>
+						        </select>
+						    </div>
+						
+						    <!-- STATUS -->
+						    <div class="col-md-2">
+						        <select name="status" class="form-select">
+						            <option value="">All Status</option>
+						            <option value="Paid" ${status == 'Paid' ? 'selected' : ''}>Paid</option>
+						            <option value="Partial" ${status == 'Partial' ? 'selected' : ''}>Partial</option>
+						            <option value="Unpaid" ${status == 'Unpaid' ? 'selected' : ''}>Unpaid</option>
+						        </select>
+						    </div>
+						
+						    <!-- BUTTON -->
+						    <div class="col-md-2">
+						        <button class="btn btn-primary w-100">Search</button>
+						    </div>
+						
 						</form>
+						
+						
 						<!-- ================= FILTER + PDF ================= -->
 						
 						<div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
@@ -186,7 +214,7 @@ pageEncoding="UTF-8"%>
             <!-- PREVIOUS -->
             <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/user/expenseList?page=${currentPage - 1}&keyword=${keyword}">
+                   href="${pageContext.request.contextPath}/user/expenseList?page=${currentPage - 1}&keyword=${keyword}&sort=${sort}&status=${status}">
                     Previous
                 </a>
             </li>
@@ -195,7 +223,7 @@ pageEncoding="UTF-8"%>
             <c:forEach begin="0" end="${totalPages - 1}" var="i">
                 <li class="page-item ${i == currentPage ? 'active' : ''}">
                     <a class="page-link"
-                       href="${pageContext.request.contextPath}/user/expenseList?page=${i}&keyword=${keyword}">
+                       href="${pageContext.request.contextPath}/user/expenseList?page=${i}&keyword=${keyword}&sort=${sort}&status=${status}">
                         ${i + 1}
                     </a>
                 </li>
@@ -204,7 +232,7 @@ pageEncoding="UTF-8"%>
             <!-- NEXT -->
             <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
                 <a class="page-link"
-                   href="${pageContext.request.contextPath}/user/expenseList?page=${currentPage + 1}&keyword=${keyword}">
+                   href="${pageContext.request.contextPath}/user/expenseList?page=${currentPage + 1}&keyword=${keyword}&sort=${sort}&status=${status}">
                     Next
                 </a>
             </li>

@@ -90,15 +90,6 @@
 
             </div>
 
-            <!-- YEAR FILTER -->
-            <form method="get" action="${pageContext.request.contextPath}/user/dashboard">
-                <select name="year" onchange="this.form.submit()" class="form-control w-25 mb-3">
-                    <c:forEach var="y" begin="2022" end="2030">
-                        <option value="${y}" ${y == selectedYear ? 'selected' : ''}>${y}</option>
-                    </c:forEach>
-                </select>
-            </form>
-
             <!-- BAR CHART -->
             <div class="card mb-4">
                 <div class="card-body">
@@ -248,4 +239,4 @@ new Chart(document.getElementById("monthPieChart"), {
 </script>
 
 </body>
-</html>
+</html> 

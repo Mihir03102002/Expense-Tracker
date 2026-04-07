@@ -73,43 +73,96 @@
 						</c:if>
 
 						<!-- ================= SEARCH + DATE FILTER ================= -->
-						<form method="get"
-						      action="${ctx}/admin/expense-list"
-						      class="mb-3 row g-2">
+					<form method="get"
+				      action="${ctx}/admin/expense-list"
+				      class="mb-3">
+				
+				    <div class="row g-2 align-items-center">
+				
+				        <!-- 🔍 Search -->
+				        <div class="col-md-2">
+				            <input type="text" name="keyword"
+				                   value="${keyword}"
+				                   placeholder="Search..."
+				                   class="form-control form-control-sm"/>
+				        </div>
+				
+				        <!-- 📅 Start -->
+				        <div class="col-md-2">
+				            <input type="date" name="startDate"
+				                   value="${startDate}"
+				                   class="form-control form-control-sm"/>
+				        </div>
+				
+				        <!-- 📅 End -->
+				        <div class="col-md-2">
+				            <input type="date" name="endDate"
+				                   value="${endDate}"
+				                   class="form-control form-control-sm"/>
+				        </div>
+				
+				        <!-- 🔽 SORT -->
+				        <div class="col-md-2">
+				            <select name="sort" class="form-control"
+							        onchange="this.form.submit()">
+							    <option value="">Sort</option>
+							    <option value="amountAsc" ${sort == 'amountAsc' ? 'selected' : ''}>Amount ↑</option>
+							    <option value="amountDesc" ${sort == 'amountDesc' ? 'selected' : ''}>Amount ↓</option>
+							    <option value="dateAsc" ${sort == 'dateAsc' ? 'selected' : ''}>Date ↑</option>
+							    <option value="dateDesc" ${sort == 'dateDesc' ? 'selected' : ''}>Date ↓</option>
+							</select>
+				        </div>
+				
+				        <!-- 🔽 STATUS -->
+				        <div class="col-md-2">
+				            <select name="status" class="form-select form-select-sm">
+				                <option value="">All Status</option>
+				                <option value="Paid" ${status=='Paid'?'selected':''}>Paid</option>
+				                <option value="Partial" ${status=='Partial'?'selected':''}>Partial</option>
+				                <option value="Unpaid" ${status=='Unpaid'?'selected':''}>Unpaid</option>
+				            </select>
+				        </div>
+				
+				        <!-- 👤 USER -->
+				        <div class="col-md-2">
+				            <select name="userId" class="form-select form-select-sm">
+				                <option value="">All Users</option>
+				                <c:forEach items="${users}" var="u">
+				                    <option value="${u.userId}"
+				                        ${userId == u.userId ? 'selected' : ''}>
+				                        ${u.firstName}
+				                    </option>
+				                </c:forEach>
+				            </select>
+				        </div>
+				
+				    </div>
+				
+				    <!-- 🔘 BUTTON -->
+				    <div class="row mt-2">
+				        <div class="col-md-2">
+				            <button class="btn btn-primary btn-sm w-100">Filter</button>
+				        </div>
+				    </div>
+				
+				</form>
+						
+						<div class="mb-3 d-flex gap-2">
 
-							<!-- 🔍 Search -->
-							<div class="col-md-3">
-								<input type="text"
-								       name="keyword"
-								       value="${keyword}"
-								       placeholder="Search..."
-								       class="form-control"/>
-							</div>
-
-							<!-- 📅 Start Date -->
-							<div class="col-md-3">
-								<input type="date"
-								       name="startDate"
-								       value="${startDate}"
-								       class="form-control"/>
-							</div>
-
-							<!-- 📅 End Date -->
-							<div class="col-md-3">
-								<input type="date"
-								       name="endDate"
-								       value="${endDate}"
-								       class="form-control"/>
-							</div>
-
-							<!-- 🔘 Filter Button -->
-							<div class="col-md-3">
-								<button class="btn btn-primary w-100">
-									Filter
-								</button>
-							</div>
-
-						</form>
+				    <!-- FULL PDF -->
+				    <a href="${ctx}/admin/expense/pdf"
+				       class="btn btn-success btn-sm">
+				        📄 Export PDF
+				    </a>
+				
+				    <!-- FILTER PDF -->
+				    <a href="${ctx}/admin/expense/pdf/filter?
+				       keyword=${keyword}&startDate=${startDate}&endDate=${endDate}&status=${status}&userId=${userId}"
+				       class="btn btn-dark btn-sm">
+				        📊 Filtered PDF
+				    </a>
+				
+				</div>
 
 						<!-- ================= EXPENSE TABLE ================= -->
 						<div class="table-responsive">
@@ -131,96 +184,108 @@
 								</thead>
 
 								<!-- ===== TABLE BODY ===== -->
-								<tbody>
+						<tbody>
 
-								    <c:choose>
-								
-								        <c:when test="${empty expenseList}">
-								            <tr>
-								                <td colspan="8">No expenses found</td>
-								            </tr>
-								        </c:when>
-								
-								        <c:otherwise>
-								
-								            <c:forEach var="e" items="${expenseList}" varStatus="status">
-								
-								                <tr>
-								
-								                    <td>${currentPage * 10 + status.index + 1}</td>
-								
-								                    <td>${e.title}</td>
-								                    <td>${e.category.categoryName}</td>
-								                    <td>${e.vendor.vendorName}</td>
-								                    <td>₹ ${e.amount}</td>
-								                    <td>${e.date}</td>
-								                    <td>${e.status.status}</td>
-								
-								                    <td>
-
-													    <a href="${ctx}/admin/expense/edit?expenseId=${e.expenseId}"
-													       class="btn btn-warning btn-sm rounded-pill">
-													        Edit
-													    </a>
-													
-													    <a href="${ctx}/admin/expense/delete?expenseId=${e.expenseId}"
-													       class="btn btn-danger btn-sm rounded-pill"
-													       onclick="return confirm('Are you sure?')">
-													        Delete
-													    </a>
-													
-													</td>
-								
-								                </tr>
-								
-								            </c:forEach>
-								
-								        </c:otherwise>
-								
-								    </c:choose>
-								
-								</tbody>
+							<c:choose>
+							
+							    <c:when test="${empty list}">
+							        <tr>
+							            <td colspan="8">No expenses found</td>
+							        </tr>
+							    </c:when>
+							
+							    <c:otherwise>
+							
+							        <c:forEach var="e" items="${list}" varStatus="loop">
+							            <tr>
+							                <td>${currentPage * pageSize + loop.index + 1}</td>
+							                <td>${e.title}</td>
+							                <td>${e.category.categoryName}</td>
+							                <td>${e.vendor.vendorName}</td>
+							                <td>₹ ${e.amount}</td>
+							                <td>${e.date}</td>
+							                <td>${e.status.status}</td>
+							
+							                <td>
+							                    <a href="${ctx}/admin/expense/edit?expenseId=${e.expenseId}"
+							                       class="btn btn-warning btn-sm rounded-pill">
+							                        Edit
+							                    </a>
+							
+							                    <a href="${pageContext.request.contextPath}/admin/expense/delete?expenseId=${e.expenseId}"
+												   class="btn btn-danger btn-sm rounded-pill"
+												   onclick="return confirm('Are you sure?')">
+												   Delete
+												</a>
+							                </td>
+							            </tr>
+							        </c:forEach>
+							
+							    </c:otherwise>
+							
+							</c:choose>
+							
+							</tbody>
 
 							</table>
 
 						</div>
 
 						<!-- ================= PAGINATION ================= -->
-						<c:if test="${totalPages > 1}">
-
-							<nav class="mt-3">
-								<ul class="pagination justify-content-center">
-
-									<!-- ⬅ PREVIOUS -->
-									<li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
-										<a class="page-link"
-										   href="${ctx}/admin/expense-list?page=${currentPage - 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
-											Previous
-										</a>
-									</li>
-
-									<!-- 🔢 PAGE NUMBERS -->
-									<c:forEach begin="0" end="${totalPages - 1}" var="i">
-										<li class="page-item ${i == currentPage ? 'active' : ''}">
-											<a class="page-link"
-											   href="${ctx}/admin/expense-list?page=${i}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
-												${i + 1}
-											</a>
-										</li>
-									</c:forEach>
-
-									<!-- ➡ NEXT -->
-									<li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
-										<a class="page-link"
-										   href="${ctx}/admin/expense-list?page=${currentPage + 1}&keyword=${keyword}&startDate=${startDate}&endDate=${endDate}">
-											Next
-										</a>
-									</li>
-
-								</ul>
-							</nav>
-
-						</c:if>
+					<!-- ================= PAGINATION ================= -->
+				<c:if test="${totalPages > 1}">
+				
+				    <nav class="mt-3">
+				        <ul class="pagination justify-content-center">
+				
+				            <!-- ⬅ PREVIOUS -->
+				            <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+				                <a class="page-link"
+				                   href="${ctx}/admin/expense-list?page=${currentPage - 1}
+				                   &keyword=${keyword}
+				                   &startDate=${startDate}
+				                   &endDate=${endDate}
+				                   &status=${status}
+				                   &userId=${userId}
+				                   &sort=${sort}">
+				                    Previous
+				                </a>
+				            </li>
+				
+				            <!-- 🔢 PAGE NUMBERS -->
+				            <c:forEach begin="0" end="${totalPages - 1}" var="i">
+				                <li class="page-item ${i == currentPage ? 'active' : ''}">
+				                    <a class="page-link"
+				                       href="${ctx}/admin/expense-list?page=${i}
+				                       &keyword=${keyword}
+				                       &startDate=${startDate}
+				                       &endDate=${endDate}
+				                       &status=${status}
+				                       &userId=${userId}
+				                       &sort=${sort}">
+				                        ${i + 1}
+				                    </a>
+				                </li>
+				            </c:forEach>
+				
+				            <!-- ➡ NEXT -->
+				            <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+				                <a class="page-link"
+				                   href="${ctx}/admin/expense-list?page=${currentPage + 1}
+				                   &keyword=${keyword}
+				                   &startDate=${startDate}
+				                   &endDate=${endDate}
+				                   &status=${status}
+				                   &userId=${userId}
+				                   &sort=${sort}">
+				                    Next
+				                </a>
+				            </li>
+				
+				        </ul>
+				    </nav>
+				
+				</c:if>
 
 					</div> <!-- END CARD BODY -->
 
