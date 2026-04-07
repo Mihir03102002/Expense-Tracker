@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
@@ -7,260 +7,114 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <title>Manage Sub Categories | Admin</title>
 
-<meta charset="UTF-8">
-
-<title>Manage Sub Categories | Admin</title>
-
-<!-- ================= ADMIN CSS ================= -->
-<jsp:include page="AdminCSS.jsp"></jsp:include>
-
+    <!-- ================= ADMIN CSS ================= -->
+    <jsp:include page="AdminCSS.jsp"></jsp:include>
 </head>
-
 
 <body>
 
 <div class="container-scroller">
 
-	<!-- ================= HEADER ================= -->
-	<jsp:include page="AdminHeader.jsp"></jsp:include>
+    <!-- ================= HEADER ================= -->
+    <jsp:include page="AdminHeader.jsp"></jsp:include>
 
+    <div class="container-fluid page-body-wrapper">
 
-	<div class="container-fluid page-body-wrapper">
+        <!-- ================= SIDEBAR ================= -->
+        <jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
 
-		<!-- ================= SIDEBAR ================= -->
-		<jsp:include page="AdminLeftSidebar.jsp"></jsp:include>
+        <!-- ================= MAIN PANEL ================= -->
+        <div class="main-panel">
 
+            <div class="content-wrapper">
 
+                <!-- ================= PAGE TITLE ================= -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h3>Sub-Category Management</h3>
+                        <p class="text-muted">Add and manage sub-categories</p>
+                    </div>
+                </div>
 
-		<!-- ================= MAIN PANEL ================= -->
-		<div class="main-panel">
+                <!-- ================= ADD SUB CATEGORY FORM ================= -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card shadow-sm mb-4">
 
-			<div class="content-wrapper">
+                            <!-- FORM HEADER -->
+                            <div class="card-header bg-primary text-white">
+                                Add New Sub-Category
+                            </div>
 
+                            <!-- FORM BODY -->
+                            <div class="card-body">
 
-				<!-- ================= PAGE TITLE ================= -->
-				<div class="row mb-4">
+                                <form action="subCategory" method="post">
 
-					<div class="col-md-12">
+                                    <div class="row g-3">
 
-						<h3>Sub-Category Management</h3>
+                                        <!-- CATEGORY DROPDOWN -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Category</label>
 
-						<p class="text-muted">
-							Add and manage sub-categories
-						</p>
+                                            <select name="categoryId"
+                                                    class="form-select"
+                                                    required>
 
-					</div>
+                                                <option value="">-- Select Category --</option>
 
-				</div>
+                                                <c:forEach var="cat" items="${categories}">
+                                                    <option value="${cat.categoryId}">
+                                                        ${cat.categoryName}
+                                                    </option>
+                                                </c:forEach>
 
+                                            </select>
+                                        </div>
 
+                                        <!-- SUB CATEGORY NAME -->
+                                        <div class="col-md-4">
+                                            <label class="form-label">Sub-Category Name</label>
 
-				<!-- ================= ADD SUB CATEGORY FORM ================= -->
-				<div class="row">
+                                            <input type="text"
+                                                   name="subCategoryName"
+                                                   class="form-control"
+                                                   placeholder="Enter sub-category name"
+                                                   required>
+                                        </div>
 
-					<div class="col-md-12">
+                                        <!-- ADD BUTTON -->
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button type="submit"
+                                                    class="btn btn-success w-100">
+                                                <i class="bi bi-plus-circle"></i>
+                                                Add Sub-Category
+                                            </button>
+                                        </div>
 
-						<div class="card shadow-sm mb-4">
+                                    </div>
 
+                                </form>
 
-							<!-- FORM HEADER -->
-							<div class="card-header bg-primary text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-								Add New Sub-Category
+               
 
-							</div>
+            <!-- ================= FOOTER ================= -->
+            <jsp:include page="AdminFooter.jsp"></jsp:include>
 
-
-
-							<!-- FORM BODY -->
-							<div class="card-body">
-
-								<form action="subCategory" method="post">
-
-									<div class="row g-3">
-
-
-										<!-- CATEGORY DROPDOWN -->
-										<div class="col-md-4">
-
-											<label class="form-label">
-												Category
-											</label>
-
-											<select name="categoryId"
-													class="form-select"
-													required>
-
-												<option value="">
-													-- Select Category --
-												</option>
-
-												<c:forEach var="cat" items="${categories}">
-
-													<option value="${cat.categoryId}">
-														${cat.categoryName}
-													</option>
-
-												</c:forEach>
-
-											</select>
-
-										</div>
-
-
-
-										<!-- SUB CATEGORY NAME -->
-										<div class="col-md-4">
-
-											<label class="form-label">
-												Sub-Category Name
-											</label>
-
-											<input type="text"
-												   name="subCategoryName"
-												   class="form-control"
-												   placeholder="Enter sub-category name"
-												   required>
-
-										</div>
-
-
-
-										<!-- ADD BUTTON -->
-										<div class="col-md-3 d-flex align-items-end">
-
-											<button type="submit"
-													class="btn btn-success w-100">
-
-												<i class="bi bi-plus-circle"></i>
-												Add Sub-Category
-
-											</button>
-
-										</div>
-
-									</div>
-
-								</form>
-
-							</div>
-
-						</div>
-
-					</div>
-
-				</div>
-
-
-
-				<!-- ================= SUB CATEGORY TABLE ================= -->
-				<div class="row">
-
-					<div class="col-md-12">
-
-						<div class="card shadow-sm">
-
-
-							<!-- TABLE HEADER -->
-							<div class="card-header bg-dark text-white">
-
-								Sub-Category List
-
-							</div>
-
-
-
-							<!-- TABLE BODY -->
-							<div class="card-body">
-
-								<div class="table-responsive">
-
-									<table class="table table-bordered table-hover text-center align-middle">
-
-
-										<!-- TABLE HEADER -->
-										<thead class="table-light">
-
-											<tr>
-												<th>Sr. No</th>
-												<th>Sub-Category</th>
-												<th>Category</th>
-											</tr>
-
-										</thead>
-
-
-
-										<!-- TABLE DATA -->
-										<tbody>
-
-											<c:forEach var="sub" items="${subCategories}" varStatus="status">
-
-												<tr>
-
-													<td>${status.index + 1}</td>
-
-													<td>${sub.subCategoryName}</td>
-
-													<td>${sub.category.categoryName}</td>
-
-												</tr>
-
-											</c:forEach>
-
-
-
-											<!-- IF EMPTY -->
-											<c:if test="${empty subCategories}">
-
-												<tr>
-
-													<td colspan="3" class="text-muted">
-														No sub-categories found
-													</td>
-
-												</tr>
-
-											</c:if>
-
-										</tbody>
-
-									</table>
-
-								</div>
-
-							</div>
-
-						</div>
-
-					</div>
-
-				</div>
-
-
-			</div>
-
-
-
-			<!-- ================= FOOTER ================= -->
-			<jsp:include page="AdminFooter.jsp"></jsp:include>
-
-
-		</div>
-
-
-	</div>
-
-
+        </div>
+    </div>
 </div>
-
-
 
 <!-- ================= ADMIN JS ================= -->
 <jsp:include page="AdminJS.jsp"></jsp:include>
 
-
 </body>
-
 </html>

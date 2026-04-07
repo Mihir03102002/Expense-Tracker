@@ -6,14 +6,24 @@
 <html lang="en">
 
 <head>
-
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Expense Tracker User</title>
 
-<!-- CSS -->
 <jsp:include page="UserCSS.jsp"></jsp:include>
+
+<style>
+/* Chart Size Control */
+.chart-container {
+    position: relative;
+    height: 280px;
+}
+
+.pie-container {
+    height: 250px;
+}
+</style>
 
 </head>
 
@@ -21,152 +31,219 @@
 
 <div class="container-scroller">
 
-    <!-- ================= HEADER ================= -->
     <jsp:include page="UserHeader.jsp"/>
 
     <div class="container-fluid page-body-wrapper">
 
-        <!-- ================= SIDEBAR ================= -->
         <jsp:include page="UserLeftSidebar.jsp"/>
 
-        <!-- ================= MAIN PANEL ================= -->
         <div class="main-panel">
         <div class="content-wrapper">
 
-            <!-- ================= WELCOME ================= -->
-            <div class="row">
-                <div class="col-md-12 grid-margin">
-                    <h3 class="font-weight-bold">
+            <!-- WELCOME -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h4 class="font-weight-bold">
                         Welcome ${sessionScope.user.firstName}
-                    </h3>
-                    <h6 class="font-weight-normal mb-0">
-                        Track your income and expenses efficiently.
-                    </h6>
+                    </h4>
                 </div>
             </div>
 
-            <!-- ================= CARDS ================= -->
-            <div class="row">
+            <!-- CARDS -->
+            <div class="row mb-4">
 
-                <div class="col-md-3 mb-4 stretch-card">
+                <div class="col-md-3">
                     <div class="card card-light-danger">
                         <div class="card-body">
-                            <p class="mb-4">This Month Expenses</p>
-                            <h3>₹ <fmt:formatNumber value="${monthExpense}" minFractionDigits="2"/></h3>
+                            <p>This Month Expenses</p>
+                            <h4>₹ <fmt:formatNumber value="${monthExpense}" minFractionDigits="2"/></h4>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-4 stretch-card">
+                <div class="col-md-3">
                     <div class="card card-dark-blue">
                         <div class="card-body">
-                            <p class="mb-4">Quarterly Expenses</p>
-                            <h3>₹ <fmt:formatNumber value="${quarterExpense}" minFractionDigits="2"/></h3>
+                            <p>Quarterly Expenses</p>
+                            <h4>₹ <fmt:formatNumber value="${quarterExpense}" minFractionDigits="2"/></h4>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-4 stretch-card">
+                <div class="col-md-3">
                     <div class="card card-tale">
                         <div class="card-body">
-                            <p class="mb-4">This Month Income</p>
-                            <h3>₹ <fmt:formatNumber value="${monthIncome}" minFractionDigits="2"/></h3>
+                            <p>This Month Income</p>
+                            <h4>₹ <fmt:formatNumber value="${monthIncome}" minFractionDigits="2"/></h4>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-4 stretch-card">
+                <div class="col-md-3">
                     <div class="card card-light-blue">
                         <div class="card-body">
-                            <p class="mb-4">Quarterly Income</p>
-                            <h3>₹ <fmt:formatNumber value="${quarterIncome}" minFractionDigits="2"/></h3>
+                            <p>Quarterly Income</p>
+                            <h4>₹ <fmt:formatNumber value="${quarterIncome}" minFractionDigits="2"/></h4>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- ================= CHART ================= -->
+            <!-- YEAR FILTER -->
+            <form method="get" action="${pageContext.request.contextPath}/user/dashboard">
+                <select name="year" onchange="this.form.submit()" class="form-control w-25 mb-3">
+                    <c:forEach var="y" begin="2022" end="2030">
+                        <option value="${y}" ${y == selectedYear ? 'selected' : ''}>${y}</option>
+                    </c:forEach>
+                </select>
+            </form>
+
+            <!-- BAR CHART -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Monthly Income vs Expense</h5>
+                    <div class="chart-container">
+                        <canvas id="sales-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PIE CHART -->
             <div class="row">
-                <div class="col-md-12 grid-margin stretch-card">
+
+                <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-
-                            <div class="d-flex justify-content-between">
-                                <p class="card-title">
-                                    Monthly Income vs Expense Report
-                                </p>
+                            <h6>Category Wise (Year)</h6>
+                            <div class="pie-container">
+                                <canvas id="yearPieChart"></canvas>
                             </div>
-
-                            <p class="font-weight-500">
-                                This chart shows monthly comparison between income and expenses.
-                            </p>
-
-                            <canvas id="sales-chart" height="100"></canvas>
-
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Category Wise (Month)</h6>
+                            <div class="pie-container">
+                                <canvas id="monthPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
 
-        <!-- ================= FOOTER ================= -->
         <jsp:include page="UserFooter.jsp"/>
-
         </div>
 
     </div>
 
 </div>
 
-<!-- ================= JS ================= -->
 <jsp:include page="UserJS.jsp"></jsp:include>
 
-<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- ================= CHART SCRIPT ================= -->
 <script>
 
-    // DATA FROM CONTROLLER
-    const months = ${monthsJson};
-    const incomeData = ${incomeList};
-    const expenseData = ${expenseList};
+// ===== MODERN COLORS =====
+const incomeColor = "#22c55e";   // green
+const expenseColor = "#ef4444";  // red
 
-    const ctx = document.getElementById('sales-chart').getContext('2d');
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: months,
-            datasets: [
-                {
-                    label: 'Income',
-                    data: incomeData,
-                    backgroundColor: '#4CAF50'
-                },
-                {
-                    label: 'Expense',
-                    data: expenseData,
-                    backgroundColor: '#F44336'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
+// BAR CHART
+new Chart(document.getElementById('sales-chart'), {
+    type: 'bar',
+    data: {
+        labels: ${monthsJson},
+        datasets: [
+            {
+                label: 'Income',
+                data: ${incomeList},
+                backgroundColor: incomeColor,
+                borderRadius: 8
             },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+            {
+                label: 'Expense',
+                data: ${expenseList},
+                backgroundColor: expenseColor,
+                borderRadius: 8
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top' }
+        },
+        scales: {
+            x: { ticks: { autoSkip: false } },
+            y: { beginAtZero: true }
+        }
+    }
+});
+
+// CATEGORY COLORS
+const colors = {
+    "Food": "#6366f1",
+    "Transportation": "#10b981",
+    "Bills": "#f59e0b",
+    "Shopping": "#ef4444",
+    "Entertainment": "#06b6d4"
+};
+
+function getColors(labels){
+    return labels.map(l => colors[l] || "#9ca3af");
+}
+
+// YEAR PIE
+new Chart(document.getElementById("yearPieChart"), {
+    type: 'doughnut',
+    data: {
+        labels: ${yearCategoryLabels},
+        datasets: [{
+            data: ${yearCategoryData},
+            backgroundColor: getColors(${yearCategoryLabels})
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        cutout: "60%",
+        onClick: (e, item) => {
+            if(item.length){
+                let cat = ${yearCategoryLabels}[item[0].index];
+                window.location.href = "expenseList?category=" + cat;
             }
         }
-    });
+    }
+});
+
+// MONTH PIE
+new Chart(document.getElementById("monthPieChart"), {
+    type: 'doughnut',
+    data: {
+        labels: ${monthCategoryLabels},
+        datasets: [{
+            data: ${monthCategoryData},
+            backgroundColor: getColors(${monthCategoryLabels})
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        cutout: "60%",
+        onClick: (e, item) => {
+            if(item.length){
+                let cat = ${monthCategoryLabels}[item[0].index];
+                window.location.href = "expenseList?category=" + cat;
+            }
+        }
+    }
+});
 
 </script>
 

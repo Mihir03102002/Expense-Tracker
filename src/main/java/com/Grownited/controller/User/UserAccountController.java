@@ -15,6 +15,10 @@ import com.Grownited.repository.AccountRepository;
 import com.Grownited.repository.ExpenseRepository;
 import com.Grownited.repository.IncomeRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+
 @Controller
 @RequestMapping("/user")
 public class UserAccountController {
@@ -28,7 +32,7 @@ public class UserAccountController {
     @Autowired
     private IncomeRepository incomeRepository;
 
-    // ================= OPEN ADD ACCOUNT PAGE =================
+    // ================= OPEN ADD ACCOUNT =================
     @GetMapping("/account")
     public String openAccountPage(Model model, HttpSession session) {
 
@@ -46,7 +50,7 @@ public class UserAccountController {
         return "User/AddAccount";
     }
 
-    // ================= SAVE ACCOUNT =================
+    // ================= SAVE =================
     @PostMapping("/account")
     public String saveAccount(AccountEntity accountEntity,
                               HttpSession session) {
@@ -59,15 +63,26 @@ public class UserAccountController {
 
         accountEntity.setUserId(user.getUserId());
 
+        if (accountEntity.getAmount() == null) {
+            accountEntity.setAmount(0.0);
+        }
+
+        if (accountEntity.getAmount() < 0) {
+            return "redirect:/user/account?error=invalidAmount";
+        }
+
         accountRepository.save(accountEntity);
 
-        return "redirect:/user/account";
+        return "redirect:/user/accountList?success=added";
     }
 
-    // ================= ACCOUNT LIST =================
+    // ================= LIST =================
     @GetMapping("/accountList")
-    public String openAccountListPage(Model model,
-                                      HttpSession session) {
+    public String openAccountListPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            Model model,
+            HttpSession session) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -75,19 +90,33 @@ public class UserAccountController {
             return "redirect:/login";
         }
 
-        List<AccountEntity> accounts =
-                accountRepository.findByUserId(user.getUserId());
+        int size = 10;
 
-        model.addAttribute("accounts", accounts);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AccountEntity> accountPage;
+
+        // 🔍 SEARCH
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            accountPage = accountRepository
+                    .findByUserIdAndTitleContainingIgnoreCase(
+                            user.getUserId(), keyword, pageable);
+        } else {
+            accountPage = accountRepository
+                    .findByUserId(user.getUserId(), pageable);
+        }
+
+        model.addAttribute("accounts", accountPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", accountPage.getTotalPages());
+        model.addAttribute("keyword", keyword);
 
         return "User/UserAccountList";
     }
 
-    // ================= DELETE ACCOUNT =================
+    // ================= DELETE =================
     @GetMapping("/account/delete")
     public String deleteAccount(@RequestParam Integer accountId,
-                                HttpSession session,
-                                Model model) {
+                                HttpSession session) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -95,25 +124,68 @@ public class UserAccountController {
             return "redirect:/login";
         }
 
-        // check if account has expenses
         boolean hasExpense =
                 expenseRepository.existsByAccountAccountId(accountId);
 
-        // check if account has income
         boolean hasIncome =
                 incomeRepository.existsByAccountAccountId(accountId);
 
         if (hasExpense || hasIncome) {
-
-            model.addAttribute("error",
-                    "Cannot delete account. Please delete transactions first.");
-
-            return "redirect:/user/accountList";
+            return "redirect:/user/accountList?error=hasTransaction";
         }
 
         accountRepository.deleteById(accountId);
 
-        return "redirect:/user/accountList";
+        return "redirect:/user/accountList?success=deleted";
     }
 
+    // ================= EDIT =================
+    @GetMapping("/account/edit")
+    public String editAccount(@RequestParam Integer accountId,
+                              Model model,
+                              HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        AccountEntity account =
+                accountRepository.findById(accountId).orElse(null);
+
+        model.addAttribute("account", account);
+
+        return "User/EditAccount";
+    }
+
+    // ================= UPDATE =================
+    @PostMapping("/account/update")
+    public String updateAccount(AccountEntity accountEntity,
+                                HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // 👉 Get existing account from DB
+        AccountEntity existingAccount =
+                accountRepository.findById(accountEntity.getAccountId()).orElse(null);
+
+        if (existingAccount == null) {
+            return "redirect:/user/accountList?error=notfound";
+        }
+
+        // ✅ Update only allowed fields
+        existingAccount.setTitle(accountEntity.getTitle());
+        existingAccount.setAccountType(accountEntity.getAccountType());
+
+        // ❌ DO NOT update amount (balance)
+
+        accountRepository.save(existingAccount);
+
+        return "redirect:/user/accountList?success=updated";
+    }
 }

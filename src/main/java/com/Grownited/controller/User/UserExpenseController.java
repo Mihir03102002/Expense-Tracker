@@ -1,17 +1,29 @@
 package com.Grownited.controller.User;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.Grownited.entity.*;
 import com.Grownited.repository.*;
+import com.Grownited.util.PdfGenerator;
 
 import jakarta.servlet.http.HttpSession;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Controller
 @RequestMapping("/user")
@@ -117,13 +129,17 @@ public class UserExpenseController {
 
         expenseRepository.save(expense);
 
-        return "redirect:/user/expenseList";
+        return "redirect:/user/expenseList?success=added";
     }
     // =============================
     // USER EXPENSE LIST
     // =============================
     @GetMapping("/expenseList")
-    public String expenseList(Model model, HttpSession session) {
+    public String expenseList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String keyword,
+            Model model,
+            HttpSession session) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -131,9 +147,24 @@ public class UserExpenseController {
             return "redirect:/login";
         }
 
-        List<ExpenseEntity> expenses = expenseRepository.findByUser(user);
+        int size = 10;
 
-        model.addAttribute("expenses", expenses);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ExpenseEntity> expensePage;
+
+        // 🔍 SEARCH
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            expensePage = expenseRepository
+                    .findByUserAndTitleContainingIgnoreCase(user, keyword, pageable);
+        } else {
+            expensePage = expenseRepository
+                    .findByUser(user, pageable);
+        }
+
+        model.addAttribute("expenses", expensePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", expensePage.getTotalPages());
+        model.addAttribute("keyword", keyword);
 
         return "User/UserExpenseList";
     }
@@ -184,7 +215,106 @@ public class UserExpenseController {
             }
         }
 
-        return "redirect:/user/expenseList";
+        return "redirect:/user/expenseList?success=deleted";
+    }
+    
+ // ================= EDIT EXPENSE =================
+    @GetMapping("/editExpense")
+    public String editExpense(@RequestParam Integer expenseId,
+                              Model model,
+                              HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        ExpenseEntity expense = expenseRepository.findById(expenseId).orElse(null);
+
+        model.addAttribute("expense", expense);
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("subCategories", subCategoryRepository.findAll());
+        model.addAttribute("vendors", vendorRepository.findAll());
+        model.addAttribute("accounts",
+                accountRepository.findByUserId(user.getUserId()));
+        model.addAttribute("statuses", statusRepository.findAll());
+
+        return "User/EditExpense";
+    }
+    
+ // ================= UPDATE EXPENSE =================
+    @PostMapping("/updateExpense")
+    public String updateExpense(@ModelAttribute ExpenseEntity expense,
+                                HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        expense.setUser(user);
+
+        AccountEntity account =
+                accountRepository.findById(expense.getAccount().getAccountId()).orElse(null);
+
+        StatusEntity status =
+                statusRepository.findById(expense.getStatus().getStatusId()).orElse(null);
+
+        if (account != null && status != null) {
+
+            Double balance = account.getAmount() == null ? 0.0 : account.getAmount();
+            Float amount = expense.getAmount();
+
+            String st = status.getStatus();
+
+            if ("Paid".equalsIgnoreCase(st)) {
+                balance -= amount;
+            } else if ("Partial".equalsIgnoreCase(st)) {
+                balance -= (amount / 2);
+            }
+
+            account.setAmount(balance);
+            accountRepository.save(account);
+        }
+
+        expenseRepository.save(expense);
+
+        return "redirect:/user/expenseList?success=updated";
+    }
+    
+    @GetMapping("/expense/pdf")
+    public ResponseEntity<InputStreamResource> exportExpensePdf(HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        List<ExpenseEntity> expenses = expenseRepository.findByUser(user);
+
+        ByteArrayInputStream pdf = PdfGenerator.generateExpensePdf(expenses);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "inline; filename=expense_report.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
     }
 
+    @GetMapping("/expense/pdf/filter")
+    public ResponseEntity<InputStreamResource> exportFilteredExpensePdf(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            HttpSession session) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+
+        List<ExpenseEntity> expenses = expenseRepository
+                .findByUserAndDateBetween(user, startDate, endDate);
+
+        ByteArrayInputStream pdf = PdfGenerator.generateExpensePdf(expenses);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "inline; filename=expense_filtered_report.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
+    }
 }

@@ -1,5 +1,7 @@
 package com.Grownited.entity;
 
+import java.util.Date;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -66,5 +68,16 @@ public class AccountEntity {
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
+
+	public Date getBalance() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
+	
+
+	
 
 }

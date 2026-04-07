@@ -37,6 +37,10 @@ public class CategoryEntity {
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     
 	

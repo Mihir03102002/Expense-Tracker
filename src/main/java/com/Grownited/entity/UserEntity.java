@@ -138,4 +138,6 @@ public class UserEntity {
     public void setActive(Boolean active) {
         this.active = active;
     }
+
+	
 }

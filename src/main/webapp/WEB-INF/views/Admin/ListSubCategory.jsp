@@ -54,6 +54,19 @@ pageEncoding="UTF-8"%>
                     </div>
 
                     <div class="card-body">
+                    
+                    <!-- ✅ SUCCESS MESSAGE -->
+						<c:if test="${param.success == 'added'}">
+						    <div class="alert alert-success">Sub-Category added successfully!</div>
+						</c:if>
+						
+						<c:if test="${param.success == 'updated'}">
+						    <div class="alert alert-success">Sub-Category updated successfully!</div>
+						</c:if>
+						
+						<c:if test="${param.success == 'deleted'}">
+						    <div class="alert alert-danger">Sub-Category deleted successfully!</div>
+						</c:if>
 
                         <!-- 🔍 SEARCH -->
                         <form method="get" action="${ctx}/admin/listSubCategory" class="mb-3 d-flex">

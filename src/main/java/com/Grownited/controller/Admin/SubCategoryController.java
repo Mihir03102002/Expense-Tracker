@@ -1,9 +1,9 @@
 package com.Grownited.controller.Admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;          // ✅ ADDED
-import org.springframework.data.domain.PageRequest;  // ✅ ADDED
-import org.springframework.data.domain.Pageable;     // ✅ ADDED
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +33,7 @@ public class SubCategoryController {
         return "Admin/SubCategory";
     }
 
-    // ================= SAVE SUBCATEGORY =================
+    // ================= SAVE =================
     @PostMapping("/admin/subCategory")
     public String saveSubCategory(
             @RequestParam("subCategoryName") String subCategoryName,
@@ -46,10 +46,10 @@ public class SubCategoryController {
 
         subCategoryRepository.save(sub);
 
-        return "redirect:/admin/listSubCategory";
+        return "redirect:/admin/listSubCategory?success=added"; // ✅ added
     }
 
-    // ================= LIST PAGE (UPDATED 🔥) =================
+    // ================= LIST =================
     @GetMapping("/admin/listSubCategory")
     public String listSubCategory(
             @RequestParam(defaultValue = "0") int page,
@@ -61,7 +61,6 @@ public class SubCategoryController {
         Pageable pageable = PageRequest.of(page, size);
         Page<SubCategoryEntity> subCategoryPage;
 
-        // 🔍 SEARCH
         if (keyword != null && !keyword.trim().isEmpty()) {
             subCategoryPage = subCategoryRepository
                     .findBySubCategoryNameContainingIgnoreCase(keyword, pageable);
@@ -83,6 +82,36 @@ public class SubCategoryController {
 
         subCategoryRepository.deleteById(subCategoryId);
 
-        return "redirect:/admin/listSubCategory";
+        return "redirect:/admin/listSubCategory?success=deleted"; // ✅ added
+    }
+
+    // ================= EDIT =================
+    @GetMapping("/admin/editSubCategory")
+    public String editSubCategory(@RequestParam Integer subCategoryId,
+                                 Model model) {
+
+        SubCategoryEntity sub = subCategoryRepository.findById(subCategoryId).orElse(null);
+
+        model.addAttribute("subCategory", sub);
+        model.addAttribute("categories", categoryRepository.findAll());
+
+        return "Admin/EditSubCategory";
+    }
+
+    // ================= UPDATE =================
+    @PostMapping("/admin/updateSubCategory")
+    public String updateSubCategory(
+            @RequestParam Integer subCategoryId,
+            @RequestParam String subCategoryName,
+            @RequestParam Integer categoryId) {
+
+        SubCategoryEntity sub = subCategoryRepository.findById(subCategoryId).orElse(null);
+
+        sub.setSubCategoryName(subCategoryName);
+        sub.setCategory(categoryRepository.findById(categoryId).get());
+
+        subCategoryRepository.save(sub);
+
+        return "redirect:/admin/listSubCategory?success=updated"; // ✅ added
     }
 }

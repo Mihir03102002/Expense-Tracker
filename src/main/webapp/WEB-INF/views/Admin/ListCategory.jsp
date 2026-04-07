@@ -85,6 +85,28 @@
 
                             <!-- ================= CARD BODY ================= -->
                             <div class="card-body">
+                            
+								                            <!-- ✅ SUCCESS MESSAGE (ONLY ONCE) -->
+								<c:if test="${param.success == 'added'}">
+								    <div class="alert alert-success alert-dismissible fade show">
+								        ✅ Category added successfully!
+								        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+								    </div>
+								</c:if>
+								
+								<c:if test="${param.success == 'deleted'}">
+								    <div class="alert alert-danger alert-dismissible fade show">
+								        ❌ Category deleted successfully!
+								        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+								    </div>
+								</c:if>
+								
+								<c:if test="${param.success == 'updated'}">
+								    <div class="alert alert-success alert-dismissible fade show">
+								        ✅ Category updated successfully!
+								        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+								    </div>
+								</c:if>
 
                                 <!-- 🔍 SEARCH BAR -->
                                 <form method="get" action="${ctx}/admin/listCategory" class="mb-3 d-flex">
@@ -133,13 +155,19 @@
                                                     <td>${cat.categoryName}</td>
 
                                                     <td>
+                                                    <!-- ✏️ EDIT BUTTON -->
+														    <a href="${ctx}/admin/editCategory?categoryId=${cat.categoryId}"
+														       class="btn btn-warning btn-sm rounded-pill">
+														        Edit
+														    </a>
+														    
                                                         <a href="${ctx}/admin/deleteCategory?categoryId=${cat.categoryId}"
                                                            class="btn btn-danger btn-sm rounded-pill"
                                                            onclick="return confirm('Are you sure you want to delete this category?')">
                                                             Delete
                                                         </a>
                                                     </td>
-
+													
                                                 </tr>
 
                                             </c:forEach>

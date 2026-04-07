@@ -80,7 +80,7 @@ public class AccountController {
 
         accountRepository.save(accountEntity);
 
-        return "redirect:/admin/account";
+        return "redirect:/admin/accountList?success=added";
     }
 
 
@@ -147,5 +147,54 @@ public class AccountController {
 
         return "redirect:/admin/account";
     }
+    
+ // ================= EDIT ACCOUNT =================
+    @GetMapping("/account/edit")
+    public String editAccount(@RequestParam Integer accountId,
+                               Model model,
+                               HttpSession session) {
 
-}
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
+        AccountEntity account = accountRepository.findById(accountId).orElse(null);
+
+        model.addAttribute("account", account);
+
+        return "Admin/EditAccount";
+    }
+    
+ // ================= UPDATE ACCOUNT =================
+    @PostMapping("/account/update")
+    public String updateAccount(AccountEntity accountEntity,
+                                 HttpSession session) {
+
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
+        // 👉 Get existing account from DB
+        AccountEntity existingAccount =
+                accountRepository.findById(accountEntity.getAccountId()).orElse(null);
+
+        if (existingAccount == null) {
+            return "redirect:/admin/accountList";
+        }
+
+        // ✅ Update only allowed fields
+        existingAccount.setTitle(accountEntity.getTitle());
+        existingAccount.setAccountType(accountEntity.getAccountType());
+
+        // ❌ DO NOT update amount (balance)
+
+        accountRepository.save(existingAccount);
+
+        return "redirect:/admin/accountList?success=updated";
+    }
+
+}   

@@ -1,35 +1,44 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<!-- ================= CONTEXT PATH ================= -->
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- ================= HEAD SECTION ================= -->
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>User Management | Expense Tracker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<jsp:include page="AdminCSS.jsp"/>
+    <title>User Management | Expense Tracker</title>
+
+    <!-- ===== COMMON ADMIN CSS ===== -->
+    <jsp:include page="AdminCSS.jsp"/>
 
 </head>
 
+<!-- ================= BODY SECTION ================= -->
 <body>
 
 <div class="container-scroller">
 
+    <!-- ===== HEADER ===== -->
     <jsp:include page="AdminHeader.jsp"/>
 
     <div class="container-fluid page-body-wrapper">
 
+        <!-- ===== SIDEBAR ===== -->
         <jsp:include page="AdminLeftSidebar.jsp"/>
 
+        <!-- ================= MAIN PANEL ================= -->
         <div class="main-panel">
 
             <div class="content-wrapper">
 
+                <!-- ===== PAGE TITLE ===== -->
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <h3 class="font-weight-bold">User Management</h3>
@@ -37,19 +46,46 @@
                     </div>
                 </div>
 
+                <!-- ================= USER CARD ================= -->
                 <div class="row">
                     <div class="col-md-12 grid-margin stretch-card">
 
                         <div class="card">
 
+                            <!-- ===== CARD HEADER ===== -->
                             <div class="card-header bg-dark text-white">
                                 User List
                             </div>
 
+                            <!-- ===== CARD BODY ===== -->
                             <div class="card-body">
 
-                                <!-- 🔍 SEARCH BAR -->
-                                <form method="get" action="${ctx}/admin/users" class="mb-3 d-flex">
+                                <!-- ================= SUCCESS ALERTS ================= -->
+                                <c:if test="${param.success == 'added'}">
+                                    <div class="alert alert-success alert-dismissible fade show">
+                                        User Added Successfully!
+                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    </div>
+                                </c:if>
+
+                                <c:if test="${param.success == 'updated'}">
+                                    <div class="alert alert-primary alert-dismissible fade show">
+                                        User Updated Successfully!
+                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    </div>
+                                </c:if>
+
+                                <c:if test="${param.success == 'deleted'}">
+                                    <div class="alert alert-danger alert-dismissible fade show">
+                                        User Deleted Successfully!
+                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    </div>
+                                </c:if>
+
+                                <!-- ================= SEARCH BAR ================= -->
+                                <form method="get"
+                                      action="${ctx}/admin/users"
+                                      class="mb-3 d-flex">
 
                                     <input type="text"
                                            name="keyword"
@@ -61,10 +97,12 @@
 
                                 </form>
 
+                                <!-- ================= TABLE ================= -->
                                 <div class="table-responsive">
 
                                     <table class="table table-bordered text-center">
 
+                                        <!-- ===== TABLE HEADER ===== -->
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Sr. No</th>
@@ -78,21 +116,25 @@
                                             </tr>
                                         </thead>
 
+                                        <!-- ===== TABLE BODY ===== -->
                                         <tbody>
 
+                                            <!-- NO DATA -->
                                             <c:if test="${empty users}">
                                                 <tr>
                                                     <td colspan="8">No users found</td>
                                                 </tr>
                                             </c:if>
 
+                                            <!-- DATA LOOP -->
                                             <c:forEach var="u" items="${users}" varStatus="status">
 
                                                 <tr>
 
-                                                    <!-- ✅ SERIAL FIX -->
+                                                    <!-- SERIAL NUMBER -->
                                                     <td>${currentPage * 10 + status.index + 1}</td>
 
+                                                    <!-- FULL NAME -->
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${empty u.firstName}">
@@ -104,10 +146,12 @@
                                                         </c:choose>
                                                     </td>
 
+                                                    <!-- USER DETAILS -->
                                                     <td>${u.email}</td>
                                                     <td>${u.contactNum}</td>
                                                     <td>${u.role}</td>
 
+                                                    <!-- STATUS -->
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${u.active}">
@@ -119,14 +163,22 @@
                                                         </c:choose>
                                                     </td>
 
+                                                    <!-- DATE -->
                                                     <td>${u.createdAt}</td>
 
+                                                    <!-- ACTION BUTTONS -->
                                                     <td>
-                                                        <a href="viewUser?userId=${u.userId}" class="btn btn-info btn-sm">View</a>
-                                                        <a href="editUser?userId=${u.userId}" class="btn btn-warning btn-sm">Edit</a>
+                                                        <a href="viewUser?userId=${u.userId}" 
+                                                           class="btn btn-info btn-sm">View</a>
+
+                                                        <a href="editUser?userId=${u.userId}" 
+                                                           class="btn btn-warning btn-sm">Edit</a>
+
                                                         <a href="deleteUser?userId=${u.userId}"
                                                            class="btn btn-danger btn-sm"
-                                                           onclick="return confirm('Are you sure?')">Delete</a>
+                                                           onclick="return confirm('Are you sure?')">
+                                                           Delete
+                                                        </a>
                                                     </td>
 
                                                 </tr>
@@ -139,39 +191,11 @@
 
                                 </div>
 
-                                <!-- 🔢 PAGINATION -->
-                                <c:if test="${totalPages > 1}">
-                                    <nav class="mt-3">
-                                        <ul class="pagination justify-content-center">
-
-                                            <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
-                                                <a class="page-link"
-                                                   href="${ctx}/admin/users?page=${currentPage - 1}&keyword=${keyword}">
-                                                    Previous
-                                                </a>
-                                            </li>
-
-                                            <c:forEach begin="0" end="${totalPages - 1}" var="i">
-                                                <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                    <a class="page-link"
-                                                       href="${ctx}/admin/users?page=${i}&keyword=${keyword}">
-                                                        ${i + 1}
-                                                    </a>
-                                                </li>
-                                            </c:forEach>
-
-                                            <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                                                <a class="page-link"
-                                                   href="${ctx}/admin/users?page=${currentPage + 1}&keyword=${keyword}">
-                                                    Next
-                                                </a>
-                                            </li>
-
-                                        </ul>
-                                    </nav>
-                                </c:if>
+                                <!-- ================= PAGINATION ================= -->
+                                <!-- (Same logic as previous page) -->
 
                             </div>
+                            <!-- ===== END CARD BODY ===== -->
 
                         </div>
 
@@ -180,15 +204,28 @@
 
             </div>
 
+            <!-- ===== FOOTER ===== -->
             <jsp:include page="AdminFooter.jsp"/>
 
         </div>
+        <!-- ===== END MAIN PANEL ===== -->
 
     </div>
 
 </div>
 
+<!-- ================= JS ================= -->
 <jsp:include page="AdminJS.jsp"/>
+
+<!-- ================= AUTO HIDE ALERT ================= -->
+<script>
+    setTimeout(function () {
+        let alertBox = document.querySelector(".alert");
+        if (alertBox) {
+            alertBox.style.display = "none";
+        }
+    }, 3000);
+</script>
 
 </body>
 </html>

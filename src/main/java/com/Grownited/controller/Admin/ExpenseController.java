@@ -73,7 +73,7 @@ public class ExpenseController {
     }
 
 
-    // ================= SAVE EXPENSE =================
+ // ================= SAVE EXPENSE =================
     @PostMapping("/expense/save")
     public String saveExpense(ExpenseEntity expense,
                               HttpSession session) {
@@ -98,19 +98,31 @@ public class ExpenseController {
                 .findById(expense.getStatus().getStatusId())
                 .orElse(null);
 
-        if (category == null || vendor == null || status == null) {
+        AccountEntity account = accountRepository   // 🔥 ADD THIS
+                .findById(expense.getAccount().getAccountId())
+                .orElse(null);
+
+        if (category == null || vendor == null || status == null || account == null) {
             return "redirect:/admin/expense";
         }
 
         expense.setCategory(category);
         expense.setVendor(vendor);
         expense.setStatus(status);
+        expense.setAccount(account); // 🔥 IMPORTANT
+
+        // 🔥 BALANCE MINUS
+        if (account.getAmount() == null) {
+            account.setAmount(0.0);
+        }
+
+        account.setAmount(account.getAmount() - expense.getAmount());
 
         expenseRepository.save(expense);
+        accountRepository.save(account); // 🔥 SAVE UPDATED BALANCE
 
-        return "redirect:/admin/expense-list";
+        return "redirect:/admin/expense-list?success=added";
     }
-
 
     // ================= EXPENSE LIST =================
     @GetMapping("/expense-list")
@@ -180,6 +192,68 @@ public class ExpenseController {
             expenseRepository.deleteById(expenseId);
         }
 
-        return "redirect:/admin/expense-list";
+        return "redirect:/admin/expense-list?success=deleted";
+    }
+    
+ // ================= EDIT EXPENSE =================
+    @GetMapping("/expense/edit")
+    public String editExpense(@RequestParam Integer expenseId,
+                              Model model,
+                              HttpSession session) {
+
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
+        ExpenseEntity expense = expenseRepository.findById(expenseId).orElse(null);
+
+        model.addAttribute("expense", expense);
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("subCategories", subCategoryRepository.findAll());
+        model.addAttribute("vendors", vendorRepository.findAll());
+        model.addAttribute("accounts", accountRepository.findAll());
+        model.addAttribute("statuses", statusRepository.findAll());
+
+        return "Admin/EditExpense";
+    }
+    
+ // ================= UPDATE EXPENSE =================
+    @PostMapping("/expense/update")
+    public String updateExpense(ExpenseEntity expense,
+                                HttpSession session) {
+
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
+        expense.setUser(admin);
+
+        expense.setCategory(
+            categoryRepository.findById(expense.getCategory().getCategoryId()).orElse(null)
+        );
+
+        expense.setSubCategory(
+            subCategoryRepository.findById(expense.getSubCategory().getSubCategoryId()).orElse(null)
+        );
+
+        expense.setVendor(
+            vendorRepository.findById(expense.getVendor().getVendorId()).orElse(null)
+        );
+
+        expense.setAccount(
+            accountRepository.findById(expense.getAccount().getAccountId()).orElse(null)
+        );
+
+        expense.setStatus(
+            statusRepository.findById(expense.getStatus().getStatusId()).orElse(null)
+        );
+
+        expenseRepository.save(expense);
+
+        return "redirect:/admin/expense-list?success=updated";
     }
 }

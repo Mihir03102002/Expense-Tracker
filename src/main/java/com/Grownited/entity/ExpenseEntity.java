@@ -137,4 +137,11 @@ public class ExpenseEntity {
     public void setUser(UserEntity user) {
         this.user = user;
     }
+
+	public Object getCategoryId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }

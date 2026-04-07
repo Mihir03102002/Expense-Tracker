@@ -20,4 +20,11 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
 
     // 🔍 SEARCH + PAGINATION (NEW)
     Page<AccountEntity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    
+ // Pagination + User filter
+    Page<AccountEntity> findByUserId(Integer userId, Pageable pageable);
+
+    // Search + Pagination
+    Page<AccountEntity> findByUserIdAndTitleContainingIgnoreCase(
+            Integer userId, String title, Pageable pageable);
 }

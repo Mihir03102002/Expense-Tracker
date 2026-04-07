@@ -7,3 +7,5 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/js/select.dataTables.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.png">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">

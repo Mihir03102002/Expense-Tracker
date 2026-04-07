@@ -100,4 +100,30 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
     		        String title,
     		        Pageable pageable
     		);
+    	 
+    	 Page<ExpenseEntity> findByUser(UserEntity user, Pageable pageable);
+
+    	 Page<ExpenseEntity> findByUserAndTitleContainingIgnoreCase(
+    	         UserEntity user, String keyword, Pageable pageable);
+    	 
+    	 @Query("""
+    			 SELECT c.categoryName, SUM(e.amount)
+    			 FROM ExpenseEntity e
+    			 JOIN e.category c
+    			 WHERE e.user.userId = :userId
+    			 AND e.date BETWEEN :start AND :end
+    			 GROUP BY c.categoryName
+    			 """)
+    			 List<Object[]> sumExpenseByCategory(Integer userId, LocalDate start, LocalDate end);
+    			 
+    			 List<ExpenseEntity> findByUserUserIdAndDateBetween(
+    				        Integer userId,
+    				        LocalDate startDate,
+    				        LocalDate endDate
+    				);
+
+
+				 List<ExpenseEntity> findByUserAndDateBetween(UserEntity user, LocalDate startDate, LocalDate endDate);
+				 
+				 
 }

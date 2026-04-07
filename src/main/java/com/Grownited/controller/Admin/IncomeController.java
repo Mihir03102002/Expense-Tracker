@@ -64,8 +64,7 @@ public class IncomeController {
         return "Admin/Income";
     }
 
-
-    // ================= SAVE INCOME =================
+ // ================= SAVE INCOME =================
     @PostMapping("/income/save")
     public String saveIncome(IncomeEntity income,
                              HttpSession session) {
@@ -97,12 +96,19 @@ public class IncomeController {
         income.setAccount(account);
         income.setStatus(status);
 
+        // 🔥 BALANCE PLUS
+        if (account.getAmount() == null) {
+            account.setAmount(0.0);
+        }
+
+        account.setAmount(account.getAmount() + income.getAmount());
+
         incomeRepository.save(income);
+        accountRepository.save(account); // 🔥 SAVE UPDATED BALANCE
 
-        return "redirect:/admin/incomeList";
+        return "redirect:/admin/incomeList?success=added";
     }
-
-
+   
     // ================= INCOME LIST =================
     @GetMapping("/incomeList")
     public String incomeList(
@@ -170,6 +176,53 @@ public class IncomeController {
             incomeRepository.deleteById(incomeId);
         }
 
-        return "redirect:/admin/incomeList";
+        return "redirect:/admin/incomeList?success=deleted";
+    }
+    
+ // ================= EDIT INCOME =================
+    @GetMapping("/income/edit")
+    public String editIncome(@RequestParam Integer incomeId,
+                             Model model,
+                             HttpSession session) {
+
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
+        IncomeEntity income = incomeRepository.findById(incomeId).orElse(null);
+
+        model.addAttribute("income", income);
+        model.addAttribute("accounts", accountRepository.findAll());
+        model.addAttribute("statuses", statusRepository.findAll());
+
+        return "Admin/EditIncome";
+    }
+    
+ // ================= UPDATE INCOME =================
+    @PostMapping("/income/update")
+    public String updateIncome(IncomeEntity income,
+                               HttpSession session) {
+
+        UserEntity admin = getAdmin(session);
+
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
+        income.setUser(admin);
+
+        income.setAccount(
+            accountRepository.findById(income.getAccount().getAccountId()).orElse(null)
+        );
+
+        income.setStatus(
+            statusRepository.findById(income.getStatus().getStatusId()).orElse(null)
+        );
+
+        incomeRepository.save(income);
+
+        return "redirect:/admin/incomeList?success=updated";
     }
 }

@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.Grownited.entity.UserEntity;
 import com.Grownited.repository.ExpenseRepository;
@@ -31,7 +32,10 @@ public class UserController {
 
     // ================= USER DASHBOARD =================
     @GetMapping("/user/dashboard")
-    public String userDashboard(Model model, HttpSession session) throws Exception {
+    public String userDashboard(
+            @RequestParam(value = "year", required = false) Integer year,
+            Model model,
+            HttpSession session) throws Exception {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -40,6 +44,10 @@ public class UserController {
         }
 
         Integer userId = user.getUserId();
+
+        if (year == null) {
+            year = LocalDate.now().getYear();
+        }
 
         // ================= CURRENT MONTH =================
         YearMonth currentMonth = YearMonth.now();
@@ -55,6 +63,9 @@ public class UserController {
         if (monthExpense == null) monthExpense = 0.0;
         if (monthIncome == null) monthIncome = 0.0;
 
+        // ================= BALANCE =================
+        Double balance = monthIncome - monthExpense;
+
         // ================= QUARTER =================
         LocalDate quarterStart = LocalDate.now().minusMonths(3);
 
@@ -67,16 +78,14 @@ public class UserController {
         if (quarterExpense == null) quarterExpense = 0.0;
         if (quarterIncome == null) quarterIncome = 0.0;
 
-        // ================= FULL YEAR CHART (JAN → DEC) =================
+        // ================= FULL YEAR CHART =================
         List<String> months = new ArrayList<>();
         List<Double> incomeList = new ArrayList<>();
         List<Double> expenseList = new ArrayList<>();
 
-        int currentYear = LocalDate.now().getYear();
-
         for (int i = 1; i <= 12; i++) {
 
-            YearMonth ym = YearMonth.of(currentYear, i);
+            YearMonth ym = YearMonth.of(year, i);
 
             LocalDate start = ym.atDay(1);
             LocalDate end = ym.atEndOfMonth();
@@ -87,29 +96,63 @@ public class UserController {
             Double expense = expenseRepository
                     .sumExpenseBetweenDatesByUser(userId, start, end);
 
-            // NULL FIX
             if (income == null) income = 0.0;
             if (expense == null) expense = 0.0;
 
-            // Month Name → Jan, Feb, Mar...
             months.add(ym.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH));
-
             incomeList.add(income);
             expenseList.add(expense);
         }
 
-        // ================= CONVERT TO JSON =================
+        // ================= CATEGORY CHART =================
+        LocalDate monthStart = currentMonth.atDay(1);
+        LocalDate monthEnd = currentMonth.atEndOfMonth();
+
+        LocalDate yearStart = LocalDate.of(year, 1, 1);
+        LocalDate yearEnd = LocalDate.of(year, 12, 31);
+
+        List<Object[]> monthCategory = expenseRepository
+                .sumExpenseByCategory(userId, monthStart, monthEnd);
+
+        List<Object[]> yearCategory = expenseRepository
+                .sumExpenseByCategory(userId, yearStart, yearEnd);
+
+        List<String> monthLabels = new ArrayList<>();
+        List<Double> monthData = new ArrayList<>();
+
+        for (Object[] row : monthCategory) {
+            monthLabels.add(row[0].toString());
+            monthData.add(Double.parseDouble(row[1].toString()));
+        }
+
+        List<String> yearLabels = new ArrayList<>();
+        List<Double> yearData = new ArrayList<>();
+
+        for (Object[] row : yearCategory) {
+            yearLabels.add(row[0].toString());
+            yearData.add(Double.parseDouble(row[1].toString()));
+        }
+
+        // ================= JSON =================
         ObjectMapper mapper = new ObjectMapper();
 
         model.addAttribute("monthsJson", mapper.writeValueAsString(months));
         model.addAttribute("incomeList", mapper.writeValueAsString(incomeList));
         model.addAttribute("expenseList", mapper.writeValueAsString(expenseList));
 
-        // ================= CARDS DATA =================
+        model.addAttribute("monthCategoryLabels", mapper.writeValueAsString(monthLabels));
+        model.addAttribute("monthCategoryData", mapper.writeValueAsString(monthData));
+
+        model.addAttribute("yearCategoryLabels", mapper.writeValueAsString(yearLabels));
+        model.addAttribute("yearCategoryData", mapper.writeValueAsString(yearData));
+
+        // ================= DATA =================
         model.addAttribute("monthExpense", monthExpense);
         model.addAttribute("quarterExpense", quarterExpense);
         model.addAttribute("monthIncome", monthIncome);
         model.addAttribute("quarterIncome", quarterIncome);
+        model.addAttribute("balance", balance);
+        model.addAttribute("selectedYear", year);
 
         return "User/UserDashboard";
     }
@@ -117,9 +160,8 @@ public class UserController {
     // ================= LOGOUT =================
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-
         session.invalidate();
-
         return "redirect:/login";
     }
+    
 }

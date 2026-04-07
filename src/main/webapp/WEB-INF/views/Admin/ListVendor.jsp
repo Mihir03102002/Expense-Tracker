@@ -78,6 +78,19 @@
 
 							<!-- ================= CARD BODY ================= -->
 							<div class="card-body">
+							
+							<!-- ✅ SUCCESS MESSAGE -->
+								<c:if test="${param.success == 'added'}">
+								    <div class="alert alert-success">Vendor added successfully!</div>
+								</c:if>
+								
+								<c:if test="${param.success == 'updated'}">
+								    <div class="alert alert-success">Vendor updated successfully!</div>
+								</c:if>
+								
+								<c:if test="${param.success == 'deleted'}">
+								    <div class="alert alert-danger">Vendor deleted successfully!</div>
+								</c:if>
 
 								<!-- ================= SEARCH BAR ================= -->
 								<form method="get" action="${ctx}/admin/listVendor" class="mb-3 d-flex">

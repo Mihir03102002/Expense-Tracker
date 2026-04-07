@@ -44,6 +44,19 @@
 
 				<!-- ================= CARD ================= -->
 				<div class="card shadow-sm">
+				
+				<!-- ✅ SUCCESS MESSAGE -->
+						<c:if test="${param.success == 'added'}">
+						    <div class="alert alert-success">Income added successfully!</div>
+						</c:if>
+						
+						<c:if test="${param.success == 'updated'}">
+						    <div class="alert alert-success">Income updated successfully!</div>
+						</c:if>
+						
+						<c:if test="${param.success == 'deleted'}">
+						    <div class="alert alert-danger">Income deleted successfully!</div>
+						</c:if>
 
 					<!-- ================= HEADER ================= -->
 					<div class="card-header bg-primary text-white d-flex justify-content-between">
@@ -129,11 +142,18 @@
 													<td>${i.status.status}</td>
 
 													<td>
-														<a href="${ctx}/admin/income/delete?incomeId=${i.incomeId}"
-														   class="btn btn-danger btn-sm"
-														   onclick="return confirm('Are you sure?')">
-															Delete
-														</a>
+
+													    <a href="${ctx}/admin/income/edit?incomeId=${i.incomeId}"
+													       class="btn btn-warning btn-sm rounded-pill">
+													        Edit
+													    </a>
+													
+													    <a href="${ctx}/admin/income/delete?incomeId=${i.incomeId}"
+													       class="btn btn-danger btn-sm rounded-pill"
+													       onclick="return confirm('Are you sure?')">
+													        Delete
+													    </a>
+													
 													</td>
 
 												</tr>

@@ -58,6 +58,19 @@
 
 					<!-- ===== CARD BODY ===== -->
 					<div class="card-body">
+					
+					<!-- ✅ SUCCESS MESSAGE -->
+						<c:if test="${param.success == 'added'}">
+						    <div class="alert alert-success">Expense added successfully!</div>
+						</c:if>
+						
+						<c:if test="${param.success == 'updated'}">
+						    <div class="alert alert-success">Expense updated successfully!</div>
+						</c:if>
+						
+						<c:if test="${param.success == 'deleted'}">
+						    <div class="alert alert-danger">Expense deleted successfully!</div>
+						</c:if>
 
 						<!-- ================= SEARCH + DATE FILTER ================= -->
 						<form method="get"
@@ -144,12 +157,19 @@
 								                    <td>${e.status.status}</td>
 								
 								                    <td>
-								                        <a href="${ctx}/admin/expense/delete?expenseId=${e.expenseId}"
-								                           class="btn btn-danger btn-sm"
-								                           onclick="return confirm('Are you sure?')">
-								                            Delete
-								                        </a>
-								                    </td>
+
+													    <a href="${ctx}/admin/expense/edit?expenseId=${e.expenseId}"
+													       class="btn btn-warning btn-sm rounded-pill">
+													        Edit
+													    </a>
+													
+													    <a href="${ctx}/admin/expense/delete?expenseId=${e.expenseId}"
+													       class="btn btn-danger btn-sm rounded-pill"
+													       onclick="return confirm('Are you sure?')">
+													        Delete
+													    </a>
+													
+													</td>
 								
 								                </tr>
 								

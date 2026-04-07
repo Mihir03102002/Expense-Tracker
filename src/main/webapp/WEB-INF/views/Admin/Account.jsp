@@ -114,64 +114,6 @@
                     </div>
                 </div>
 
-
-                <!-- ================= ACCOUNT TABLE ================= -->
-                <div class="row">
-                    <div class="col-md-12 grid-margin stretch-card">
-
-                        <div class="card">
-
-                            <div class="card-header bg-dark text-white">
-                                Account List
-                            </div>
-
-                            <div class="card-body">
-
-                                <div class="table-responsive">
-
-                                    <table class="table table-bordered text-center">
-
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Sr. No</th>
-                                                <th>Account</th>
-                                                <th>Type</th>
-                                                <th>Balance</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-
-                                            <c:forEach var="a" items="${accounts}" varStatus="status">
-                                                <tr>
-                                                    <td>${status.index + 1}</td>
-                                                    <td>${a.title}</td>
-                                                    <td>${a.accountType}</td>
-                                                    <td>₹ ${a.amount}</td>
-                                                </tr>
-                                            </c:forEach>
-
-                                            <c:if test="${empty accounts}">
-                                                <tr>
-                                                    <td colspan="4">No accounts found</td>
-                                                </tr>
-                                            </c:if>
-
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
             <!-- ================= FOOTER ================= -->
             <jsp:include page="AdminFooter.jsp"/>
 

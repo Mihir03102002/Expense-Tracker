@@ -54,6 +54,39 @@ pageEncoding="UTF-8"%>
                 </div>
 
                 <div class="card-body">
+                
+                <!-- SUCCESS -->
+				<c:if test="${param.success == 'added'}">
+				    <div class="alert alert-success">Account added successfully!</div>
+				</c:if>
+				
+				<c:if test="${param.success == 'updated'}">
+				    <div class="alert alert-success">Account updated successfully!</div>
+				</c:if>
+				
+				<c:if test="${param.success == 'deleted'}">
+				    <div class="alert alert-danger">Account deleted successfully!</div>
+				</c:if>
+				
+				<!-- ERROR -->
+				<c:if test="${param.error == 'hasTransaction'}">
+				    <div class="alert alert-warning">
+				        Cannot delete account. Transactions exist!
+				    </div>
+				</c:if>
+				
+				<form method="get" action="${pageContext.request.contextPath}/user/accountList"
+				      class="mb-3 d-flex">
+				
+				    <input type="text"
+				           name="keyword"
+				           value="${keyword}"
+				           placeholder="Search account..."
+				           class="form-control me-2"/>
+				
+				    <button class="btn btn-primary">Search</button>
+				
+				</form>
 
                     <table class="table table-bordered table-hover text-center align-middle">
 
@@ -84,23 +117,28 @@ pageEncoding="UTF-8"%>
                                 <tr>
 
                                     <!-- Serial Number -->
-                                    <td>${i.index + 1}</td>
+                                    <td>${currentPage * 10 + i.index + 1}</td>
 
                                     <td>${a.title}</td>
                                     <td>${a.accountType}</td>
                                     <td>₹ ${a.amount}</td>
+                                    
+                                 
 
                                     <td>
 
-                                        <a href="${pageContext.request.contextPath}/user/account/delete?accountId=${a.accountId}"
-                                           class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Are you sure you want to delete this account?')">
-
-                                            Delete
-
-                                        </a>
-
-                                    </td>
+								    <a href="${pageContext.request.contextPath}/user/account/edit?accountId=${a.accountId}"
+								       class="btn btn-warning btn-sm">
+								        Edit
+								    </a>
+								
+								    <a href="${pageContext.request.contextPath}/user/account/delete?accountId=${a.accountId}"
+								       class="btn btn-danger btn-sm"
+								       onclick="return confirm('Are you sure you want to delete this account?')">
+								        Delete
+								    </a>
+								
+								</td>
 
                                 </tr>
 
@@ -115,6 +153,40 @@ pageEncoding="UTF-8"%>
             </div>
 
         </div>
+        
+        <c:if test="${totalPages > 1}">
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+
+            <!-- PREVIOUS -->
+            <li class="page-item ${currentPage == 0 ? 'disabled' : ''}">
+                <a class="page-link"
+                   href="${pageContext.request.contextPath}/user/accountList?page=${currentPage - 1}&keyword=${keyword}">
+                    Previous
+                </a>
+            </li>
+
+            <!-- PAGE NUMBERS -->
+            <c:forEach begin="0" end="${totalPages - 1}" var="p">
+                <li class="page-item ${p == currentPage ? 'active' : ''}">
+                    <a class="page-link"
+                       href="${pageContext.request.contextPath}/user/accountList?page=${p}&keyword=${keyword}">
+                        ${p + 1}
+                    </a>
+                </li>
+            </c:forEach>
+
+            <!-- NEXT -->
+            <li class="page-item ${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                <a class="page-link"
+                   href="${pageContext.request.contextPath}/user/accountList?page=${currentPage + 1}&keyword=${keyword}">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</c:if>
 
         <!-- USER FOOTER -->
         <jsp:include page="UserFooter.jsp"></jsp:include>

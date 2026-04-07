@@ -67,4 +67,18 @@ public interface IncomeRepository extends JpaRepository<IncomeEntity, Integer> {
             String title,
             Pageable pageable
     );
+    
+    Page<IncomeEntity> findByUser(UserEntity user, Pageable pageable);
+
+    Page<IncomeEntity> findByUserAndTitleContainingIgnoreCase(
+            UserEntity user, String keyword, Pageable pageable);
+    
+ 
+    List<IncomeEntity> findByUserAndDateBetween(
+            UserEntity user,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+    
+    
 }

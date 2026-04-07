@@ -101,4 +101,8 @@ public class IncomeEntity {
     public void setStatus(StatusEntity status) {
         this.status = status;
     }
+
+	
+
+	
 }

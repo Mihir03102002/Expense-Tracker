@@ -98,6 +98,14 @@
         </ul>
       </div>
     </li>
-
+    
+   <!-- Report -->
+<li class="nav-item">
+    <a class="nav-link"
+       href="${pageContext.request.contextPath}/user/report">
+        <i class="ti-file menu-icon"></i>
+        <span class="menu-title">Report</span>
+    </a>
+</li>
   </ul>
 </nav>

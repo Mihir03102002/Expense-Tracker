@@ -154,15 +154,6 @@
 
 													<td>
 
-														<!-- EDIT BUTTON -->
-														<a href="/admin/status/edit?statusId=${s.statusId}"
-														   class="btn btn-warning btn-sm rounded-pill">
-
-															Edit
-
-														</a>
-
-
 														<!-- DELETE BUTTON -->
 														<a href="deleteStatus?statusId=${s.statusId}"
 														   class="btn btn-danger btn-sm rounded-pill"

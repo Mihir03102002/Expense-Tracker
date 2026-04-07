@@ -1,12 +1,20 @@
 <footer class="footer">
-  <div class="d-sm-flex justify-content-center justify-content-sm-between">
-    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-      Expense Tracker |
-    </span>
-    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
-      <i class="ti-heart text-danger ms-1"></i>
-    </span>
-  </div>
+    <div class="container-fluid">
+        <div class="row align-items-center">
+
+            <!-- LEFT -->
+            <div class="col-md-4 text-md-start text-center mb-2 mb-md-0">
+                <span>
+                    2026 <strong>Expense Tracker</strong>
+                </span>
+                <br>
+                <small class="text-muted">
+                    Developed by <b>Mihir Prajapati</b>
+                </small>
+            </div>
+
+        </div>
+    </div>
 </footer>
 
 <script src="assets/vendors/js/vendor.bundle.base.js"></script>
@@ -22,3 +30,8 @@
 
 <script src="assets/js/jquery.cookie.js" type="text/javascript"></script>
 <script src="assets/js/dashboard.js"></script>
+
+
+
+
+

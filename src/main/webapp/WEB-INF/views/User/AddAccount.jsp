@@ -13,6 +13,34 @@ pageEncoding="UTF-8"%>
 <!-- USER CSS -->
 <jsp:include page="UserCSS.jsp"></jsp:include>
 
+<style>
+/* ✅ FIX FOOTER POSITION */
+html, body {
+    height: 100%;
+}
+
+.container-scroller {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-body-wrapper {
+    flex: 1;
+    display: flex;
+}
+
+.main-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.content-wrapper {
+    flex-grow: 1;
+}
+</style>
+
 </head>
 
 <body>
@@ -29,6 +57,7 @@ pageEncoding="UTF-8"%>
 
         <!-- MAIN PANEL -->
         <div class="main-panel">
+
             <div class="content-wrapper">
 
                 <h3 class="mb-2">My Accounts</h3>
@@ -103,69 +132,12 @@ pageEncoding="UTF-8"%>
 
                 </div>
 
+            </div> <!-- ✅ content-wrapper END -->
 
-                <!-- ================= ACCOUNT LIST ================= -->
-
-                <div class="card">
-
-                    <div class="card-header bg-dark text-white">
-                        My Account List
-                    </div>
-
-                    <div class="card-body">
-
-                        <table class="table table-bordered text-center">
-
-                            <thead class="table-light">
-
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Account</th>
-                                    <th>Type</th>
-                                    <th>Balance</th>
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                <c:forEach var="a" items="${accounts}" varStatus="i">
-
-                                    <tr>
-
-                                        <td>${i.index + 1}</td>
-                                        <td>${a.title}</td>
-                                        <td>${a.accountType}</td>
-                                        <td>₹ ${a.amount}</td>
-
-                                    </tr>
-
-                                </c:forEach>
-
-                                <c:if test="${empty accounts}">
-
-                                    <tr>
-                                        <td colspan="4">
-                                            No accounts found
-                                        </td>
-                                    </tr>
-
-                                </c:if>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- USER FOOTER -->
+            <!-- ✅ FOOTER NOW AT BOTTOM -->
             <jsp:include page="UserFooter.jsp"></jsp:include>
 
-        </div>
+        </div> <!-- ✅ main-panel END -->
 
     </div>
 
