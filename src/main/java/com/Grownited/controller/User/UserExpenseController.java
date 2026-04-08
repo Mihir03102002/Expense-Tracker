@@ -81,7 +81,8 @@ public class UserExpenseController {
     // =============================
     @PostMapping("/saveExpense")
     public String saveExpense(@ModelAttribute ExpenseEntity expense,
-                              HttpSession session) {
+                              HttpSession session,
+                              Model model) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -91,41 +92,31 @@ public class UserExpenseController {
 
         expense.setUser(user);
 
-        Optional<AccountEntity> accOpt =
-                accountRepository.findById(expense.getAccount().getAccountId());
+        AccountEntity account = accountRepository
+                .findById(expense.getAccount().getAccountId())
+                .orElse(null);
 
-        Optional<StatusEntity> statusOpt =
-                statusRepository.findById(expense.getStatus().getStatusId());
-
-        if (accOpt.isPresent() && statusOpt.isPresent()) {
-
-            AccountEntity account = accOpt.get();
-            StatusEntity statusEntity = statusOpt.get();
-
-            Double balance = account.getAmount();
-            if(balance == null){
-                balance = (double) 0f;
-            }
-
-            Float expenseAmount = expense.getAmount();
-
-            String status = statusEntity.getStatus();
-
-            if("Paid".equalsIgnoreCase(status)){
-
-                balance = balance - expenseAmount;
-
-            } 
-            else if("Partial".equalsIgnoreCase(status)){
-
-                balance = balance - (expenseAmount / 2);
-
-            }
-            // Unpaid → no balance change
-
-            account.setAmount(balance);
-            accountRepository.save(account);
+        if (account == null) {
+            model.addAttribute("error", "Account not found!");
+            return "User/AddExpense";
         }
+
+        Double balance = account.getAmount() == null ? 0.0 : account.getAmount();
+        Float amount = expense.getAmount();
+
+        if (amount <= 0) {
+            model.addAttribute("error", "Amount must be greater than 0!");
+            return "User/AddExpense";
+        }
+
+        if (balance < amount) {
+            model.addAttribute("error",
+                    "❌ Insufficient Balance! Available: ₹ " + balance);
+            return "User/AddExpense";
+        }
+
+        account.setAmount(balance - amount);
+        accountRepository.save(account);
 
         expenseRepository.save(expense);
 
@@ -274,7 +265,8 @@ public class UserExpenseController {
  // ================= UPDATE EXPENSE =================
     @PostMapping("/updateExpense")
     public String updateExpense(@ModelAttribute ExpenseEntity expense,
-                                HttpSession session) {
+                                HttpSession session,
+                                Model model) {
 
         UserEntity user = (UserEntity) session.getAttribute("user");
 
@@ -282,31 +274,26 @@ public class UserExpenseController {
             return "redirect:/login";
         }
 
-        expense.setUser(user);
+        ExpenseEntity oldExpense =
+                expenseRepository.findById(expense.getExpenseId()).orElse(null);
 
         AccountEntity account =
                 accountRepository.findById(expense.getAccount().getAccountId()).orElse(null);
 
-        StatusEntity status =
-                statusRepository.findById(expense.getStatus().getStatusId()).orElse(null);
+        Double balance = account.getAmount() == null ? 0.0 : account.getAmount();
 
-        if (account != null && status != null) {
+        // ✅ restore old amount
+        balance += oldExpense.getAmount();
 
-            Double balance = account.getAmount() == null ? 0.0 : account.getAmount();
-            Float amount = expense.getAmount();
-
-            String st = status.getStatus();
-
-            if ("Paid".equalsIgnoreCase(st)) {
-                balance -= amount;
-            } else if ("Partial".equalsIgnoreCase(st)) {
-                balance -= (amount / 2);
-            }
-
-            account.setAmount(balance);
-            accountRepository.save(account);
+        if (balance < expense.getAmount()) {
+            model.addAttribute("error", "Insufficient balance!");
+            return "User/EditExpense";
         }
 
+        account.setAmount(balance - expense.getAmount());
+        accountRepository.save(account);
+
+        expense.setUser(user);
         expenseRepository.save(expense);
 
         return "redirect:/user/expenseList?success=updated";

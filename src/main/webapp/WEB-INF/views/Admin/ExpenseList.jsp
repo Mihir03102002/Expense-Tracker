@@ -71,7 +71,8 @@
 						<c:if test="${param.success == 'deleted'}">
 						    <div class="alert alert-danger">Expense deleted successfully!</div>
 						</c:if>
-
+						
+						
 						<!-- ================= SEARCH + DATE FILTER ================= -->
 					<form method="get"
 				      action="${ctx}/admin/expense-list"

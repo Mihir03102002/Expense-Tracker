@@ -42,6 +42,12 @@ pageEncoding="UTF-8"%>
 
 <form action="${ctx}/admin/expense/update" method="post">
 
+<c:if test="${not empty error}">
+    <div class="alert alert-danger text-center">
+        ${error}
+    </div>
+</c:if>
+
 <input type="hidden" name="expenseId" value="${expense.expenseId}" />
 
 <div class="row mb-3">

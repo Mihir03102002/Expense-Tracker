@@ -83,7 +83,8 @@ public class ExpenseController {
  // ================= SAVE EXPENSE =================
     @PostMapping("/expense/save")
     public String saveExpense(ExpenseEntity expense,
-                              HttpSession session) {
+                              HttpSession session,
+                              Model model) {
 
         UserEntity admin = getAdmin(session);
 
@@ -93,40 +94,35 @@ public class ExpenseController {
 
         expense.setUser(admin);
 
-        CategoryEntity category = categoryRepository
-                .findById(expense.getCategory().getCategoryId())
-                .orElse(null);
-
-        VendorEntity vendor = vendorRepository
-                .findById(expense.getVendor().getVendorId())
-                .orElse(null);
-
-        StatusEntity status = statusRepository
-                .findById(expense.getStatus().getStatusId())
-                .orElse(null);
-
-        AccountEntity account = accountRepository   // 🔥 ADD THIS
+        AccountEntity account = accountRepository
                 .findById(expense.getAccount().getAccountId())
                 .orElse(null);
 
-        if (category == null || vendor == null || status == null || account == null) {
-            return "redirect:/admin/expense";
+        if (account == null) {
+            model.addAttribute("error", "Account not found!");
+            return "Admin/Expense";
         }
 
-        expense.setCategory(category);
-        expense.setVendor(vendor);
-        expense.setStatus(status);
-        expense.setAccount(account); // 🔥 IMPORTANT
+        Double balance = account.getAmount() == null ? 0.0 : account.getAmount();
+        Float amount = expense.getAmount();
 
-        // 🔥 BALANCE MINUS
-        if (account.getAmount() == null) {
-            account.setAmount(0.0);
+        // ✅ VALIDATION
+        if (amount == null || amount <= 0) {
+            model.addAttribute("error", "Amount must be greater than 0!");
+            return "Admin/Expense";
         }
 
-        account.setAmount(account.getAmount() - expense.getAmount());
+        if (balance < amount) {
+            model.addAttribute("error",
+                    "❌ Insufficient Balance! Available: ₹ " + balance);
+            return "Admin/Expense";
+        }
 
+        // ✅ SAFE DEDUCTION
+        account.setAmount(balance - amount);
+
+        accountRepository.save(account);
         expenseRepository.save(expense);
-        accountRepository.save(account); // 🔥 SAVE UPDATED BALANCE
 
         return "redirect:/admin/expense-list?success=added";
     }
@@ -283,7 +279,8 @@ public class ExpenseController {
  // ================= UPDATE EXPENSE =================
     @PostMapping("/expense/update")
     public String updateExpense(ExpenseEntity expense,
-                                HttpSession session) {
+                                HttpSession session,
+                                Model model) {
 
         UserEntity admin = getAdmin(session);
 
@@ -291,28 +288,33 @@ public class ExpenseController {
             return "redirect:/login";
         }
 
+        ExpenseEntity oldExpense =
+                expenseRepository.findById(expense.getExpenseId()).orElse(null);
+
+        if (oldExpense == null) {
+            return "redirect:/admin/expense-list";
+        }
+
+        AccountEntity account = accountRepository
+                .findById(expense.getAccount().getAccountId())
+                .orElse(null);
+
+        Double balance = account.getAmount() == null ? 0.0 : account.getAmount();
+
+        // ✅ ADD BACK OLD AMOUNT
+        balance += oldExpense.getAmount();
+
+        // ❌ CHECK AGAIN
+        if (balance < expense.getAmount()) {
+            model.addAttribute("error", "Insufficient balance!");
+            return "Admin/EditExpense";
+        }
+
+        // ✅ FINAL UPDATE
+        account.setAmount(balance - expense.getAmount());
+        accountRepository.save(account);
+
         expense.setUser(admin);
-
-        expense.setCategory(
-            categoryRepository.findById(expense.getCategory().getCategoryId()).orElse(null)
-        );
-
-        expense.setSubCategory(
-            subCategoryRepository.findById(expense.getSubCategory().getSubCategoryId()).orElse(null)
-        );
-
-        expense.setVendor(
-            vendorRepository.findById(expense.getVendor().getVendorId()).orElse(null)
-        );
-
-        expense.setAccount(
-            accountRepository.findById(expense.getAccount().getAccountId()).orElse(null)
-        );
-
-        expense.setStatus(
-            statusRepository.findById(expense.getStatus().getStatusId()).orElse(null)
-        );
-
         expenseRepository.save(expense);
 
         return "redirect:/admin/expense-list?success=updated";

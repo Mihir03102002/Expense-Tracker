@@ -54,6 +54,11 @@
 
 								<form action="${pageContext.request.contextPath}/user/saveExpense" method="post">
 
+								<c:if test="${not empty error}">
+								    <div class="alert alert-danger text-center">
+								        ${error}
+								    </div>
+								</c:if>
 									<!-- ROW 1 -->
 									<div class="row mb-3">
 
